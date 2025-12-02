@@ -2,12 +2,18 @@
 # Add your publications here using the format below:
 #
 # - title: "Paper Title"
+#   authors: "Author 1, Author 2, Author 3"
 #   year: 2024
 #   venue: "Conference or Journal Name"
 #   link: "https://example.com/paper-link"
+#   image: "/assets/images/pub-2024-example.png"
+#   type: "journal"  # Options: journal, conference, preprint, poster, talk
 #
 # Example:
 # - title: "Sample Research Paper"
+#   authors: "Stephen Kerr, Co-Author Name"
 #   year: 2024
 #   venue: "International Conference on Example"
 #   link: "https://example.com/sample-paper"
+#   image: "/assets/images/sample-paper.png"
+#   type: "conference"

@@ -1,7 +1,9 @@
 # Site settings
-title: "Your Site Title"
-description: "Your site description goes here"
-author: "Your Name"
+title: "Stephen Kerr"
+description: "Computational materials scientist at Queen's University using atomistic simulation to study alloys and teach numerical methods."
+author: "Stephen Kerr"
+email: "24jrpc@queensu.ca"
+linkedin: "https://linkedin.com/in/stephen-kerr-93aa42254/"
 
 # Build settings
 markdown: kramdown
