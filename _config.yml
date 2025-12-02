@@ -1,0 +1,30 @@
+# Site settings
+title: "Your Site Title"
+description: "Your site description goes here"
+author: "Your Name"
+
+# Build settings
+markdown: kramdown
+theme: null
+
+# GitHub Pages settings
+baseurl: ""
+url: ""
+
+# Plugins
+plugins:
+  - jekyll-seo-tag
+
+# Collections
+collections:
+  publications:
+    output: false
+  videos:
+    output: false
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
