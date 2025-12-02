@@ -1,19 +1,38 @@
 # Publications
-# Add your publications here using the format below:
-#
-# - title: "Paper Title"
-#   authors: "Author 1, Author 2, Author 3"
-#   year: 2024
-#   venue: "Conference or Journal Name"
-#   link: "https://example.com/paper-link"
-#   image: "/assets/images/pub-2024-example.png"
-#   type: "journal"  # Options: journal, conference, preprint, poster, talk
-#
-# Example:
-# - title: "Sample Research Paper"
-#   authors: "Stephen Kerr, Co-Author Name"
-#   year: 2024
-#   venue: "International Conference on Example"
-#   link: "https://example.com/sample-paper"
-#   image: "/assets/images/sample-paper.png"
-#   type: "conference"
+# Peer-reviewed publications, preprints, talks, and posters
+
+- title: "Chromium Raises Vacancy Concentration and Promotes Grain-Boundary Al Segregation in Ni–Cr–Al"
+  authors: "Stephen T.W. Kerr, Keyvan Ferasat, Yasaman Ghaffari, Laurent Karim Béland"
+  year: 2025
+  venue: "Scripta Materialia (Submitted - SSRN 5759303)"
+  link: "/assets/pdfs/kerr-2025-scripta-cr-vacancy.pdf"
+  image: "/assets/images/graphical-abstract-cr-vacancy.png"
+  type: "preprint"
+
+- title: "C-C Bonding in Molecular Systems via Cross-Coupling-like Reactions Involving Noncovalently Bound Constituent Ions"
+  authors: "Stephen Kerr, Fedor Y. Naumkin"
+  year: 2024
+  venue: "Molecules 29, 4429"
+  link: "/assets/pdfs/kerr-2024-molecules-c-c-bonding.pdf"
+  type: "journal"
+
+- title: "Modelling of molecule-inside-dipole complexes: through-vs. around-molecule ion transfer"
+  authors: "Stephen T.W. Kerr"
+  year: 2023
+  venue: "Queen's University (PhD Thesis)"
+  link: "/assets/pdfs/kerr-thesis.pdf"
+  type: "thesis"
+
+- title: "Noncovalently bound complexes of polar molecules: Dipole-inside-of-dipole vs. dipole–dipole systems"
+  authors: "S. Kerr, F.Y. Naumkin"
+  year: 2017
+  venue: "New Journal of Chemistry 41(22)"
+  link: "/assets/pdfs/kerr-2017-njc-noncovalent-complexes.pdf"
+  type: "journal"
+
+- title: "Rational design of a material for rapid colorimetric Fe²⁺ detection"
+  authors: "Nadia O. Laschuk, Iraklii I. Ebralidze, Simone Quaranta, Stephen T.W. Kerr, Jacquelyn G. Egan, Scott Gillis, Franco Gaspari, Alessandro Latini, Olena V. Zenkina"
+  year: 2016
+  venue: "Materials and Design 107"
+  link: "/assets/pdfs/kerr-2016-materials-design-fe-detection.pdf"
+  type: "journal"
