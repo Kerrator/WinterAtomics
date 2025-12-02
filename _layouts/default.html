@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <meta name="author" content="{{ site.author }}">
+  
+  <!-- Normalize.css for consistent styling -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  
+  <!-- Tufte CSS - Academic-focused CSS framework -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.8.0/tufte.min.css">
+  
+  <style>
+    /* Additional custom styles for academic portfolio */
+    body {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      font-family: "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    header {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    nav ul li {
+      display: inline;
+      margin-right: 1rem;
+    }
+    
+    nav ul li a {
+      text-decoration: none;
+      color: #0066cc;
+    }
+    
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+    
+    main {
+      min-height: 60vh;
+    }
+    
+    footer {
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: normal;
+      margin-top: 2rem;
+    }
+    
+    a {
+      color: #0066cc;
+    }
+    
+    ul {
+      padding-left: 1.5rem;
+    }
+    
+    li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ site.title }}</h1>
+    <p>{{ site.description }}</p>
+    <nav>
+      <ul>
+        <li><a href="{{ '/' | relative_url }}">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    {{ content }}
+  </main>
+  
+  <footer>
+    <p>&copy; {{ site.time | date: '%Y' }} {{ site.author }}. All rights reserved.</p>
+  </footer>
+</body>
+</html>
