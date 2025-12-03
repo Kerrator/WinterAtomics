@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,16 +15,71 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.8.0/tufte.min.css">
 
   <style>
-    /* Additional custom styles for academic portfolio */
+    /*
+     * WinterAtomics Color System (role-based)
+     * Keep the banner palette, but assign colours to specific UI roles:
+     * - Text is neutral for readability.
+     * - Teal is accent-only (links, highlights, focus, active indicator).
+     */
+
+    :root {
+      /* Banner-derived base palette */
+      --color-void: #051820;
+      --color-deep-cobalt: #061E29;
+      --color-deep-teal-shadow: #08232E;
+      --color-midnight-slate: #0C313F;
+
+      --color-link-teal: #41A0AC;
+      --color-primary-teal: #4DADB8;
+      --color-highlight-icy: #91DBE1;
+      --color-frost: #AEE9EC;
+
+      /* Role-based backgrounds */
+      --bg-page: var(--color-void);
+      --bg-section: var(--color-deep-cobalt);
+      --bg-card: var(--color-deep-teal-shadow);
+      --bg-elev: var(--color-midnight-slate);
+
+      /* Sidebar tweaks (quieter) */
+      --bg-sidebar: #071F29;
+      --bg-sidebar-hover: rgba(77, 173, 184, 0.10);
+      --bg-sidebar-active: rgba(77, 173, 184, 0.14);
+
+      /* Text (neutral, not teal-washed) */
+      --text-heading: #EAFBFC;
+      --text-body: #CFEAEC;
+      --text-muted: #93B7BF;
+
+      /* Accents */
+      --link-color: var(--color-highlight-icy);
+      --link-hover: var(--text-heading);
+      --accent: var(--color-primary-teal);
+      --accent-strong: var(--color-frost);
+
+      /* Borders (subtle on dark) */
+      --border-subtle: rgba(77, 173, 184, 0.22);
+      --border-strong: rgba(77, 173, 184, 0.35);
+
+      /* Buttons */
+      --button-bg: var(--color-primary-teal);
+      --button-bg-hover: var(--color-highlight-icy);
+      --button-text: var(--color-void);
+
+      /* Focus */
+      --focus-ring: var(--color-frost);
+    }
+
+    /* Base */
     body {
       margin: 0;
       padding: 0;
       font-family: "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
       line-height: 1.6;
-      color: #333;
+      background-color: var(--bg-page);
+      color: var(--text-body);
     }
 
-    /* CSS Grid Layout for sidebar + main content */
+    /* Layout */
     .site-container {
       display: grid;
       grid-template-columns: 250px 1fr;
@@ -39,28 +95,32 @@
 
     header {
       grid-area: header;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid var(--border-subtle);
       padding: 1.5rem 2rem 1rem 2rem;
+      background: linear-gradient(120deg, var(--bg-page), var(--bg-elev));
     }
 
     header h1 {
       margin: 0;
       font-size: 1.8rem;
       font-weight: normal;
+      color: var(--text-heading);
     }
 
     header p {
       margin: 0.5rem 0 0 0;
       font-size: 0.95rem;
-      color: #666;
+      color: var(--text-muted);
+      /* FIX: was #666 on dark background */
     }
 
-    /* Sidebar Navigation */
+    /* Sidebar */
     .sidebar {
       grid-area: sidebar;
       padding: 2rem 1rem;
-      border-right: 1px solid #ccc;
-      background-color: #fafafa;
+      border-right: 1px solid var(--border-subtle);
+      background-color: var(--bg-sidebar);
+      /* FIX: darker/quieter */
     }
 
     .sidebar nav ul {
@@ -73,37 +133,57 @@
       margin-bottom: 0.75rem;
     }
 
+    /* IMPORTANT: override Tufte's link underline background inside sidebar */
+    .sidebar nav ul li a,
+    .sidebar-contact a {
+      background: none !important;
+      background-image: none !important;
+      text-shadow: none !important;
+    }
+
     .sidebar nav ul li a {
+      color: var(--text-body);
+      /* FIX: nav is neutral, not teal */
       text-decoration: none;
-      color: #0066cc;
+      /* no always-on underline */
       font-size: 1.05rem;
       display: block;
-      padding: 0.25rem 0.5rem;
-      border-radius: 3px;
-      transition: background-color 0.2s;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
     }
 
     .sidebar nav ul li a:hover {
-      background-color: #e8e8e8;
+      background-color: var(--bg-sidebar-hover);
+      color: var(--text-heading);
+      border-color: var(--border-subtle);
     }
 
+    /* Active state: left indicator bar, not a bright filled pill */
     .sidebar nav ul li.active a {
-      font-weight: bold;
-      background-color: #e0e0e0;
+      color: var(--text-heading);
+      background-color: var(--bg-sidebar-active);
+      border-color: var(--border-subtle);
+      border-left: 3px solid var(--accent);
+      padding-left: calc(0.75rem - 3px);
+      font-weight: 600;
     }
 
-    /* Contact info in sidebar */
+    /* Contact */
     .sidebar-contact {
       margin-top: 2rem;
       padding-top: 1.5rem;
-      border-top: 1px solid #ddd;
+      border-top: 1px solid var(--border-subtle);
       font-size: 0.9rem;
+      color: var(--text-muted);
     }
 
     .sidebar-contact h3 {
       font-size: 1rem;
       margin: 0 0 0.5rem 0;
       font-weight: normal;
+      color: var(--text-heading);
     }
 
     .sidebar-contact p {
@@ -111,15 +191,19 @@
     }
 
     .sidebar-contact a {
-      color: #0066cc;
-      text-decoration: none;
+      color: var(--link-color);
+      text-decoration: underline;
+      text-decoration-color: rgba(145, 219, 225, 0.55);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
     }
 
     .sidebar-contact a:hover {
-      text-decoration: underline;
+      color: var(--link-hover);
+      text-decoration-color: var(--accent-strong);
     }
 
-    /* Main Content Area */
+    /* Main */
     main {
       grid-area: main;
       padding: 2rem;
@@ -128,25 +212,56 @@
 
     footer {
       grid-area: footer;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid var(--border-subtle);
       padding: 1rem 2rem;
       font-size: 0.9rem;
-      color: #666;
+      color: var(--text-muted);
       text-align: center;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    /* Headings */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       font-weight: normal;
       margin-top: 1.5rem;
       margin-bottom: 0.75rem;
+      color: var(--text-heading);
     }
 
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
+    h1 {
+      font-size: 2rem;
+    }
 
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
+
+    /* Global links (content area) */
     a {
-      color: #0066cc;
+      color: var(--link-color);
+      text-decoration: underline;
+      text-decoration-color: rgba(145, 219, 225, 0.55);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      transition: color 0.15s, text-decoration-color 0.15s;
+    }
+
+    a:hover {
+      color: var(--link-hover);
+      text-decoration-color: var(--accent-strong);
+    }
+
+    a:focus {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
     }
 
     ul {
@@ -157,13 +272,13 @@
       margin-bottom: 0.5rem;
     }
 
-    /* Publication Styles */
+    /* Publications */
     .publication {
       display: flex;
       gap: 1.5rem;
       margin-bottom: 2rem;
       padding-bottom: 2rem;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     .publication:last-child {
@@ -174,7 +289,7 @@
       width: 200px;
       height: auto;
       object-fit: cover;
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-subtle);
       flex-shrink: 0;
     }
 
@@ -185,6 +300,7 @@
     .pub-details h3 {
       margin-top: 0;
       font-size: 1.15rem;
+      color: var(--text-heading);
     }
 
     .pub-details p {
@@ -192,28 +308,31 @@
     }
 
     .pub-details .pub-authors {
-      color: #555;
+      color: var(--text-muted);
+      /* FIX: was #555 */
       font-size: 0.95rem;
     }
 
     .pub-details .pub-venue {
       font-style: italic;
-      color: #666;
+      color: var(--text-muted);
+      /* FIX: was #666 */
     }
 
     .pub-details .pub-link {
       display: inline-block;
       margin-top: 0.5rem;
-      color: #0066cc;
-      text-decoration: none;
+      color: var(--link-color);
+      text-decoration: underline;
       font-weight: 500;
     }
 
     .pub-details .pub-link:hover {
-      text-decoration: underline;
+      color: var(--link-hover);
+      text-decoration-color: var(--accent-strong);
     }
 
-    /* Responsive Design */
+    /* Responsive */
     @media (max-width: 768px) {
       .site-container {
         grid-template-columns: 1fr;
@@ -226,7 +345,7 @@
 
       .sidebar {
         border-right: none;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid var(--border-subtle);
         padding: 1rem;
       }
 
@@ -258,11 +377,64 @@
         max-width: 300px;
       }
     }
+
+    /* Header Banner */
+    .header-banner {
+      width: 100%;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .header-banner img {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-height: 200px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    @media (max-width: 768px) {
+      .header-banner img {
+        max-height: 120px;
+      }
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.15s, color 0.15s;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--button-bg-hover);
+      color: var(--button-text);
+    }
+
+    .btn-primary:focus {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
   </style>
 </head>
+
 <body>
   <div class="site-container">
     <header>
+      <div class="header-banner">
+        <img src="{{ '/assets/images/header-banner.png' | relative_url }}"
+          alt="WinterAtomics header banner - Computational materials science research" loading="lazy">
+      </div>
       <h1>{{ site.title }}</h1>
       <p>{{ site.description }}</p>
     </header>
@@ -270,16 +442,16 @@
     <aside class="sidebar">
       <nav>
         <ul>
-          <li {% if page.url == '/' or page.url == '/index.html' %}class="active"{% endif %}>
+          <li {% if page.url=='/' or page.url=='/index.html' %}class="active" {% endif %}>
             <a href="{{ '/' | relative_url }}">Home</a>
           </li>
-          <li {% if page.url == '/research/' or page.url == '/research.html' %}class="active"{% endif %}>
+          <li {% if page.url=='/research/' or page.url=='/research.html' %}class="active" {% endif %}>
             <a href="{{ '/research' | relative_url }}">Research</a>
           </li>
-          <li {% if page.url == '/teaching/' or page.url == '/teaching.html' %}class="active"{% endif %}>
+          <li {% if page.url=='/teaching/' or page.url=='/teaching.html' %}class="active" {% endif %}>
             <a href="{{ '/teaching' | relative_url }}">Teaching</a>
           </li>
-          <li {% if page.url == '/publications/' or page.url == '/publications.html' %}class="active"{% endif %}>
+          <li {% if page.url=='/publications/' or page.url=='/publications.html' %}class="active" {% endif %}>
             <a href="{{ '/publications' | relative_url }}">Publications</a>
           </li>
         </ul>
@@ -288,7 +460,7 @@
       <div class="sidebar-contact">
         <h3>Contact</h3>
         <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
-        <p><a href="{{ site.linkedin }}" target="_blank">LinkedIn</a></p>
+        <p><a href="{{ site.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
       </div>
     </aside>
 
@@ -301,4 +473,5 @@
     </footer>
   </div>
 </body>
+
 </html>
