@@ -43,3 +43,6 @@ Temporary Items
 
 # Claude Code
 .claude/
+
+# Working documents
+gitignore/
