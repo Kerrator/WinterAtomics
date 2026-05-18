@@ -26,6 +26,9 @@ A selection of peer-reviewed publications, preprints, talks, and posters. For fu
       {% if pub.link %}
       <a href="{{ pub.link }}" class="pub-link" target="_blank">View Publication →</a>
       {% endif %}
+      {% if pub.talk_page %}
+      <a href="{{ pub.talk_page | relative_url }}" class="pub-link" style="margin-left: 1rem;">Talk / Presentation Page →</a>
+      {% endif %}
     </div>
   </div>
 {% endfor %}
