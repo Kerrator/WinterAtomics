@@ -8,6 +8,7 @@
   link: "/assets/pdfs/kerr-2025-scripta-cr-vacancy.pdf"
   image: "/assets/images/graphical-abstract-cr-vacancy.png"
   type: "preprint"
+  talk_page: "/pykmc/"
 
 - title: "C-C Bonding in Molecular Systems via Cross-Coupling-like Reactions Involving Noncovalently Bound Constituent Ions"
   authors: "Stephen Kerr, Fedor Y. Naumkin"
