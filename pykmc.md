@@ -6,7 +6,25 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
 ---
 
 <style>
-.pykmc-page { max-width: 760px; margin: 0 auto; }
+/* Readability overrides: scoped to /pykmc/ only so the rest of the site
+   keeps its Palatino aesthetic. System sans-serif stack reads cleaner on
+   mobile (the QR-scan audience). */
+.pykmc-page {
+  max-width: 760px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.pykmc-page p,
+.pykmc-page li,
+.pykmc-page a {
+  font-family: inherit;
+}
+.pykmc-page h1 { font-size: 2.15rem; line-height: 1.25; }
+.pykmc-page h2 { font-size: 1.55rem; line-height: 1.3; }
+.pykmc-page h3 { font-size: 1.25rem; line-height: 1.35; }
 
 .pykmc-hero {
   padding: 1.5rem 0 1rem 0;
@@ -16,7 +34,7 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
 .pykmc-hero h1 { margin-top: 0; }
 .pykmc-hero .tagline {
   color: var(--text-muted);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
 }
 
 .pykmc-toc {
@@ -164,8 +182,11 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
 
   <section id="event-1" class="pykmc-section">
     <h2>Event 1 — Surface ↔ subsurface exchange (downward)</h2>
+    <!--
+      Descriptions left in source for later rewrite — kept out of render for now.
     <p class="event-meta">Surface atom hops into a subsurface vacancy. Sets the downstream availability of vacancies for the in-plane events.</p>
     <p>An atom on the surface layer swaps with the subsurface vacancy directly below it. This event transports a vacancy upward to the surface while moving a surface atom into the bulk — the first ingredient in the chromium-driven enhancement of bulk vacancy concentration.</p>
+    -->
     <div class="video-embed">
       <iframe src="https://www.youtube.com/embed/a5MsdIsdSnA" title="Event 1 — surface ↔ subsurface exchange (downward)" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
@@ -187,8 +208,11 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
 
   <section id="event-2" class="pykmc-section">
     <h2>Event 2 — Surface 1NN in-plane (atom 3975)</h2>
+    <!--
+      Descriptions left in source for later rewrite — kept out of render for now.
     <p class="event-meta">First-nearest-neighbour hop in the surface plane. Atom index 3975 — a particular local environment.</p>
     <p>A surface atom hops to a first-nearest-neighbour vacancy site within the same surface plane. The local chromium / aluminium configuration around atom 3975 sets this event's barrier and rate; comparing it with the same geometric event at a different atom (Event 3) shows how strongly the barrier varies with local chemistry.</p>
+    -->
     <div class="video-embed">
       <iframe src="https://www.youtube.com/embed/wFuyyo_9nL0" title="Event 2 — surface 1NN in-plane, atom 3975" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
@@ -210,8 +234,11 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
 
   <section id="event-3" class="pykmc-section">
     <h2>Event 3 — Surface 1NN in-plane (atom 2023)</h2>
+    <!--
+      Descriptions left in source for later rewrite — kept out of render for now.
     <p class="event-meta">Same geometric event as Event 2, different atom (idx 2023) — different local chemistry, different barrier.</p>
     <p>Atom 2023 makes the same geometric move as atom 3975, but its neighbours differ — so the barrier (and the rate that PyKMC samples it at) differs too. Side-by-side with Event 2, this is the cleanest single-event illustration of the local-environment sensitivity that PyKMC has to resolve at every step.</p>
+    -->
     <div class="video-embed">
       <iframe src="https://www.youtube.com/embed/QaGVe-QhRt0" title="Event 3 — surface 1NN in-plane, atom 2023" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
@@ -233,8 +260,11 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
 
   <section id="event-4" class="pykmc-section">
     <h2>Event 4 — Surface ↔ subsurface exchange (upward, atom 3234)</h2>
+    <!--
+      Descriptions left in source for later rewrite — kept out of render for now.
     <p class="event-meta">Reverse of Event 1: subsurface atom 3234 hops up to the surface. Closes the surface ↔ bulk vacancy cycle.</p>
     <p>The subsurface atom at index 3234 hops up into a surface vacancy, swapping the vacancy back into the bulk. Paired with Event 1, this completes the simplest surface ↔ subsurface exchange cycle and is the elementary step that lets vacancies (and segregating Al) shuttle between the surface and the interior.</p>
+    -->
     <div class="video-embed">
       <iframe src="https://www.youtube.com/embed/lF9cu1FroHc" title="Event 4 — surface ↔ subsurface exchange (upward), atom 3234" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
