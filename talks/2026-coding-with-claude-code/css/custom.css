@@ -1,0 +1,290 @@
+/* ============================================================
+   custom.css · "Coding with Claude Code"
+   Queen's University brand · engineered/technical look.
+   Loaded AFTER the base theme, so these rules win.
+   Offline: fonts are vendored woff2 in css/fonts/ (no CDN).
+   ============================================================ */
+
+/* ---- Brand fonts, vendored (Open Sans = brand primary; IBM Plex Mono for code/labels) ---- */
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/open-sans-var-latin.woff2') format('woff2');
+  font-weight: 300 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('fonts/ibm-plex-mono-400-latin.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('fonts/ibm-plex-mono-500-latin.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+
+/* ---- Queen's tricolour + support tokens ---- */
+:root {
+  --q-blue:  #002452;   /* dominant: rail, headings, page numbers */
+  --q-gold:  #FABD0F;   /* secondary: rail numeral, tricolour, fills on blue */
+  --q-red:   #B90E31;   /* small accents: bullets, keylines, accent word */
+  --ink:     #212121;   /* body text */
+  --muted:   #58595B;   /* secondary text */
+  --line:    #E6E7E8;   /* hairline */
+  --panel:   #F1F2F2;   /* anchor / zebra fill */
+  --rail-tint:#B3C2D0;  /* light blue for sublabels on the rail */
+  --rail-w:  52px;      /* index-rail width */
+}
+
+/* ---- Base typography ---- */
+.reveal {
+  font-family: 'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  font-size: 34px;
+}
+.reveal .slides section { text-align: left; }
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: 'Open Sans', system-ui, sans-serif;
+  color: var(--q-blue);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.005em;
+  margin: 0 0 0.32em;
+}
+.reveal h2 { font-size: 1.28em; line-height: 1.08; }
+.reveal h3 { font-size: 1.00em; line-height: 1.12; }
+
+.reveal a { color: var(--q-blue); text-decoration-color: var(--q-red); }
+.reveal section img { border: none; box-shadow: none; }
+.reveal strong, .reveal b { font-weight: 700; }
+.reveal .accent { color: var(--q-red); }
+
+/* Code stays monospace (IBM Plex Mono) regardless of the body face. */
+.reveal pre, .reveal code {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ============================================================
+   Layout: the engineered index rail on every content slide
+   (pure CSS; a tiny script stamps the gold section number via
+   data-rail, with the blue band as the no-JS fallback).
+   ============================================================ */
+
+/* Leaf content slides clear the rail with left padding. */
+.reveal .slides section:not(.titleslide):not(:has(section)) {
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: 26px 36px 30px calc(var(--rail-w) + 26px);
+}
+
+/* The blue rail + gold section numeral. */
+.reveal .slides section:not(.titleslide):not(:has(section))::before {
+  content: attr(data-rail);
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: var(--rail-w);
+  background: var(--q-blue);
+  color: var(--q-gold);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500; font-size: 0.62em; line-height: 1;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 14px;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+
+/* The mandatory tricolour, as a tab at the top of the rail. */
+.reveal .slides section:not(.titleslide):not(:has(section))::after {
+  content: ""; position: absolute; left: 0; top: 0;
+  width: var(--rail-w); height: 18px;
+  background: linear-gradient(to bottom,
+    var(--q-gold) 0 33.34%, var(--q-red) 33.34% 66.67%, #ffffff 66.67% 100%);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+
+/* ---- Section eyebrow / kicker ---- */
+.reveal .kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.5em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.5em;
+}
+.reveal .kicker::before {
+  content: ""; display: inline-block;
+  width: 0.55em; height: 0.55em; margin-right: 0.6em;
+  background: var(--q-red); vertical-align: baseline;
+}
+
+/* ---- Bullet lists (red square markers) ---- */
+.reveal .slides section ul { list-style: none; margin: 0.3em 0 0; padding: 0; }
+.reveal .slides section ul li {
+  position: relative; padding-left: 1.2em; margin: 0.1em 0;
+  font-size: 0.75em; line-height: 1.18;
+}
+.reveal .slides section ul li::before {
+  content: "\25AA"; position: absolute; left: 0; color: var(--q-red);
+}
+.reveal .slides section ul ul { font-size: 0.95em; margin-top: 0.05em; }
+.reveal .spine li { margin: 0.12em 0; }
+
+/* ---- The recurring "anchor" callout (pyKMC example grounding a point) ---- */
+.reveal .anchor {
+  border-left: 3px solid var(--q-red);
+  background: var(--panel);
+  padding: 0.4em 0.75em;
+  margin: 0.5em 0 0;
+  font-size: 0.62em;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.reveal .anchor::before {
+  content: "anchor ";
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+  color: var(--q-red);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ---- Dense reference tables (terminology, seven-phase one-liners) ---- */
+.reveal table.kv {
+  font-size: 0.40em; line-height: 1.22;
+  border-collapse: collapse; width: 100%; margin: 0;
+}
+.reveal table.kv th, .reveal table.kv td {
+  border: 1px solid var(--line);
+  padding: 0.12em 0.45em; text-align: left; vertical-align: top;
+}
+.reveal table.kv thead th {
+  background: var(--q-blue); color: #fff; font-weight: 600;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.reveal table.kv tbody tr:nth-child(even) { background: var(--panel); }
+.reveal table.kv td:first-child {
+  color: var(--q-blue); font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.92em;
+}
+.reveal table.kv td.num {
+  width: 1.4em; text-align: center; font-weight: 700; color: var(--q-red);
+}
+/* The at-a-glance dictionary: narrated live and meant to be photographed,
+   so it renders larger than the skipped-live reference tables. */
+.reveal table.kv.glance { font-size: 0.54em; }
+
+/* 3-column translation dictionary: term | software development | materials research */
+.reveal table.kv.tri { font-size: 0.5em; }
+.reveal table.kv.tri th, .reveal table.kv.tri td { padding: 0.22em 0.55em; vertical-align: top; line-height: 1.24; }
+.reveal table.kv.tri td:first-child { white-space: normal; }
+
+/* ---- Code blocks ---- */
+.reveal pre { width: 94%; max-width: 94%; box-shadow: none; margin: 0.3em 0; }
+.reveal pre code {
+  font-size: 0.62em; line-height: 1.34; max-height: 512px; /* slide box is a fixed 960x700; vh caps vary with the device viewport (iPad!) */
+  white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere;
+  border-radius: 4px; border-left: 3px solid var(--q-blue);
+}
+
+/* ---- Figures: centred + bounded so they never overflow ---- */
+.reveal .fig { display: block; margin: 0.2em auto 0; max-width: 100%; }
+/* px, not vh: the slide box is always 960x700 (reveal scales the box), so vh
+   caps silently change per device and can clip on an iPad's taller viewport. */
+.reveal .fig.tall { max-height: 528px; }
+.reveal .fig.wide { max-height: 480px; }
+
+/* ---- KaTeX display guard ---- */
+.reveal .katex-display {
+  font-size: 0.62em; margin: 0.4em 0; max-width: 100%;
+  overflow-x: auto; overflow-y: hidden;
+}
+
+/* ============================================================
+   Title slide
+   ============================================================ */
+.reveal .titleslide {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0;
+}
+/* reveal sets display:block inline on the visible section, which silently
+   kills flex on the section itself; an inner wrapper carries the layout. */
+.reveal .titleslide .titleflex {
+  display: flex; flex-direction: column;
+  height: 100%; box-sizing: border-box;
+  padding: 40px 48px 44px;
+}
+.reveal .titleslide .titletop {
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.reveal .titleslide .tricolour {
+  display: inline-block; width: 150px; height: 8px;
+  background: linear-gradient(to right,
+    var(--q-blue) 0 33.34%, var(--q-gold) 33.34% 66.67%, var(--q-red) 66.67% 100%);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.reveal .titleslide .titlelogo { height: 58px; width: auto; }
+.reveal .titleslide .titlemid { margin-top: auto; }
+.reveal .titleslide h1 {
+  font-size: 2.0em; line-height: 1.03; color: var(--q-blue);
+  letter-spacing: -0.02em; margin: 0 0 0.18em;
+}
+.reveal .titleslide .subtitle {
+  font-size: 0.78em; color: var(--muted); line-height: 1.4;
+  max-width: 44rem; margin: 0;
+}
+.reveal .titleslide .byline {
+  border-top: 1px solid var(--line); padding-top: 12px;
+  font-size: 0.66em; color: var(--q-blue); font-weight: 600;
+  letter-spacing: 0.01em; margin: 0; margin-top: auto;
+}
+
+/* ---- Slide number ---- */
+.reveal .slide-number {
+  background: transparent; color: var(--q-blue);
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.5em;
+}
+
+/* ---- Touch ink bar (iPad: no C/B/DEL keys). Above the menu button,
+       below the menu overlay (z 200), above the ink canvases (z 24/26). ---- */
+.inkbar {
+  position: fixed; left: 9px; bottom: 76px; z-index: 30;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.inkbar button {
+  width: 38px; height: 38px; border: 0; border-radius: 7px;
+  background: transparent; color: var(--muted);
+  font-size: 17px; line-height: 1; cursor: pointer; opacity: 0.35;
+  -webkit-tap-highlight-color: transparent;
+}
+.inkbar button:hover, .inkbar button:active {
+  opacity: 1; color: var(--q-blue); background: var(--panel);
+}
+@media print { .inkbar { display: none; } }
+
+/* ============================================================
+   PDF export: landscape pages for the 16:9 slides.
+   Use the `landscape` keyword (a fixed-px @page collapses
+   reveal's per-slide pagination).
+   ============================================================ */
+@media print {
+  @page { size: landscape; margin: 0; }
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  /* The screen index rail uses absolute positioning that reveal's print
+     layout shifts, clipping content at the left edge. Drop it for the PDF
+     backup and print content full-width. The title keeps its tricolour bar,
+     and a thin tricolour strip on each page preserves the brand cue. */
+  .reveal .slides section:not(.titleslide):not(:has(section)) {
+    padding: 34px 46px 30px 46px;
+  }
+  .reveal .slides section:not(.titleslide):not(:has(section))::before {
+    content: ""; left: 0; top: 0; right: 0; bottom: auto;
+    width: auto; height: 7px;
+    background: linear-gradient(to right,
+      var(--q-blue) 0 33.34%, var(--q-gold) 33.34% 66.67%, var(--q-red) 66.67% 100%);
+    padding: 0;
+  }
+  .reveal .slides section:not(.titleslide):not(:has(section))::after {
+    display: none;
+  }
+}
