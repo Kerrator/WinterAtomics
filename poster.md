@@ -6,7 +6,7 @@ description: Scan-to-read landing page for the full version of the work on chrom
 ---
 
 <style>
-/* Scoped styles for poster landing page */
+/* Scoped styles for poster landing page — uses site dark-theme variables */
 .poster-page {
   max-width: 600px;
   margin: 0 auto;
@@ -17,12 +17,12 @@ description: Scan-to-read landing page for the full version of the work on chrom
 .poster-page h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text-heading);
 }
 
 .poster-page .tagline {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-muted);
   margin-bottom: 2.5rem;
   line-height: 1.6;
 }
@@ -33,49 +33,51 @@ description: Scan-to-read landing page for the full version of the work on chrom
   max-width: 400px;
   margin: 0 auto 1.5rem auto;
   padding: 1.25rem 2rem;
-  background-color: #0066cc;
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   text-decoration: none;
   font-size: 1.2rem;
   font-weight: 600;
   border-radius: 8px;
   transition: background-color 0.3s, transform 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .poster-page .primary-button:hover {
-  background-color: #0052a3;
+  background-color: var(--button-bg-hover);
+  color: var(--button-text);
   transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 .poster-page .primary-button:focus {
-  outline: 3px solid #ffa500;
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
 .poster-page .primary-button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .poster-page .secondary-link {
   display: inline-block;
-  color: #0066cc;
+  color: var(--link-color);
   text-decoration: none;
   font-size: 0.95rem;
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.15s;
 }
 
 .poster-page .secondary-link:hover {
-  background-color: #f0f0f0;
+  background-color: var(--bg-elev);
+  color: var(--link-hover);
   text-decoration: underline;
 }
 
 .poster-page .secondary-link:focus {
-  outline: 2px solid #0066cc;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

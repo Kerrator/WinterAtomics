@@ -1,9 +1,13 @@
 # Site settings
 title: "Stephen Kerr"
-description: "PhD candidate in computational materials science at Queen's University. Studying defect mechanisms in alloys using DFT and molecular dynamics."
+description: "PhD candidate in computational materials science at Queen's University. Studying vacancy–solute coupling in nuclear alloys (Ni–Cr–Al, Zr) and CO₂ catalysis using DFT, machine-learning interatomic potentials (MACE, ACE), and kinetic modelling (k-ART)."
 author: "Stephen Kerr"
 email: "24jrpc@queensu.ca"
 linkedin: "https://linkedin.com/in/stephen-kerr-93aa42254/"
+github: "WinterAtomics"
+url: "https://www.winteratomics.ca"
+# scholar: "https://scholar.google.com/citations?user=YOUR_ID"
+# orcid: "0000-0000-0000-0000"
 
 # Build settings
 markdown: kramdown
@@ -11,7 +15,6 @@ theme: null
 
 # GitHub Pages settings
 baseurl: ""
-url: ""
 
 # Plugins
 plugins:
@@ -20,8 +23,6 @@ plugins:
 # Collections
 collections:
   publications:
-    output: false
-  videos:
     output: false
 
 # Defaults

@@ -5,8 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
-  <meta name="description" content="{{ site.description }}">
+  <meta name="description" content="{{ page.description | default: site.description }}">
   <meta name="author" content="{{ site.author }}">
+  <meta name="theme-color" content="#051820">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚛</text></svg>" type="image/svg+xml">
+  <!-- Open Graph -->
+  <meta property="og:title" content="{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}">
+  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  {% seo %}
 
   <!-- Normalize.css for consistent styling -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
@@ -67,6 +76,20 @@
 
       /* Focus */
       --focus-ring: var(--color-frost);
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+    }
+
+    /* Selection */
+    ::selection {
+      background: rgba(77, 173, 184, 0.35);
+      color: var(--text-heading);
     }
 
     /* Base */
@@ -96,22 +119,92 @@
     header {
       grid-area: header;
       border-bottom: 1px solid var(--border-subtle);
-      padding: 1.5rem 2rem 1rem 2rem;
-      background: linear-gradient(120deg, var(--bg-page), var(--bg-elev));
+      border-top: 3px solid var(--accent);
+      padding: 2.5rem 2rem 2rem 2rem;
+      background:
+        linear-gradient(135deg, rgba(5, 24, 32, 0.94) 0%, rgba(12, 49, 63, 0.88) 50%, rgba(8, 35, 46, 0.92) 100%),
+        url('/assets/images/header-banner.png') center / cover no-repeat;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--color-highlight-icy) 50%, var(--accent) 70%, transparent 100%);
+      opacity: 0.45;
     }
 
     header h1 {
       margin: 0;
-      font-size: 1.8rem;
+      font-size: 1.9rem;
       font-weight: normal;
       color: var(--text-heading);
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+    }
+
+    header .site-tagline {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 0.3rem;
+      padding: 0.2rem 0.65rem;
+      border: 1px solid rgba(77, 173, 184, 0.25);
+      border-radius: 3px;
+      background: rgba(77, 173, 184, 0.06);
     }
 
     header p {
-      margin: 0.5rem 0 0 0;
-      font-size: 0.95rem;
+      margin: 0.6rem 0 0 0;
+      font-size: 0.92rem;
       color: var(--text-muted);
-      /* FIX: was #666 on dark background */
+      max-width: 720px;
+      line-height: 1.55;
+    }
+
+    /* "Now" badge — a quietly animated marker for active focus */
+    .now-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      padding: 0.25rem 0.65rem 0.25rem 0.6rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      background: rgba(77, 173, 184, 0.05);
+    }
+
+    .now-badge::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-highlight-icy);
+      box-shadow: 0 0 0 0 rgba(145, 219, 225, 0.55);
+      animation: nowPulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .now-badge strong {
+      color: var(--text-body);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    @keyframes nowPulse {
+      0% { box-shadow: 0 0 0 0 rgba(145, 219, 225, 0.45); }
+      70% { box-shadow: 0 0 0 6px rgba(145, 219, 225, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(145, 219, 225, 0); }
     }
 
     /* Sidebar */
@@ -120,7 +213,6 @@
       padding: 2rem 1rem;
       border-right: 1px solid var(--border-subtle);
       background-color: var(--bg-sidebar);
-      /* FIX: darker/quieter */
     }
 
     .sidebar nav ul {
@@ -143,9 +235,7 @@
 
     .sidebar nav ul li a {
       color: var(--text-body);
-      /* FIX: nav is neutral, not teal */
       text-decoration: none;
-      /* no always-on underline */
       font-size: 1.05rem;
       display: block;
       padding: 0.4rem 0.75rem;
@@ -213,10 +303,16 @@
     footer {
       grid-area: footer;
       border-top: 1px solid var(--border-subtle);
-      padding: 1rem 2rem;
-      font-size: 0.9rem;
+      padding: 1.75rem 2rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       text-align: center;
+      letter-spacing: 0.015em;
+      background: linear-gradient(180deg, var(--bg-page), var(--bg-section));
+    }
+
+    footer p:first-child {
+      margin-bottom: 0.15rem;
     }
 
     /* Headings */
@@ -276,13 +372,24 @@
     .publication {
       display: flex;
       gap: 1.5rem;
-      margin-bottom: 2rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px 8px 8px 4px;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+
+    .publication:hover {
+      border-color: var(--border-strong);
+      border-left-color: var(--color-highlight-icy);
+      box-shadow: 0 2px 16px rgba(77, 173, 184, 0.10);
+      transform: translateX(1px);
     }
 
     .publication:last-child {
-      border-bottom: none;
+      margin-bottom: 0;
     }
 
     .publication img {
@@ -290,7 +397,9 @@
       height: auto;
       object-fit: cover;
       border: 1px solid var(--border-subtle);
+      border-radius: 6px;
       flex-shrink: 0;
+      background: var(--bg-elev);
     }
 
     .pub-details {
@@ -309,27 +418,561 @@
 
     .pub-details .pub-authors {
       color: var(--text-muted);
-      /* FIX: was #555 */
       font-size: 0.95rem;
     }
 
     .pub-details .pub-venue {
       font-style: italic;
       color: var(--text-muted);
-      /* FIX: was #666 */
     }
 
     .pub-details .pub-link {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       margin-top: 0.5rem;
-      color: var(--link-color);
-      text-decoration: underline;
+      color: var(--accent);
+      text-decoration: none;
       font-weight: 500;
+      font-size: 0.88rem;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: 5px;
+      background: rgba(77, 173, 184, 0.06);
+      transition: all 0.2s;
     }
 
     .pub-details .pub-link:hover {
-      color: var(--link-hover);
-      text-decoration-color: var(--accent-strong);
+      color: var(--text-heading);
+      background: rgba(77, 173, 184, 0.14);
+      border-color: var(--accent);
+    }
+
+    .pub-details .pub-link::before {
+      content: '\2193';
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    /* Publication cards without images — full-width layout */
+    .publication:not(:has(img)) {
+      display: block;
+    }
+
+    /* Publication DOI/link badges */
+    .pub-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .pub-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: 5px;
+      background: rgba(77, 173, 184, 0.06);
+      color: var(--accent);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .pub-links a:hover {
+      color: var(--text-heading);
+      background: rgba(77, 173, 184, 0.14);
+      border-color: var(--accent);
+    }
+
+    .pub-links a::after {
+      content: none !important;
+    }
+
+    /* Publication type badges */
+    .pub-details .pub-type {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background-color: rgba(77, 173, 184, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(77, 173, 184, 0.25);
+      margin-top: 0.25rem;
+    }
+
+    .pub-details .pub-type strong {
+      font-weight: 600;
+    }
+
+    /* Section cards for research areas */
+    .research-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px 8px 8px 4px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+
+    .research-card:hover {
+      border-color: var(--border-strong);
+      border-left-color: var(--color-highlight-icy);
+      box-shadow: 0 2px 16px rgba(77, 173, 184, 0.10);
+      transform: translateX(1px);
+    }
+
+    .research-card h3 {
+      margin-top: 0;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+
+    .research-card p {
+      margin-bottom: 0;
+    }
+
+    .research-card em {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    /* Methods grid */
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .methods-grid .method-group {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-top: 2px solid var(--accent);
+      border-radius: 4px 4px 8px 8px;
+      padding: 1rem 1.25rem;
+    }
+
+    .methods-grid .method-group h4 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .methods-grid .method-group ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.92rem;
+    }
+
+    .methods-grid .method-group li {
+      margin-bottom: 0.3rem;
+    }
+
+    /* Teaching experience cards */
+    .teaching-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px 8px 8px 4px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+
+    .teaching-card:hover {
+      border-color: var(--border-strong);
+      border-left-color: var(--color-highlight-icy);
+      box-shadow: 0 2px 16px rgba(77, 173, 184, 0.10);
+      transform: translateX(1px);
+    }
+
+    .teaching-card h3 {
+      margin-top: 0;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+
+    .teaching-card h4 {
+      margin-top: 0.75rem;
+      margin-bottom: 0.25rem;
+      font-size: 0.95rem;
+      color: var(--text-heading);
+      font-weight: 600;
+    }
+
+    .teaching-card p {
+      margin-bottom: 0.4rem;
+    }
+
+    .teaching-card .course-list {
+      margin: 0.5rem 0 0 0;
+      padding-left: 1.25rem;
+      font-size: 0.92rem;
+    }
+
+    .teaching-card .course-list li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* Research interest tags */
+    .interest-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .interest-tag {
+      display: inline-block;
+      font-size: 0.82rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-body);
+      transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+    }
+
+    .interest-tag:hover {
+      border-color: var(--accent);
+      color: var(--text-heading);
+      background-color: rgba(77, 173, 184, 0.12);
+      transform: translateY(-1px);
+      transition: border-color 0.2s, color 0.2s, background-color 0.2s, transform 0.2s;
+    }
+
+    /* Status badges on research cards */
+    .status-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .status-badge.active {
+      background-color: rgba(77, 173, 184, 0.18);
+      color: var(--accent);
+      border: 1px solid rgba(77, 173, 184, 0.3);
+    }
+
+    .status-badge.emerging {
+      background-color: rgba(145, 219, 225, 0.10);
+      color: var(--text-muted);
+      border: 1px solid rgba(145, 219, 225, 0.2);
+    }
+
+    .status-badge.past {
+      background-color: rgba(147, 183, 191, 0.08);
+      color: var(--text-muted);
+      border: 1px solid rgba(147, 183, 191, 0.15);
+    }
+
+    /* Code styling for dark theme */
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.88em;
+      background: var(--bg-elev);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      color: var(--color-highlight-icy);
+    }
+
+    pre {
+      background: var(--bg-elev);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    /* Homepage intro section */
+    .intro-highlight {
+      font-size: 1.06rem;
+      line-height: 1.7;
+      color: var(--text-heading);
+      margin-bottom: 1.75rem;
+      padding: 1.15rem 1.35rem;
+      border-left: 3px solid var(--accent);
+      border-bottom: 1px solid var(--border-subtle);
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(8, 35, 46, 0.6) 100%);
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* Timeline-style update items */
+    .update-item {
+      position: relative;
+      padding: 0.75rem 0 0.75rem 1rem;
+      border-left: 2px solid var(--border-subtle);
+      margin-bottom: 0.5rem;
+    }
+
+    .update-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 1.1rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg-page);
+    }
+
+    .update-date {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .update-item p {
+      margin: 0.25rem 0 0 0;
+      font-size: 0.94rem;
+      line-height: 1.65;
+    }
+
+    /* Compact project list for homepage */
+    .project-list {
+      margin-top: 0.75rem;
+    }
+
+    .project-item {
+      padding: 0.6rem 0.85rem;
+      margin-bottom: 0.4rem;
+      border-left: 2px solid var(--border-subtle);
+      font-size: 0.94rem;
+      line-height: 1.6;
+      transition: border-color 0.2s;
+    }
+
+    .project-item:hover {
+      border-left-color: var(--accent);
+    }
+
+    .project-item strong {
+      color: var(--text-heading);
+    }
+
+    .bio-section {
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(77, 173, 184, 0.10);
+    }
+
+    .bio-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    /* Research cards inside bio sections (homepage) — tighter spacing */
+    .bio-section .research-card {
+      margin-bottom: 0.75rem;
+    }
+
+    .bio-section .research-card h3 {
+      font-size: 1rem;
+    }
+
+    .bio-section .research-card p {
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .bio-section h2 {
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .bio-section p {
+      line-height: 1.7;
+    }
+
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Better blockquote styling */
+    blockquote {
+      border-left: 3px solid var(--accent);
+      margin-left: 0;
+      padding: 0.5rem 1.25rem;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      padding: 0.6rem 0.85rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    th {
+      color: var(--text-heading);
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-strong);
+      background: var(--bg-card);
+    }
+
+    tr:hover td {
+      background: rgba(77, 173, 184, 0.04);
+    }
+
+    /* Horizontal rule */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border-subtle);
+      margin: 2rem 0;
+    }
+
+    /* Subtle page-load fade */
+    main {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Staggered card entrance */
+    .research-card,
+    .teaching-card,
+    .publication {
+      animation: cardIn 0.4s ease-out both;
+    }
+
+    .research-card:nth-child(1), .teaching-card:nth-child(1), .publication:nth-child(1) { animation-delay: 0.05s; }
+    .research-card:nth-child(2), .teaching-card:nth-child(2), .publication:nth-child(2) { animation-delay: 0.1s; }
+    .research-card:nth-child(3), .teaching-card:nth-child(3), .publication:nth-child(3) { animation-delay: 0.15s; }
+    .research-card:nth-child(4), .teaching-card:nth-child(4), .publication:nth-child(4) { animation-delay: 0.2s; }
+    .research-card:nth-child(5), .teaching-card:nth-child(5), .publication:nth-child(5) { animation-delay: 0.25s; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Improved paragraph spacing in main content */
+    main p {
+      margin-bottom: 1rem;
+    }
+
+    /* Subtle card depth on research/teaching cards */
+    .research-card,
+    .teaching-card,
+    .publication {
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25), 0 0 0 0 rgba(77, 173, 184, 0);
+    }
+
+    .research-card:hover,
+    .teaching-card:hover,
+    .publication:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(77, 173, 184, 0.08);
+    }
+
+    /* Better visual hierarchy for section intros */
+    main > p:first-of-type {
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+
+    /* Section heading accent bar */
+    main > h2 {
+      position: relative;
+      padding-left: 0.75rem;
+      border-bottom: none;
+      border-left: 3px solid var(--accent);
+      padding-bottom: 0;
+      margin-top: 2.25rem;
+    }
+
+    main > h1 + h2,
+    main > h1 + p + h2 {
+      margin-top: 1.5rem;
+    }
+
+    /* Last-updated stamp in footer */
+    .last-updated {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    /* Skip-to-content link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--accent);
+      color: var(--bg-page);
+      padding: 0.5rem 1rem;
+      z-index: 100;
+      transition: top 0.2s;
+      text-decoration: none;
+      border-radius: 0 0 6px 0;
+      font-size: 0.85rem;
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    /* Research pipeline connector — visual thread between cards */
+    .research-card + .research-card {
+      position: relative;
+    }
+
+    .research-card + .research-card::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: -0.75rem;
+      left: 1.5rem;
+      width: 2px;
+      height: 0.75rem;
+      background: var(--border-subtle);
     }
 
     /* Responsive */
@@ -346,26 +989,51 @@
       .sidebar {
         border-right: none;
         border-bottom: 1px solid var(--border-subtle);
-        padding: 1rem;
+        padding: 0.75rem 1rem;
       }
 
       .sidebar nav ul {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
+        gap: 0.4rem;
       }
 
       .sidebar nav ul li {
         margin-bottom: 0;
       }
 
+      .sidebar nav ul li a {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.95rem;
+      }
+
       .sidebar-contact {
-        margin-top: 1rem;
-        padding-top: 1rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+        align-items: baseline;
+      }
+
+      .sidebar-contact h3 {
+        display: none;
+      }
+
+      .sidebar-contact p {
+        margin: 0;
       }
 
       main {
         padding: 1.5rem 1rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      header .site-tagline {
+        font-size: 0.72rem;
       }
 
       .publication {
@@ -376,29 +1044,26 @@
         width: 100%;
         max-width: 300px;
       }
-    }
 
-    /* Header Banner */
-    .header-banner {
-      width: 100%;
-      margin-bottom: 1rem;
-      overflow: hidden;
-      border-radius: 6px;
-      border: 1px solid var(--border-subtle);
-    }
+      .methods-grid {
+        grid-template-columns: 1fr;
+      }
 
-    .header-banner img {
-      width: 100%;
-      height: auto;
-      display: block;
-      max-height: 200px;
-      object-fit: cover;
-      object-position: center;
-    }
+      .interest-tags {
+        gap: 0.35rem;
+      }
 
-    @media (max-width: 768px) {
-      .header-banner img {
-        max-height: 120px;
+      .interest-tag {
+        font-size: 0.78rem;
+        padding: 0.25rem 0.6rem;
+      }
+
+      .project-item {
+        font-size: 0.88rem;
+      }
+
+      .update-item p {
+        font-size: 0.88rem;
       }
     }
 
@@ -425,18 +1090,272 @@
       outline: 2px solid var(--focus-ring);
       outline-offset: 2px;
     }
+
+    /* Publication year grouping */
+    .pub-year-heading {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-weight: normal;
+      letter-spacing: 0.02em;
+    }
+
+    .pub-year-heading:first-child {
+      margin-top: 0;
+    }
+
+    /* Subtle glow on active research cards */
+    .research-card:has(.status-badge.active):hover {
+      box-shadow: 0 4px 24px rgba(77, 173, 184, 0.14), 0 0 0 1px rgba(77, 173, 184, 0.10);
+    }
+
+    /* Better responsive breakpoints */
+    @media (max-width: 960px) {
+      .site-container {
+        grid-template-columns: 220px 1fr;
+      }
+    }
+
+    /* (max-width: 768px) overrides merged into primary mobile block above */
+
+    /* Respect reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      main,
+      .research-card,
+      .teaching-card,
+      .publication {
+        animation: none;
+      }
+
+      .research-card:hover,
+      .teaching-card:hover,
+      .publication:hover {
+        transform: none;
+      }
+    }
+
+    /* Subtle section divider */
+    .section-divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+      margin: 2.5rem 0;
+    }
+
+    /* Pipeline visual: connect research themes on homepage */
+    .pipeline-connector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0 0.75rem 0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .pipeline-connector::before,
+    .pipeline-connector::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-subtle));
+    }
+
+    .pipeline-connector::after {
+      background: linear-gradient(90deg, var(--border-subtle), transparent);
+    }
+
+    /* Multi-scale pipeline diagram — DFT → ML potential → k-ART → observable */
+    .pipeline-diagram {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0 0.5rem 0;
+      counter-reset: pipeline;
+    }
+
+    .pipeline-step {
+      position: relative;
+      padding: 0.85rem 0.75rem 0.7rem 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-top: 2px solid var(--accent);
+      border-radius: 4px 4px 8px 8px;
+      text-align: center;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .pipeline-step:hover {
+      border-color: var(--border-strong);
+      border-top-color: var(--color-highlight-icy);
+      transform: translateY(-2px);
+    }
+
+    .pipeline-step .pipeline-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.2rem;
+    }
+
+    .pipeline-step .pipeline-name {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text-heading);
+      line-height: 1.3;
+    }
+
+    .pipeline-step .pipeline-scale {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      font-style: italic;
+    }
+
+    .pipeline-step + .pipeline-step::before {
+      content: '\2192';
+      position: absolute;
+      left: -0.55rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-size: 1rem;
+      background: var(--bg-page);
+      padding: 0 0.1rem;
+      z-index: 2;
+    }
+
+    @media (max-width: 768px) {
+      .pipeline-diagram {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+      }
+
+      .pipeline-step + .pipeline-step::before {
+        content: '\2193';
+        left: 50%;
+        top: -0.6rem;
+        transform: translateX(-50%);
+      }
+    }
+
+    /* "Now" focus list on homepage — compact, scannable */
+    .focus-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 0 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .focus-list li {
+      position: relative;
+      padding: 0.55rem 0.75rem 0.55rem 1.6rem;
+      margin: 0;
+      background: rgba(77, 173, 184, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      font-size: 0.93rem;
+      line-height: 1.55;
+    }
+
+    .focus-list li::before {
+      content: '';
+      position: absolute;
+      left: 0.7rem;
+      top: 1.05rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .focus-list li strong {
+      color: var(--text-heading);
+    }
+
+    /* Section divider between Current / Previous / Emerging research */
+    main > h2 + .research-card {
+      margin-top: 0.5rem;
+    }
+
+    /* Smoother transition between h2 sections */
+    main > h2 ~ h2 {
+      margin-top: 2.5rem;
+    }
+
+    /* External link indicator */
+    main a[target="_blank"]::after {
+      content: ' \2197';
+      font-size: 0.75em;
+      vertical-align: super;
+      opacity: 0.6;
+    }
+
+    .pub-details .pub-link::after {
+      content: none;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: #222;
+      }
+
+      .sidebar, .skip-link, footer {
+        display: none;
+      }
+
+      .site-container {
+        display: block;
+        max-width: none;
+      }
+
+      header {
+        background: none;
+        border-bottom: 2px solid #333;
+        color: #222;
+      }
+
+      header h1, header p, header .site-tagline {
+        color: #222;
+      }
+
+      a {
+        color: #222;
+        text-decoration: underline;
+      }
+
+      .research-card, .teaching-card, .publication {
+        border: 1px solid #ccc;
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
   <div class="site-container">
     <header>
-      <div class="header-banner">
-        <img src="{{ '/assets/images/header-banner.png' | relative_url }}"
-          alt="WinterAtomics header banner - Computational materials science research" loading="lazy">
-      </div>
       <h1>{{ site.title }}</h1>
+      <span class="site-tagline">Computational Materials Science</span>
       <p>{{ site.description }}</p>
+      <span class="now-badge" title="Current focus">
+        <strong>Now:</strong> MACE-driven k-ART trajectories in Ni–Cr–Al &middot; CO₂ binding on stepped Cu &middot; Zr–Nb defect benchmarking
+      </span>
     </header>
 
     <aside class="sidebar">
@@ -461,15 +1380,19 @@
         <h3>Contact</h3>
         <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
         <p><a href="{{ site.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+        {% if site.scholar %}<p><a href="{{ site.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a></p>{% endif %}
+        {% if site.orcid %}<p><a href="https://orcid.org/{{ site.orcid }}" target="_blank" rel="noopener noreferrer">ORCID</a></p>{% endif %}
+        {% if site.github %}<p><a href="https://github.com/{{ site.github }}" target="_blank" rel="noopener noreferrer">GitHub</a></p>{% endif %}
       </div>
     </aside>
 
-    <main>
+    <main id="main-content">
       {{ content }}
     </main>
 
     <footer>
-      <p>&copy; {{ site.time | date: '%Y' }} {{ site.author }}. All rights reserved.</p>
+      <p>&copy; {{ site.time | date: '%Y' }} {{ site.author }} · Department of Mechanical and Materials Engineering · Queen's University</p>
+      <p class="last-updated">Built with Jekyll · Last updated {{ site.time | date: '%B %Y' }}</p>
     </footer>
   </div>
 </body>

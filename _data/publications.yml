@@ -1,37 +1,36 @@
-# Publications
-# Peer-reviewed publications, preprints, talks, and posters
+# Peer-reviewed publications, preprints, and theses
 
 - title: "Chromium Raises Vacancy Concentration and Promotes Grain-Boundary Al Segregation in Ni–Cr–Al"
   authors: "Stephen T.W. Kerr, Keyvan Ferasat, Yasaman Ghaffari, Laurent Karim Béland"
   year: 2025
-  venue: "Scripta Materialia (Submitted - SSRN 5759303)"
-  link: "/assets/pdfs/kerr-2025-scripta-cr-vacancy.pdf"
+  venue: "Scripta Materialia (submitted; SSRN 5759303)"
+  link: "https://www.sciencedirect.com/science/article/pii/S1359646226000394"
   image: "/assets/images/graphical-abstract-cr-vacancy.png"
   type: "preprint"
   talk_page: "/pykmc/"
 
-- title: "C-C Bonding in Molecular Systems via Cross-Coupling-like Reactions Involving Noncovalently Bound Constituent Ions"
+- title: "C–C Bonding in Molecular Systems via Cross-Coupling-like Reactions Involving Noncovalently Bound Constituent Ions"
   authors: "Stephen Kerr, Fedor Y. Naumkin"
   year: 2024
   venue: "Molecules 29, 4429"
   link: "/assets/pdfs/kerr-2024-molecules-c-c-bonding.pdf"
   type: "journal"
 
-- title: "Modelling of molecule-inside-dipole complexes: through-vs. around-molecule ion transfer"
+- title: "Modelling of Molecule-Inside-Dipole Complexes: Through- vs. Around-Molecule Ion Transfer"
   authors: "Stephen T.W. Kerr"
   year: 2023
-  venue: "Queen's University (PhD Thesis)"
+  venue: "Ontario Tech University (MSc Thesis)"
   link: "/assets/pdfs/kerr-thesis.pdf"
   type: "thesis"
 
-- title: "Noncovalently bound complexes of polar molecules: Dipole-inside-of-dipole vs. dipole–dipole systems"
+- title: "Noncovalently Bound Complexes of Polar Molecules: Dipole-Inside-of-Dipole vs. Dipole–Dipole Systems"
   authors: "S. Kerr, F.Y. Naumkin"
   year: 2017
   venue: "New Journal of Chemistry 41(22)"
   link: "/assets/pdfs/kerr-2017-njc-noncovalent-complexes.pdf"
   type: "journal"
 
-- title: "Rational design of a material for rapid colorimetric Fe²⁺ detection"
+- title: "Rational Design of a Material for Rapid Colorimetric Fe²⁺ Detection"
   authors: "Nadia O. Laschuk, Iraklii I. Ebralidze, Simone Quaranta, Stephen T.W. Kerr, Jacquelyn G. Egan, Scott Gillis, Franco Gaspari, Alessandro Latini, Olena V. Zenkina"
   year: 2016
   venue: "Materials and Design 107"
