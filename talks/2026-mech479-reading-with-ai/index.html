@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reading and writing with AI · Stephen Kerr</title>
+
+    <!-- reveal core (vendored, offline) -->
+    <link rel="stylesheet" href="lib/reveal/reset.css" />
+    <link rel="stylesheet" href="lib/reveal/reveal.css" />
+    <link rel="stylesheet" href="lib/reveal/theme/black.css" id="theme" />
+    <!-- code highlighting theme -->
+    <link rel="stylesheet" href="lib/reveal/plugin/highlight/monokai.css" />
+    <!-- plugin styles -->
+    <link rel="stylesheet" href="lib/plugins/chalkboard/style.css" />
+    <link rel="stylesheet" href="lib/plugins/menu/menu.css" />
+    <!-- house style: "The Invisible Variable" (loaded LAST so it wins) -->
+    <link rel="stylesheet" href="css/custom.css" />
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+        <!-- ===============================================================
+             Reading and writing with AI. MECH 479, 10 Nov 2026, ~20 min.
+             Six sections on the horizontal spine; one drill-down in section 2.
+             Source of truth: FOUNDATION.md in this folder. Adapted from
+             talks/2026-coding-with-ai-v2/.
+        ================================================================ -->
+
+        <!-- TITLE -->
+        <section>
+          <div class="title-block">
+            <h1>Reading and writing with AI</h1>
+            <p class="subtitle">Context, skills, and <span class="gold">keeping the work yours</span></p>
+            <p class="who">Stephen Kerr<br />
+              <span class="aff">MECH 479 · Queen's University · 10 November 2026</span></p>
+          </div>
+          <aside class="notes">
+            Twenty minutes. You are writing a 2000-word critical assessment from at least three
+            papers, and most of you will use an AI model somewhere in that. This is how I use one
+            for reading and writing, and why. One idea runs through all of it: what you put in
+            front of the model changes every turn that follows. The bar along the bottom tracks
+            the six sections.
+          </aside>
+        </section>
+
+        <!-- ============ 1 · THE HIDDEN PURPOSE ============ -->
+
+        <section>
+          <p class="kicker"><span class="n">1</span> · The hidden purpose</p>
+          <p class="ask">“I need to wash my car, the carwash is 10&nbsp;m away should I walk or drive?”</p>
+          <aside class="notes">
+            Read it to the room exactly as written, then ask for hands: who walks, who drives? Let
+            people commit. Do not hint at the trap.
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">1</span> · The hidden purpose</p>
+          <h2>Walk or drive?</h2>
+          <img class="shot fig" src="assets/carwash-exchange.png" alt="ChatGPT answering that walking 10 m to the car wash is the rational choice" style="max-height:330px;" />
+          <p class="evidence">ChatGPT 5.3 Instant · 2026-07-13 · one observed response</p>
+          <p class="goldline fragment">The car has to arrive at the wash.</p>
+          <aside class="notes">
+            The model answers the question it recognizes: distance and transport. Fluent,
+            confident, locally sensible, and it has dropped the purpose of the trip. Let the room
+            say it before the reveal.
+            This is one response from one model on one day. Other models and other days get it
+            right. The point is not that models are bad. The point is that I never stated the
+            purpose, and the model did not ask.
+            Your version of this prompt is "summarize this paper". You have a purpose: a report, a
+            topic, an argument. If you do not say it, you get the summary of a reader with no
+            purpose. Hold that; section three shows it on a real paper.
+          </aside>
+        </section>
+
+        <!-- ============ 2 · WHAT THE MODEL SEES ============ -->
+
+        <section>
+          <section>
+            <p class="kicker"><span class="n">2</span> · What the model sees</p>
+            <h2>How many r's in strawberry?</h2>
+            <p class="big" style="font-family:'Plex Mono',monospace;">strawberry</p>
+            <p class="fragment">The model reads chunks called tokens, not letters.</p>
+            <p class="big fragment" style="font-family:'Plex Mono',monospace; letter-spacing:0.08em;">s t <span class="gold">r</span> a w b e <span class="gold">r</span> <span class="gold">r</span> y</p>
+            <p class="take fragment">When a model struggles: <span class="gold">change what you put in front of it</span>.</p>
+            <aside class="notes">
+              A token is the smallest unit the model reads and writes. Not a letter, not reliably a
+              whole word: a chunk. Asking it to count letters asks it to work below its own units.
+              Spell the word out first and the letters become explicit, and the count is easy.
+              The lesson is general. When a model struggles, do not repeat the question louder.
+              Change what is in front of it.
+              (Down, if there is time: the same token meaning two different things.)
+            </aside>
+          </section>
+          <section>
+            <h3>Same token, different meaning</h3>
+            <img class="fig" src="assets/token-context.svg" alt="Two occurrences of the same token ID, in a lead-shield sentence and a lead-nurse sentence, develop different contextual representations as transformer layers mix in context; the token dose flips meaning too" style="max-height:430px;" />
+            <p class="take">The neighbours decide what a token means.</p>
+            <aside class="notes">
+              Optional. The same word enters both sentences. By the output, lead is a metal in one
+              and a senior role in the other, and dose flips too. The meaning of each token comes
+              from the other tokens the model can see. So what is in the window is not storage. It
+              shapes how every word is read.
+            </aside>
+          </section>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">2</span> · What the model sees</p>
+          <h2>Keep context small and relevant</h2>
+          <img class="fig" src="assets/context-zones.svg" alt="The context window as one region with two overlapping zones: a gold adaptable zone, focused and easy to steer, and a grey rigid zone, crowded and set in its ways, with an arrow showing the window filling toward capacity" style="max-height:430px;" />
+          <p class="goldline fragment">Everything in the chat is read again on every turn.</p>
+          <aside class="notes">
+            The context window is everything the model reads to write its next reply: your
+            instructions, the files you attached, and the whole conversation so far. It has no
+            other memory of this chat.
+            A fresh, focused chat is easy to steer. As it fills with side questions, old answers
+            and ideas you dropped, it gets set in its ways. I call the two ends adaptable and
+            rigid. It is a cartoon: there is no fixed point where behaviour flips.
+            Two consequences for the rest of the talk. First, a short instruction at the top of a
+            chat is read on every turn, so it shapes every turn. Second, a long chat carries
+            everything, wanted or not.
+          </aside>
+        </section>
+
+        <!-- ============ 3 · A PROMPT CHANGES EVERY TURN ============ -->
+
+        <section>
+          <p class="kicker"><span class="n">3</span> · A prompt changes every turn</p>
+          <h2>Same paper, different conversation</h2>
+          <div class="pair">
+            <div class="cold">
+              <p class="label">no skill</p>
+              <div class="chat">
+                <div class="me"><p>summarize this paper</p></div>
+                <div class="ai">
+                  <p><b>Summary</b> · The question · Approach · Key findings (1–5) · Interpretation · Limitations · Bottom line</p>
+                  <p class="faded">about 640 words, finished in one reply</p>
+                </div>
+              </div>
+            </div>
+            <div class="hot">
+              <p class="label">read-paper-with-me</p>
+              <div class="chat">
+                <div class="me"><p class="meta">[the same PDF]</p></div>
+                <div class="ai hot"><p><span class="gold">Why are you reading this paper?</span></p></div>
+              </div>
+            </div>
+          </div>
+          <p class="evidence">Claude Opus 5.5 · no skill 2026-11-09 · with skill 2026-11-02 · one observed reply each</p>
+          <p class="take fragment">The summary on the left is good. It is also <span class="gold">not mine</span>.</p>
+          <aside class="notes">
+            The paper is my own: chromium and the third-element effect in Ni–Cr–Al, Scripta
+            Materialia this year. Same PDF, same model, two starts.
+            Left: I attach it and type "summarize this paper". I get about 640 words, well
+            organized, and as far as I can tell accurate. Nothing is wrong with it. But I did not
+            read the paper to get it, it does not know what my report is about, and I could not
+            defend any line of it in a conversation.
+            Right: the same PDF with a skill loaded. A skill is a short instruction file. This one
+            is written to trigger on exactly those words, "summarize this paper". Its first reply
+            is a question: why are you reading this?
+            That is the car wash again. The skill makes the model ask for the purpose I left out.
+            Honest labels: these are two separate runs a week apart, one reply each. In the
+            right-hand run I started the skill by name.
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">3</span> · A prompt changes every turn</p>
+          <h2>A hint and a page, before the answer</h2>
+          <div class="chat">
+            <div class="me"><p>…the old Wagner model of the third element effect is not well understood, or that it being an oxygen-dependent process is in question…</p></div>
+            <div class="ai hot">
+              <p>Two parts of your take hold up… The Wagner part needs another look. <span class="gold">Reread the last sentence of the “In this work” paragraph on p. 1</span>, then the paragraph on Wagner just after it.</p>
+              <p style="margin-top:0.5em;">How does the paper's proposed pathway relate to Wagner's model, and which element does it say is delivering that effect?</p>
+            </div>
+          </div>
+          <p class="evidence">excerpt · my spelling fixed, wording kept</p>
+          <aside class="notes">
+            I give my take on the Introduction first. Part of it is off: I said Wagner's model is
+            in question. It does not tell me the right answer. It says which parts hold, names the
+            part that does not, and sends me to a specific paragraph on page one with a question.
+            I had to go back and read. That is the point of the design: the reading happens in my
+            head, and the model checks it against the page.
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">3</span> · A prompt changes every turn</p>
+          <h2>It checked the author</h2>
+          <div class="chat">
+            <div class="me"><p>…if Wagner's model requires oxygen, and they can show that Al gets to GBs without oxygen, does that not cast some doubt that Wagner's model is complete?</p></div>
+            <div class="ai hot">
+              <p><span class="gold">Not from this paper alone.</span> …the simulations cover only Ni–Cr–Al (p. 2) and don't address coupling between the metal and oxide phases (p. 4). So Al reaching grain boundaries without oxygen comes from how the model was set up, not from a finding that oxygen doesn't matter.</p>
+            </div>
+          </div>
+          <p class="take fragment">I am the first author. <span class="gold">The paper is still the ground truth.</span></p>
+          <aside class="notes">
+            Then I pushed a conclusion: if aluminium reaches grain boundaries without oxygen,
+            doesn't that cast doubt on Wagner? It said no, not from this paper, and gave the pages:
+            the simulations have no oxygen in them at all, so the absence of oxygen is a modelling
+            choice, not a finding.
+            It is right, and I wrote the paper. I overreached on my own work, in a casual chat, and
+            the instruction "the paper is the ground truth, give a page for each claim" held me to
+            what the paper says. Without that instruction, a model tends to agree with you.
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">3</span> · A prompt changes every turn</p>
+          <h2>The skill, as written</h2>
+          <p class="skilltext">
+            <b>One question at a time.</b><br />
+            <b>The paper is the ground truth.</b> Give a page for each claim you make.<br />
+            <b>Hint before telling.</b> If their take is off, point to where to look.<br />
+            <b>Build the note on their words.</b> Add only what your check found,<br />
+            &nbsp;&nbsp;and mark each addition with its page.
+          </p>
+          <p class="evidence">read-paper-with-me/SKILL.md · condensed from its Defaults · 37 lines in all</p>
+          <p class="goldline fragment">Thirty-seven lines, read again on every turn.</p>
+          <aside class="notes">
+            This is most of the skill. Four defaults and a three-step flow: ask why they are
+            reading, go section by section, and at the end ask for the three to five things they
+            will remember without looking.
+            Every behaviour you just saw is one of these lines. The opening question is the flow.
+            The reread-page-one reply is "hint before telling". "Not from this paper alone" is
+            "the paper is the ground truth".
+            It works because of section two. The instruction sits in the window and is read on
+            every turn, so it shapes every turn. A skill is a prompt you bothered to write down
+            once. You can write your own.
+          </aside>
+        </section>
+
+        <!-- ============ 4 · THREE SKILLS, ONE REPORT ============ -->
+
+        <section>
+          <p class="kicker"><span class="n">4</span> · Three skills, one report</p>
+          <h2>Each stage ends in your words</h2>
+          <div class="pipe">
+            <div class="stage src"><span class="what">A paper</span>one of your three or more</div>
+            <div class="arrow">▶</div>
+            <div class="stage"><span class="what">Your note</span><span class="skill">read-paper-with-me</span>Your take first. It checks against the page.</div>
+            <div class="arrow">▶</div>
+            <div class="stage"><span class="what">Your outline</span><span class="skill">build-report-outline</span>It questions your thesis, points and word budget. It writes no prose.</div>
+            <div class="arrow">▶</div>
+            <div class="stage"><span class="what">Your draft, reviewed</span><span class="skill">review-my-draft</span>It points at the problem and asks what you will do.</div>
+          </div>
+          <p class="goldline fragment">The AI asks and checks. You write.</p>
+          <aside class="notes">
+            Three skills that line up with how the report gets written.
+            Reading: one note per paper, in your words, with pages, plus the points worth reusing.
+            Outlining: you bring your notes and a working conclusion. It asks for a thesis someone
+            could disagree with, a story shape, four to six points each backed by a quote or number
+            from your notes, and a word budget. It refuses to draft sentences. The last step is to
+            write the argument from memory in five sentences and compare.
+            Reviewing: one section at a time. You rate your own section first. It flags citations
+            it cannot trace to your notes, points at problems by location, and logs each one as
+            fixed or rejected with your reason. Rejecting with a reason is allowed.
+            I have only shown you evidence for the first. The other two I am describing, not
+            demonstrating. All three are drafts and have not been tested properly yet.
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">4</span> · Three skills, one report</p>
+          <h2>My words, its additions marked</h2>
+          <div class="note">
+            <p><b>Introduction (pp. 1–2).</b> Oxidation mechanisms are critical for materials engineering. The paper tries to explain how Al in low quantities can still get to grain boundaries to form protective layers. It says Cr aids Al by way of vacancy formation energy (thermodynamically). Wagner's model is that Cr acts as a secondary oxygen getter…</p>
+            <p class="added"><i>Added:</i> The paper presents its route as complementing Wagner's, not replacing it (pp. 1, 3).</p>
+            <p><b>Open question:</b> If Al can reach grain boundaries by a route that doesn't involve oxygen, is Wagner's model complete? This paper can't settle that, because it doesn't model oxygen or the oxide (pp. 2, 4).</p>
+          </div>
+          <p class="evidence">excerpt of the note from the 2026-11-02 run · I chose accept, edit or rewrite</p>
+          <p class="take fragment">My overreach became an <span class="gold">open question</span> I can take into the report.</p>
+          <aside class="notes">
+            This is the note that came out of those turns. The paragraph is my wording with the
+            spelling fixed. The gold line is the one thing it added, and it carries pages so I can
+            check it. Then it asked: accept, edit or rewrite?
+            Look at the open question. That is my overreach about Wagner, turned into a question
+            the paper cannot settle. For a critical assessment that is useful: it is a place where
+            a second paper has to do the work.
+            After each section it also asks whether anything is worth reusing, and records the
+            quote or number, the page, and why. That list is what the outline step draws on.
+            Honest label: I stopped this run after the Introduction, so this is one section of a
+            note, not a finished one.
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">4</span> · Three skills, one report</p>
+          <h2>What the three have in common</h2>
+          <ul>
+            <li>One question at a time</li>
+            <li>You answer first</li>
+            <li>A page for every claim</li>
+            <li>You accept, edit or reject</li>
+          </ul>
+          <p class="small fragment" style="margin-top:1em;">Drafts, not yet tested. Each one works pasted into any chatbot.<br />Course rule: AI use is allowed where the assignment says so, and you cite it.</p>
+          <aside class="notes">
+            The same four habits run through all three, and you can use them without my files. Ask
+            the model to question you one thing at a time. Give your answer before you ask for
+            its. Ask for the page. And decide yourself what goes in.
+            Practical: each skill is a text file. Paste it into ChatGPT, Claude, Copilot or
+            whatever you use, then attach the paper or your notes. The link is on the last slide.
+            The syllabus rule still applies: AI use is permitted only where an assignment says so,
+            and it must be cited. If you are unsure whether it is permitted for a piece of work,
+            ask me.
+          </aside>
+        </section>
+
+        <!-- ============ 5 · HANDOFF ============ -->
+
+        <section>
+          <p class="kicker"><span class="n">5</span> · Handoff</p>
+          <h2>Handoff: compaction with intention</h2>
+          <img class="fig" src="assets/context-window-handoff.svg" alt="A long session's context window is crowded with abandoned ideas, stale assumptions, and old tool output around the goal and the task; a handoff curates the task, the decisions that matter, and the evidence into a fresh window with room to work" style="max-height:400px;" />
+          <p class="goldline fragment">One task, and only the context it needs.</p>
+          <aside class="notes">
+            This is the habit I use most in my own research and coding. A long chat collects
+            abandoned ideas, stale assumptions and old output next to the things that matter, and
+            the task competes with all of it.
+            When the chat gets long, the tool will summarize it for you automatically. I do not
+            rely on that: I did not choose what was kept, and I cannot see what was dropped.
+            A handoff is the same compression done on purpose. I write a short note with the task,
+            the decisions that matter and the evidence, and I start a new chat with only that.
+            Do not be afraid to start a new chat. New chats are cheap. A crowded one is not.
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">5</span> · Handoff</p>
+          <h2>Your note is the handoff</h2>
+          <div class="pair">
+            <div class="cold">
+              <p class="label">one long chat</p>
+              three papers, one window<br />
+              paper one is far behind you<br />
+              what got dropped is invisible
+            </div>
+            <div class="hot">
+              <p class="label">a fresh chat per stage</p>
+              per paper: ends in your note<br />
+              outline: starts from your notes<br />
+              review: outline + one section
+            </div>
+          </div>
+          <p class="take fragment">Start the next chat with <span class="gold">what you wrote</span>, not with everything that was said.</p>
+          <aside class="notes">
+            Here is where the two halves of the talk meet. Each skill ends in a written record: the
+            note, the outline, the feedback log. Those records are handoffs. They are short, you
+            wrote them, and you know what is in them.
+            So read each paper in its own chat. Open a new chat for the outline and give it your
+            notes, not the three PDFs and three long conversations. Open another for review with
+            the outline and one section.
+            Each chat stays small and focused, and what carries forward is your own writing. If
+            something is missing from a note, you find out when you outline, and you go back to
+            the paper.
+          </aside>
+        </section>
+
+        <!-- ============ 6 · OWNERSHIP ============ -->
+
+        <section>
+          <p class="kicker"><span class="n">6</span> · Ownership</p>
+          <h2>Better structure, wrong comparison</h2>
+          <p>AI restructured my dipole paragraph. Genuinely better writing.</p>
+          <p class="big fragment" data-fragment-index="1" style="font-family:'Plex Mono',monospace;">A &gt; B &nbsp;<span class="redtext">became</span>&nbsp; A &lt; B</p>
+          <p class="evidence fragment" data-fragment-index="1">the shape of the error, not the sentence</p>
+          <p class="take fragment" data-fragment-index="2">I kept the structure and repaired the science. Possible only because <span class="gold">I still knew what the sentence was supposed to say.</span></p>
+          <aside class="notes">
+            Why all this effort to keep the writing mine. My own example. An AI pass made a
+            paragraph about dipoles much better structured, and somewhere in the rewrite it
+            reversed a comparison: a greater-than became a less-than, and the sentence became
+            scientifically wrong. It read better than my original.
+            I kept the improved structure and repaired the relationship. I could do that only
+            because I still knew what the science was supposed to say. If the model had written
+            the paragraph from scratch, I would have had nothing to check it against.
+            (I have not recovered the original sentence, so this is the shape of the error, not a
+            reconstruction.)
+          </aside>
+        </section>
+
+        <section>
+          <p class="kicker"><span class="n">6</span> · Ownership</p>
+          <h2 class="goldline" style="font-size:1.5em;">Delegate labour,<br />not judgement.</h2>
+          <div class="shelf-row" style="margin-top:0.7em;">
+            <ul>
+              <li>Explain the choices</li>
+              <li>Trace each claim to a page</li>
+              <li>Challenge the output</li>
+            </ul>
+            <img class="shelf-qr" src="assets/qr-skills.svg" alt="QR code linking to github.com/Kerrator/skills" />
+          </div>
+          <p class="shelf-url">github.com/Kerrator/skills</p>
+          <p class="small" style="margin-top:0.6em;">Thank you. Questions?</p>
+          <aside class="notes">
+            The close. These tools will do a great deal of work for you: finding, checking,
+            restructuring, pointing at the weak spot. Let them. What you keep is the judgement.
+            The test is simple. For your report, can you explain the choices you made, trace each
+            claim to a page in a paper, and say where the model's output was wrong? If you can,
+            the work is yours and you learned the material on the way.
+            The three study skills and the handoff skill are at this address. Take them, change
+            them, or write your own. Thank you.
+            (Chalkboard on B for Q&amp;A sketches.)
+          </aside>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Touch entry to inking (an iPad has no C/B/DEL keys). -->
+    <div class="inkbar">
+      <button type="button" title="Annotate this slide (C)" onclick="RevealChalkboard.toggleNotesCanvas();"><i class="fas fa-pen"></i></button>
+      <button type="button" title="Open chalkboard (B)" onclick="RevealChalkboard.toggleChalkboard();"><i class="fas fa-chalkboard"></i></button>
+      <button type="button" title="Clear ink on this slide (DEL)" onclick="RevealChalkboard.clear();"><i class="fas fa-eraser"></i></button>
+    </div>
+
+    <!-- reveal core + plugins (vendored, offline) -->
+    <script src="lib/reveal/reveal.js"></script>
+    <script src="lib/reveal/plugin/markdown.js"></script>
+    <script src="lib/reveal/plugin/highlight.js"></script>
+    <script src="lib/reveal/plugin/notes.js"></script>
+    <script src="lib/reveal/plugin/math.js"></script>
+    <script src="lib/reveal/plugin/search.js"></script>
+    <script src="lib/reveal/plugin/zoom.js"></script>
+    <script src="lib/plugins/chalkboard/plugin.js"></script>
+    <script src="lib/plugins/menu/menu.js"></script>
+
+    <script>
+      // Guideposts, pass 1: derive each top-level stack's section number from
+      // the kicker it already carries, and stamp it (plus position-in-section)
+      // onto the stack and its vertical children. Must run BEFORE initialize:
+      // the ?print-pdf layout re-parents sections into .pdf-page wrappers.
+      (function () {
+        const tops = Array.from(document.querySelectorAll('.reveal .slides > section'));
+        const bySection = {};
+        tops.forEach((sec) => {
+          if (sec.dataset.gp !== undefined) return;          // outline: explicit "0"
+          const n = sec.querySelector('.kicker .n');
+          if (!n) return;                                    // title: no bar
+          sec.dataset.gp = n.textContent.trim();
+        });
+        tops.forEach((sec) => {
+          const gp = sec.dataset.gp;
+          if (gp === undefined || gp === '0') return;
+          (bySection[gp] = bySection[gp] || []).push(sec);
+        });
+        Object.values(bySection).forEach((list) => {
+          list.forEach((sec, i) => {
+            sec.dataset.gpIdx = i;
+            sec.dataset.gpCount = list.length;
+            sec.querySelectorAll('section').forEach((child) => {
+              child.dataset.gp = sec.dataset.gp;
+              child.dataset.gpIdx = i;
+              child.dataset.gpCount = list.length;
+            });
+          });
+        });
+        // Section names for the bar, from each section's first kicker.
+        window.GP_NAMES = Object.keys(bySection).sort().map((k) => {
+          const kick = bySection[k][0].querySelector('.kicker');
+          return kick.textContent.replace(/^\s*\d+\s*·\s*/, '').trim();
+        });
+      })();
+
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: false,        // replaced by the section guidepost bar below
+        center: false,          // top-aligned reads better for dense technical slides
+        slideNumber: 'c/t',
+        transition: 'slide',
+        pdfSeparateFragments: false,   // print: one page per slide, not per fragment
+
+        // --- KaTeX, fully offline ---
+        katex: {
+          local: 'lib/katex',
+          extensions: ['mhchem'],
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$',  right: '$',  display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ]
+        },
+
+        // --- live inking (Apple Pencil / mouse) ---
+        chalkboard: { boardmarkerWidth: 3, storage: '2026-mech479-reading-with-ai-chalkboard' },
+
+        // --- jump-anywhere menu (top-left) ---
+        menu: { themes: false, openButton: true, openSlideNumber: true },
+
+        plugins: [
+          RevealMarkdown, RevealHighlight, RevealNotes,
+          RevealMath.KaTeX, RevealSearch, RevealZoom,
+          RevealChalkboard, RevealMenu
+        ]
+      });
+
+      // Guideposts, pass 2: the tracking bar. Labeled segments along the
+      // bottom letterbox; the current section's segment lights up and fills in
+      // gold as its slides advance. Live mode gets one fixed bar; ?print-pdf
+      // gets a static copy injected at the foot of every printed page.
+      (function () {
+        function buildBar(root) {
+          const segs = [];
+          window.GP_NAMES.forEach((name, i) => {
+            const seg = document.createElement('div');
+            seg.className = 'gp-seg';
+            seg.innerHTML = '<span class="gp-label"><span class="gp-n">' + (i + 1) +
+              '</span> · <span class="gp-name"></span></span>' +
+              '<div class="gp-track"><div class="gp-fill"></div></div>';
+            seg.querySelector('.gp-name').textContent = name;
+            root.appendChild(seg);
+            segs.push(seg);
+          });
+          return segs;
+        }
+        function renderBar(segs, gp, idx, count) {
+          segs.forEach((seg, i) => {
+            const s = i + 1;
+            let frac = 0;
+            if (s < gp) frac = 1;
+            else if (s === gp) frac = (idx + 1) / count;
+            seg.classList.toggle('is-current', s === gp);
+            seg.classList.toggle('is-done', s < gp);
+            seg.querySelector('.gp-fill').style.width = (frac * 100) + '%';
+          });
+        }
+        if (/print-pdf/gi.test(window.location.search)) {
+          const inject = function () {
+            document.querySelectorAll('.reveal .slides .pdf-page').forEach(function (page) {
+              if (page.querySelector('.guidebar-print')) return;
+              const sec = page.querySelector('section');
+              if (!sec || sec.dataset.gp === undefined) return;   // title page: none
+              const bar = document.createElement('div');
+              bar.className = 'guidebar-print';
+              renderBar(buildBar(bar), +sec.dataset.gp,
+                        +(sec.dataset.gpIdx || 0), +(sec.dataset.gpCount || 1));
+              page.appendChild(bar);
+            });
+          };
+          Reveal.on('pdf-ready', inject);
+          Reveal.on('ready', function () { setTimeout(inject, 1500); });  // fallback; idempotent
+        } else {
+          const bar = document.createElement('div');
+          bar.className = 'guidebar gp-hidden';
+          bar.setAttribute('aria-hidden', 'true');
+          document.body.appendChild(bar);
+          const segs = buildBar(bar);
+          const update = function () {
+            const sec = Reveal.getHorizontalSlides()[Reveal.getIndices().h];
+            bar.classList.toggle('gp-hidden', sec.dataset.gp === undefined);
+            renderBar(segs, +(sec.dataset.gp || 0),
+                      +(sec.dataset.gpIdx || 0), +(sec.dataset.gpCount || 1));
+          };
+          Reveal.on('ready', update);
+          Reveal.on('slidechanged', update);
+        }
+      })();
+    </script>
+  </body>
+</html>
