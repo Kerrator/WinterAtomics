@@ -28,10 +28,11 @@ main{
 .tag{top:9px;font-weight:600}
 .hint{bottom:9px;right:12px}
 .legend{
-  position:absolute;right:12px;top:9px;font-size:13px;color:var(--ink);pointer-events:none;
-  display:flex;gap:12px;align-items:center;
+  position:absolute;right:12px;top:7px;font-size:13px;color:var(--ink);
+  display:flex;gap:4px 12px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 190px);
 }
-.legend span{display:inline-flex;gap:5px;align-items:center}
+.legend span,.legend label{display:inline-flex;gap:5px;align-items:center}
+.legend input[type=checkbox]{width:15px;height:15px;margin:0}
 .bar{padding:10px 18px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .bar.opts{padding-bottom:12px;font-size:15px}
 .stepper{display:flex;gap:8px;align-items:center}
@@ -81,10 +82,10 @@ form{display:inline-flex;gap:8px;align-items:center;margin:0}
   <section class="panel" id="p3">
     <canvas id="view3d" role="img" aria-label="Three-dimensional view of a cubic crystal at the centre of a sphere, with a sheet of paper resting on top"></canvas>
     <div class="tag">Crystal, sphere and sheet</div>
-    <div class="legend" aria-label="Legend">
-      <span><svg width="14" height="14" aria-hidden="true"><rect x="2" y="2" width="10" height="10" fill="#D55E00"/></svg>&lt;100&gt;</span>
-      <span><svg width="14" height="14" aria-hidden="true"><polygon points="7,0.5 12,7 7,13.5 2,7" fill="#0072B2"/></svg>&lt;110&gt;</span>
-      <span><svg width="14" height="14" aria-hidden="true"><polygon points="7,1 13,12.5 1,12.5" fill="#009E73"/></svg>&lt;111&gt;</span>
+    <div class="legend" role="group" aria-label="Show or hide each family of directions">
+      <label title="Show or hide the &lt;100&gt; directions"><input type="checkbox" data-fam="0" checked><svg width="14" height="14" aria-hidden="true"><rect x="2" y="2" width="10" height="10" fill="#D55E00"/></svg>&lt;100&gt;</label>
+      <label title="Show or hide the &lt;110&gt; directions"><input type="checkbox" data-fam="1" checked><svg width="14" height="14" aria-hidden="true"><polygon points="7,0.5 12,7 7,13.5 2,7" fill="#0072B2"/></svg>&lt;110&gt;</label>
+      <label title="Show or hide the &lt;111&gt; directions"><input type="checkbox" data-fam="2" checked><svg width="14" height="14" aria-hidden="true"><polygon points="7,1 13,12.5 1,12.5" fill="#009E73"/></svg>&lt;111&gt;</label>
       <span id="legendAdded" hidden><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="#7B2D8E"/></svg>added</span>
     </div>
     <div class="hint">Drag inside the sphere to turn the crystal · drag outside it to turn the view · scroll to zoom</div>
@@ -233,7 +234,8 @@ let Q = qFromMat(PRESETS['001']);
 let qTween = null, camTween = null, camSaved = null;
 const cam = { az: CAM0.az, el: CAM0.el, zoom: 1 };
 let stage = 1, fromStage = 1, anim = 0, animT0 = performance.now(), animDur = STEPS[0].d;
-const opt = { gc: false, rays: true, allLabels: false };
+const opt = { gc: false, rays: true, allLabels: false, fam: [true, true, true] };
+const famOn = p => p.fam > 2 || opt.fam[p.fam];     // hand-added poles always show
 let hover = null, drag = null, raf = 0;
 let view = null, map = null, pick3 = [], pick2 = [];
 let instructor = false;
@@ -315,7 +317,7 @@ function draw3D(){
   const dimLower = st >= 4;
 
   const M = qToMat(Q);
-  const items = poles.map(p => {
+  const items = poles.filter(famOn).map(p => {
     const v = mulMV(M, p.v), up = v[2] >= -1e-7;
     let X = null, sx = null;
     if (up){ const k = 1/(1 + Math.max(0, v[2])); X = [2*v[0]*k, 2*v[1]*k, 1]; sx = P(X); }
@@ -555,6 +557,7 @@ function draw2D(){
 
   const shown = [];
   for (const p of poles){
+    if (!famOn(p)) continue;
     const v = mulMV(M, p.v); if (v[2] < -1e-7) continue;
     const [x, y] = toXY(v), hl = hover === p.id, f = FAM[p.fam];
     ctx.globalAlpha = A;
@@ -636,6 +639,9 @@ window.addEventListener('keydown', e => {
 $('gc').addEventListener('change', e => { opt.gc = e.target.checked; invalidate(); });
 $('rays').addEventListener('change', e => { opt.rays = e.target.checked; invalidate(); });
 $('allLabels').addEventListener('change', e => { opt.allLabels = e.target.checked; invalidate(); });
+document.querySelectorAll('[data-fam]').forEach(c => c.addEventListener('change', () => {
+  opt.fam[+c.dataset.fam] = c.checked; hover = null; invalidate();
+}));
 $('resetView').addEventListener('click', () => { cam.zoom = 1; tweenCam(stage === 5 ? { az: 0, el: Math.PI/2 } : CAM0, 700); });
 document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
   qTween = { from: Q, to: qFromMat(PRESETS[b.dataset.preset]), t0: performance.now(), dur: 900 };
