@@ -131,10 +131,10 @@
         <section>
           <p class="kicker"><span class="n">3</span> · A prompt changes every turn</p>
           <h2>Same paper, different conversation</h2>
-          <div class="pair">
+          <div class="pair" style="margin-top:0.2em;">
             <div class="cold">
               <p class="label">no skill</p>
-              <div class="chat">
+              <div class="chat" style="font-size:0.74em;">
                 <div class="me"><p>summarize this paper</p></div>
                 <div class="ai">
                   <p><b>Summary</b> · The question · Approach · Key findings (1–5) · Interpretation · Limitations · Bottom line</p>
@@ -144,14 +144,13 @@
             </div>
             <div class="hot">
               <p class="label">read-paper-with-me</p>
-              <div class="chat">
+              <div class="chat" style="font-size:0.74em;">
                 <div class="me"><p class="meta">[the same PDF]</p></div>
                 <div class="ai hot"><p><span class="gold">Why are you reading this paper?</span></p></div>
               </div>
             </div>
           </div>
-          <p class="evidence">Claude Opus 5.5 · no skill 2026-11-09 · with skill 2026-11-02 · one observed reply each</p>
-          <p class="take fragment">The summary on the left is good. It is also <span class="gold">not mine</span>.</p>
+          <p class="take fragment" style="font-size:0.64em; margin-top:0.5em;">On the left is a summary; if you wanted to get the gist of a paper, it might be good (you would still have to check).<br /><span style="display:block; margin-top:0.5em;">It is also <span class="gold">not mine</span>. The summary is not how that paper will be useful to me, in the story I want to tell.</span></p>
           <aside class="notes">
             The paper is my own: chromium and the third-element effect in Ni–Cr–Al, Scripta
             Materialia this year. Same PDF, same model, two starts.
@@ -170,7 +169,7 @@
 
         <section>
           <p class="kicker"><span class="n">3</span> · A prompt changes every turn</p>
-          <h2>A hint and a page, before the answer</h2>
+          <h2>A hint and a page, before AI writes</h2>
           <div class="chat">
             <div class="me"><p>…the old Wagner model of the third element effect is not well understood, or that it being an oxygen-dependent process is in question…</p></div>
             <div class="ai hot">
@@ -178,7 +177,6 @@
               <p style="margin-top:0.5em;">How does the paper's proposed pathway relate to Wagner's model, and which element does it say is delivering that effect?</p>
             </div>
           </div>
-          <p class="evidence">excerpt · my spelling fixed, wording kept</p>
           <aside class="notes">
             I give my take on the Introduction first. Part of it is off: I said Wagner's model is
             in question. It does not tell me the right answer. It says which parts hold, names the
@@ -190,14 +188,14 @@
 
         <section>
           <p class="kicker"><span class="n">3</span> · A prompt changes every turn</p>
-          <h2>It checked the author</h2>
+          <h2>Pushing back on an overstated claim</h2>
           <div class="chat">
             <div class="me"><p>…if Wagner's model requires oxygen, and they can show that Al gets to GBs without oxygen, does that not cast some doubt that Wagner's model is complete?</p></div>
             <div class="ai hot">
               <p><span class="gold">Not from this paper alone.</span> …the simulations cover only Ni–Cr–Al (p. 2) and don't address coupling between the metal and oxide phases (p. 4). So Al reaching grain boundaries without oxygen comes from how the model was set up, not from a finding that oxygen doesn't matter.</p>
             </div>
           </div>
-          <p class="take fragment">I am the first author. <span class="gold">The paper is still the ground truth.</span></p>
+          <p class="take fragment">LLMs tend to not want to disagree with users. <span class="gold">The paper is still the source: it will push back when a summary might be incorrect.</span></p>
           <aside class="notes">
             Then I pushed a conclusion: if aluminium reaches grain boundaries without oxygen,
             doesn't that cast doubt on Wagner? It said no, not from this paper, and gave the pages:
@@ -216,11 +214,9 @@
             <b>One question at a time.</b><br />
             <b>The paper is the ground truth.</b> Give a page for each claim you make.<br />
             <b>Hint before telling.</b> If their take is off, point to where to look.<br />
-            <b>Build the note on their words.</b> Add only what your check found,<br />
-            &nbsp;&nbsp;and mark each addition with its page.
+            <b>Build the note on their words.</b> Mark each addition with its page.
           </p>
-          <p class="evidence">read-paper-with-me/SKILL.md · condensed from its Defaults · 37 lines in all</p>
-          <p class="goldline fragment">Thirty-seven lines, read again on every turn.</p>
+          <p class="goldline fragment">The skill will be read again on every turn.</p>
           <aside class="notes">
             This is most of the skill. Four defaults and a three-step flow: ask why they are
             reading, go section by section, and at the end ask for the three to five things they
@@ -272,7 +268,6 @@
             <p class="added"><i>Added:</i> The paper presents its route as complementing Wagner's, not replacing it (pp. 1, 3).</p>
             <p><b>Open question:</b> If Al can reach grain boundaries by a route that doesn't involve oxygen, is Wagner's model complete? This paper can't settle that, because it doesn't model oxygen or the oxide (pp. 2, 4).</p>
           </div>
-          <p class="evidence">excerpt of the note from the 2026-11-02 run · I chose accept, edit or rewrite</p>
           <p class="take fragment">My overreach became an <span class="gold">open question</span> I can take into the report.</p>
           <aside class="notes">
             This is the note that came out of those turns. The paragraph is my wording with the
@@ -297,7 +292,6 @@
             <li>A page for every claim</li>
             <li>You accept, edit or reject</li>
           </ul>
-          <p class="small fragment" style="margin-top:1em;">Drafts, not yet tested. Each one works pasted into any chatbot.<br />Course rule: AI use is allowed where the assignment says so, and you cite it.</p>
           <aside class="notes">
             The same four habits run through all three, and you can use them without my files. Ask
             the model to question you one thing at a time. Give your answer before you ask for
