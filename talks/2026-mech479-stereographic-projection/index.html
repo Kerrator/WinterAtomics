@@ -59,7 +59,9 @@ input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
 input[type=text]{font:inherit;padding:5px 8px;border:1px solid #b9c2cd;border-radius:7px;width:7.5em}
 form{display:inline-flex;gap:8px;align-items:center;margin:0}
 .instructor{border-left:2px solid var(--line);padding-left:14px}
-#addMsg{color:var(--muted);font-size:14px}
+#addMsg,#projMsg{color:var(--muted);font-size:14px}
+#proj{width:5.5em}
+.ob{text-decoration:overline}
 [hidden]{display:none !important}
 @media (max-width:820px){
   html,body{height:auto}
@@ -92,7 +94,7 @@ form{display:inline-flex;gap:8px;align-items:center;margin:0}
   </section>
   <section class="panel" id="p2">
     <canvas id="map" role="img" aria-label="Stereogram: the poles of the upper half of the sphere as they land on the sheet"></canvas>
-    <div class="tag">Stereogram: the sheet seen from above</div>
+    <div class="tag" id="tag2">Stereogram: [001] at the centre</div>
     <div class="hint" id="hint2" hidden>Drag to turn the crystal</div>
   </section>
 </main>
@@ -111,6 +113,12 @@ form{display:inline-flex;gap:8px;align-items:center;margin:0}
     <button type="button" data-preset="001">[001]</button>
     <button type="button" data-preset="011">[011]</button>
     <button type="button" data-preset="111">[111]</button>
+    <form id="projForm">
+      <label for="proj" class="lbl">or any</label>
+      <input type="text" id="proj" placeholder="u v w" autocomplete="off" inputmode="text" title="Type any direction, for example 1 1 2 or -1 1 0, to put it at the centre of the map">
+      <button type="submit">Go</button>
+    </form>
+    <span id="projMsg" role="status"></span>
   </span>
   <label><input type="checkbox" id="gc"> Great circles</label>
   <label><input type="checkbox" id="rays" checked> Rays</label>
@@ -210,13 +218,16 @@ function addPole(hkl, fam, added){
 // the nine mirror planes {100} and {110}: their great circles cut the map into 24 triangles
 const ZONES = [[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,-1,0],[1,0,1],[1,0,-1],[0,1,1],[0,1,-1]].map(unit);
 
-// rows = world x, y, z written in crystal coordinates (map: x points down, y right, z out of the sheet)
-const R2 = Math.SQRT1_2, R3 = 1/Math.sqrt(3), R6 = 1/Math.sqrt(6);
-const PRESETS = {
-  '001': [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-  '011': [[1, 0, 0], [0, R2, -R2], [0, R2, R2]],
-  '111': [[R6, R6, -2*R6], [-R2, R2, 0], [R3, R3, R3]]
-};
+// Orientation that puts [uvw] at the centre of the map. Rows = world x, y, z written in crystal
+// coordinates (map: x points down, y right, z out of the sheet). One rule for every direction:
+// [001] is kept towards the top; when [uvw] lies along c, [100] goes to the bottom instead.
+function projectionMatrix(hkl){
+  const z = unit(hkl);
+  let x = add(scl(z, z[2]), [0, 0, -1]);            // minus the part of [001] that lies in the sheet
+  if (len(x) < 1e-6) x = add([1, 0, 0], scl(z, -z[0]));
+  x = unit(x);
+  return [x, cross(z, x), z];
+}
 
 const STEPS = [
   { t: 'The crystal', c: 'A cubic crystal. Each arrow is a direction [uvw]; in a cubic crystal it is also the normal to the plane (hkl) with the same indices.', d: 800 },
@@ -230,7 +241,8 @@ const FRAME = [null, { z: 1.9, tz: 0 }, { z: 1.45, tz: 0 }, { z: 1, tz: 0.42 }, 
 const CAM0 = { az: -0.45, el: 0.38 };
 
 // ---------------------------------------------------------------- state
-let Q = qFromMat(PRESETS['001']);
+let Q = qFromMat(projectionMatrix([0, 0, 1]));
+let centre = [0, 0, 1];              // the direction a projection button or the box last centred; null once dragged
 let qTween = null, camTween = null, camSaved = null;
 const cam = { az: CAM0.az, el: CAM0.el, zoom: 1 };
 let stage = 1, fromStage = 1, anim = 0, animT0 = performance.now(), animDur = STEPS[0].d;
@@ -643,10 +655,25 @@ document.querySelectorAll('[data-fam]').forEach(c => c.addEventListener('change'
   opt.fam[+c.dataset.fam] = c.checked; hover = null; invalidate();
 }));
 $('resetView').addEventListener('click', () => { cam.zoom = 1; tweenCam(stage === 5 ? { az: 0, el: Math.PI/2 } : CAM0, 700); });
+function updateTag(){
+  const multi = centre && centre.some(n => Math.abs(n) > 9);
+  $('tag2').innerHTML = centre
+    ? 'Stereogram: [' + centre.map(n => n < 0 ? `<span class="ob">${-n}</span>` : String(n)).join(multi ? ' ' : '') + '] at the centre'
+    : 'Stereogram: the sheet seen from above';
+}
+function goProjection(hkl){
+  qTween = { from: Q, to: qFromMat(projectionMatrix(hkl)), t0: performance.now(), dur: 900 };
+  centre = hkl; updateTag(); invalidate();
+}
 document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
-  qTween = { from: Q, to: qFromMat(PRESETS[b.dataset.preset]), t0: performance.now(), dur: 900 };
-  invalidate();
+  $('projMsg').textContent = ''; goProjection(b.dataset.preset.split('').map(Number));
 }));
+$('projForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const hkl = parseHKL($('proj').value);
+  if (!hkl){ $('projMsg').textContent = 'Enter three integers, e.g. 1 1 2 or -1 1 0.'; return; }
+  $('projMsg').textContent = ''; goProjection(hkl);
+});
 
 function parseHKL(str){
   str = str.trim().replace(/[\[\](){}<>]/g, '').replace(/−/g, '-');
@@ -692,7 +719,10 @@ function mapToVec(x, y){             // inverse stereographic projection
   const X = (y - map.cy)/map.Rm, Y = (x - map.cx)/map.Rm, r2 = X*X + Y*Y;
   return [2*X/(1 + r2), 2*Y/(1 + r2), (1 - r2)/(1 + r2)];
 }
-const turn = (v0, v1) => { Q = qnorm(qmul(qBetween(v0, v1), Q)); qTween = null; };
+const turn = (v0, v1) => {
+  Q = qnorm(qmul(qBetween(v0, v1), Q)); qTween = null;
+  if (centre){ centre = null; updateTag(); }
+};
 
 cv3.addEventListener('pointerdown', e => {
   if (!view) return;
