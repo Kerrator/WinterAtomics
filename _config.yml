@@ -1,10 +1,12 @@
 # Site settings
 title: "Stephen Kerr"
-description: "PhD candidate in computational materials science at Queen's University. Studying vacancy–solute coupling in nuclear alloys (Ni–Cr–Al, Zr) and CO₂ catalysis using DFT, machine-learning interatomic potentials (MACE, ACE), and kinetic modelling (k-ART)."
+description: "PhD candidate in computational materials science at Queen's University. Studying defect mechanisms in alloys using DFT and molecular dynamics."
 author: "Stephen Kerr"
 email: "24jrpc@queensu.ca"
 linkedin: "https://linkedin.com/in/stephen-kerr-93aa42254/"
-github: "WinterAtomics"
+# Sidebar GitHub link. Not named "github": GitHub Pages always sets site.github,
+# so that key is never empty.
+github_username: "Kerrator"
 url: "https://www.winteratomics.ca"
 # scholar: "https://scholar.google.com/citations?user=YOUR_ID"
 # orcid: "0000-0000-0000-0000"

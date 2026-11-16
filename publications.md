@@ -5,7 +5,7 @@ title: Publications
 
 # Publications
 
-Peer-reviewed publications, preprints, and theses spanning computational materials science and molecular quantum chemistry. Current work focuses on vacancy–solute coupling and grain-boundary segregation in nuclear alloys using DFT and ML potentials, building on earlier contributions in noncovalent molecular interactions and colorimetric sensing.
+Peer-reviewed publications and theses. If you need a copy, please contact me.
 
 {% if site.data.publications %}
 <div class="publications-list">

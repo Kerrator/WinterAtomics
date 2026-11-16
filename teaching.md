@@ -5,25 +5,27 @@ title: Teaching
 
 # Teaching
 
-I teach and support undergraduate courses, labs, and tutorials with a focus on clarity, reproducible computation, and constructive feedback. Students progress from analytical solutions to Python scripts that test assumptions, check residuals, and quantify numerical error. My teaching draws directly on my research — students in computational courses work with the same tools and verification practices I use in atomistic simulation, building habits that transfer to research and industry.
+I teach and support early-year labs and tutorials with a focus on clarity, reproducible computation, and constructive feedback. Students move from analytical solutions to small Python scripts that test assumptions, residuals, and numerical error. I value accessibility, readable figures, and practical problem-solving.
 
 ## Teaching Philosophy
 
-My approach centres on bridging theory and practice. I set clear expectations and transparent rubrics early, then work alongside students to build confidence with both analytical and computational methods. I emphasize reproducibility—version control, documentation, and verification habits—because these are the same skills that underpin reliable research. Formative assessments and peer explanation keep feedback constructive and timely.
+My approach emphasizes:
 
-I am particularly interested in responsible AI integration in STEM coursework. Students now have access to LLM-based tools that can generate code, solve textbook problems, and draft reports. Rather than prohibiting these tools, I design assignments that use them deliberately—asking students to verify AI-generated solutions against physical constraints, critique model outputs, and document when and why a tool fails. This builds the critical evaluation skills that matter in research and professional practice while acknowledging the reality of modern computational workflows.
+- **Clear expectations:** Set standards early and provide transparent rubrics
+- **Hands-on support:** Work alongside students to build confidence
+- **Analytical foundations:** Connect paper-and-pencil methods to computational implementations
+- **Reproducibility:** Teach version control, documentation, and verification habits
+- **Constructive feedback:** Use formative assessments and peer explanation
 
 ## Teaching Interests
 
 <div class="interest-tags">
 <span class="interest-tag">Numerical methods in Python</span>
-<span class="interest-tag">Data fitting & uncertainty</span>
-<span class="interest-tag">Active tutorials</span>
-<span class="interest-tag">Problem-based learning</span>
-<span class="interest-tag">Rubric-based feedback</span>
-<span class="interest-tag">Responsible AI in STEM education</span>
-<span class="interest-tag">Inclusive teaching</span>
-<span class="interest-tag">Computational materials labs</span>
+<span class="interest-tag">Data fitting &amp; uncertainty quantification</span>
+<span class="interest-tag">Active tutorials &amp; problem-based learning</span>
+<span class="interest-tag">Rubric-based feedback for transparent grading</span>
+<span class="interest-tag">Responsible use of AI &amp; language models in coursework</span>
+<span class="interest-tag">Accessible materials &amp; inclusive teaching practices</span>
 </div>
 
 ## Teaching Experience
@@ -33,13 +35,14 @@ I am particularly interested in responsible AI integration in STEM coursework. S
 <p><em>2024–present</em></p>
 
 <h4>MECH 479 Nanomaterials</h4>
-<p>Instructor + TA, 2024–2026, 20–40 students. Interactive lectures on materials simulation, molecular dynamics, and computational nanoscience. Designed cross-platform tutorials emphasising reproducible workflows, version control, and verification of numerical results — including a new computational module on MD with LAMMPS and post-processing in Python. Course content connects directly to my research in atomistic simulation of defect behaviour in alloys, so students work with the same DFT and MD tools used in active research projects.</p>
+<p>Instructor + TA, 2024/2025, 20–40 students. Interactive lectures on materials simulation, molecular dynamics, and computational nanoscience. Designed cross-platform tutorials emphasizing reproducible workflows, version control, and verification of numerical results.</p>
+<p>Interactive viewer I built for the course: <a href="/talks/2026-mech479-stereographic-projection/">Stereographic projection of a cubic crystal</a>.</p>
 
-<h4>MECH 272 Materials Science</h4>
-<p>Lab TA, Winter 2025–2026. Undergraduate materials laboratory supporting hands-on characterization and testing methods.</p>
+<h4>MECH 272 Materials</h4>
+<p>Lab TA, Winter 2025. Undergraduate materials laboratory supporting hands-on characterization and testing methods.</p>
 
 <h4>CHEM 112 General Chemistry II</h4>
-<p>Lab TA, Winter 2025–2026. Laboratory instruction for first-year engineering and science students.</p>
+<p>Lab TA, Winter 2025. Laboratory instruction for first-year engineering and science students.</p>
 </div>
 
 <div class="teaching-card">
@@ -55,5 +58,5 @@ I am particularly interested in responsible AI integration in STEM coursework. S
 <li>Science Café (weekly drop-in support, 5–15 students per session)</li>
 </ul>
 
-<p>Additional terms included coordination of multiple CHEM 1010U and 1020U lab sections, development of comment banks for efficient feedback, and mentoring of undergraduate peer tutors.</p>
+<p>Additional terms included coordination of multiple CHEM 1010U and 1020U lab sections, development of comment banks for efficient feedback, and mentoring of undergraduate peer tutors. Emphasized reproducible computation, academic integrity, and hands-on problem-solving across all courses.</p>
 </div>
