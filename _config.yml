@@ -16,6 +16,19 @@ theme: null
 # GitHub Pages settings
 baseurl: ""
 
+# Not site pages. Setting exclude replaces Jekyll's defaults and drops the
+# github-pages CNAME entry, so those are listed here too.
+exclude:
+  - AGENTS.md
+  - CLAUDE.md
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - CNAME
+  - gitignore/
+  - vendor/
+  - node_modules/
+
 # Plugins
 plugins:
   - jekyll-seo-tag
