@@ -96,6 +96,10 @@
     body {
       margin: 0;
       padding: 0;
+      /* Undo Tufte's 87.5% / 84% body width so the page fills phones and
+         .site-container centres on wide screens */
+      width: auto;
+      max-width: none;
       font-family: "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
       line-height: 1.6;
       background-color: var(--bg-page);
@@ -348,6 +352,20 @@
       text-decoration-thickness: 2px;
       text-underline-offset: 3px;
       transition: color 0.15s, text-decoration-color 0.15s;
+    }
+
+    /* Tufte underlines a:link with cream (#fffff8) shadows and gradients made
+       for its light page; on this dark page they smear the link text. Drop
+       them and use the site underline. */
+    a:link {
+      background-image: none;
+      text-shadow: none;
+      text-decoration: underline 2px rgba(145, 219, 225, 0.55);
+    }
+
+    a:link::selection {
+      text-shadow: none;
+      background: rgba(77, 173, 184, 0.35);
     }
 
     a:hover {
@@ -941,7 +959,7 @@
     }
 
     /* Skip-to-content link for accessibility */
-    .skip-link {
+    a.skip-link {
       position: absolute;
       top: -40px;
       left: 0;
@@ -1113,7 +1131,7 @@
     }
 
     /* Better responsive breakpoints */
-    @media (max-width: 960px) {
+    @media (min-width: 769px) and (max-width: 960px) {
       .site-container {
         grid-template-columns: 220px 1fr;
       }
