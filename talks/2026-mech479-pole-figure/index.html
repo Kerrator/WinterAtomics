@@ -1,0 +1,1909 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pole figure of a rolled sheet</title>
+<style>
+:root{
+  --ink:#1c2530; --muted:#5d6b7a; --line:#d5dbe3; --bg:#f4f5f7; --panel:#ffffff; --accent:#1f5fae;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font:16px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);
+  display:flex;flex-direction:column;height:100dvh;
+}
+header{padding:10px 18px 8px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+h1{font-size:20px;margin:0;font-weight:600}
+header span{color:var(--muted);font-size:14px}
+main{
+  flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);
+  gap:12px;padding:0 18px;
+}
+.panel{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;min-height:0;overflow:hidden}
+.panel canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.tag,.hint{position:absolute;left:12px;font-size:13px;color:var(--muted);pointer-events:none}
+.tag{top:9px;font-weight:600}
+.tag small{display:block;font-size:inherit;font-weight:400}
+.hint{bottom:9px;right:12px}
+.soon{
+  position:absolute;left:50%;top:38px;transform:translateX(-50%);max-width:calc(100% - 24px);
+  background:#fff6dc;border:1px solid #d8c387;color:#5f4b12;border-radius:7px;padding:6px 14px;
+  font-size:15px;font-weight:600;text-align:center;pointer-events:none;
+}
+.bar{padding:10px 18px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar.opts{padding-bottom:12px;font-size:15px}
+.stepper{display:flex;gap:8px;align-items:center}
+.dots{display:flex;gap:6px;margin:0 2px}
+button{
+  font:inherit;color:var(--ink);background:#fff;border:1px solid #b9c2cd;border-radius:7px;
+  padding:6px 12px;cursor:pointer;
+}
+button:hover:not(:disabled){background:#eef2f6}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.primary:hover:not(:disabled){background:#184c8c}
+button[aria-pressed="true"],button[aria-pressed="true"]:hover:not(:disabled){background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.grp.seg{gap:0}
+.seg .lbl{margin-right:8px}
+.seg button{border-radius:0;margin-left:-1px}
+.seg button:first-of-type{border-radius:7px 0 0 7px;margin-left:0}
+.seg button:last-of-type{border-radius:0 7px 7px 0}
+.dots button{width:30px;height:30px;padding:0;border-radius:50%;font-size:14px;color:var(--muted)}
+.dots button.soon-step{border-style:dashed}
+.dots button.done{background:#dfe8f3;border-color:#a9bdd6;color:var(--ink)}
+.dots button.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.say{flex:1;min-width:280px;min-height:3.1em;display:flex;flex-direction:column;justify-content:center}
+.say b{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.say p{margin:0;font-size:18px;line-height:1.3}
+.grp{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lbl{color:var(--muted)}
+.readout output{
+  display:inline-block;min-width:17.5em;font-size:17px;font-weight:600;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.readout .none{color:var(--muted);font-weight:400}
+.ob{text-decoration:overline}
+.slide{flex:1 1 280px;max-width:420px;flex-wrap:nowrap}
+input[type=range]{flex:1;min-width:110px;margin:0;accent-color:var(--accent);cursor:pointer}
+.slide output{min-width:2.9em;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.rollnote{flex:1 1 300px;min-height:2.7em;display:flex;align-items:center;font-size:14px;line-height:1.35;color:var(--muted)}
+.rollnote b{color:var(--ink);font-weight:600}
+.opts label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+input[type=checkbox]{width:17px;height:17px;margin:0;accent-color:var(--accent)}
+/* the instructor's extras: see OPEN_TO_ALL in the script */
+.inst{border-left:2px solid var(--line);padding-left:14px}
+.inst svg{flex:none}
+.modulus{flex:1 1 480px;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:baseline;gap:0 14px;font-size:15px}
+.modulus output{display:inline-flex;flex-wrap:wrap;justify-content:flex-end;gap:0 12px}
+.modulus span{color:var(--muted);font-size:15px}
+.modulus b{display:inline-block;min-width:3.6em;color:var(--ink);font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.modulus small{flex:0 1 auto;color:var(--muted);font-size:12.5px;line-height:1.3;text-align:right}
+[hidden]{display:none !important}
+@media (max-width:820px){
+  html,body{height:auto}
+  body{height:auto}
+  main{grid-template-columns:1fr;padding:0 10px}
+  #p3{aspect-ratio:1/0.9}
+  #p2{aspect-ratio:1/1}
+  .bar{padding:10px 10px 0}
+  /* Back, the six step dots and Next on one line down to a 360 px screen; narrower, Next goes to a second line */
+  .stepper{gap:4px;flex-wrap:wrap}
+  .stepper>button{padding:6px 7px;white-space:nowrap}
+  .dots{gap:4px;margin:0}
+  .dots button{width:28px;height:28px}
+  #figGrp,#marksGrp{order:-1}
+  .hint{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Pole figure of a rolled sheet</h1>
+  <span>MECH 479 · Texture and anisotropy</span>
+  <!-- instructor only (see OPEN_TO_ALL in the script): Young's modulus along the directions of the sheet -->
+  <div class="modulus" id="modGrp" role="group" aria-label="Young's modulus along the directions of the sheet" hidden>
+    <output id="modOut" aria-live="off"></output>
+    <small id="modNote"></small>
+  </div>
+</header>
+
+<main>
+  <section class="panel" id="p3">
+    <canvas id="view3d" role="img" aria-label="Three-dimensional view of a piece of rolled sheet, with its rolling, transverse and normal directions, and one cubic crystal inside it"></canvas>
+    <div class="tag" id="tag3">Sheet element and one crystal</div>
+    <div class="soon" id="soon" hidden></div>
+    <div class="hint" id="hint3">Drag the crystal to turn it · drag outside it to turn the view · scroll to zoom</div>
+  </section>
+  <section class="panel" id="p2">
+    <canvas id="map" role="img" aria-label="Pole figure: the crystal's {111} plane normals in a stereographic projection, with RD up, TD to the right and ND at the centre"></canvas>
+    <div class="tag" id="tag2">{111} pole figure · stereographic<small>looking down ND</small></div>
+    <div class="hint" id="hint2" hidden></div>
+  </section>
+</main>
+
+<section class="bar">
+  <div class="stepper">
+    <button id="back" type="button">◀ Back</button>
+    <div class="dots" id="dots"></div>
+    <button id="next" type="button" class="primary">Next ▶</button>
+  </div>
+  <div class="say" aria-live="polite"><b id="stepTitle"></b><p id="caption"></p></div>
+</section>
+
+<section class="bar roll" id="rollBar" hidden>
+  <span class="grp"><span class="lbl">Rolling</span>
+    <button type="button" id="play" class="primary" title="Roll the sheet on to 90 % reduction">▶ Play</button>
+    <button type="button" id="rollReset" title="Back to the sheet before rolling">Reset</button>
+  </span>
+  <label class="grp slide" title="Reduction in thickness; 90 % leaves a tenth of the thickness">
+    <span class="lbl">Reduction</span>
+    <input type="range" id="red" min="0" max="90" step="1" value="0">
+    <output id="redOut">0 %</output>
+  </label>
+  <span class="rollnote"><span id="rollNote" aria-live="off"></span></span>
+</section>
+
+<section class="bar roll" id="annealBar" hidden>
+  <span class="grp"><span class="lbl">Anneal</span>
+    <button type="button" id="annealPlay" class="primary" title="Anneal the rolled sheet until new grains have replaced the rolled ones">▶ Play</button>
+    <button type="button" id="annealReset" title="Back to the sheet as rolled">Reset</button>
+  </span>
+  <label class="grp slide" title="How far the new grains have got in replacing the rolled ones. This step is drawn, not computed.">
+    <span class="lbl">Recrystallized</span>
+    <input type="range" id="rex" min="0" max="100" step="1" value="0">
+    <output id="rexOut">0 %</output>
+  </label>
+  <span class="rollnote"><span id="annealNote" aria-live="off"></span></span>
+</section>
+
+<section class="bar opts">
+  <span class="grp" id="oriGrp"><span class="lbl">Orientation</span>
+    <button type="button" data-ori="0 0 1, 1 0 0" title="(001) in the sheet plane, [100] along RD">Cube (001)[100]</button>
+    <button type="button" data-ori="1 1 0, 0 0 1" title="(110) in the sheet plane, [001] along RD">Goss (110)[001]</button>
+    <button type="button" data-ori="1 1 2, 1 1 -1" title="(112) in the sheet plane, [11-1] along RD">Copper (112)[11<span class="ob">1</span>]</button>
+    <button type="button" data-ori="1 1 0, 1 -1 2" title="(110) in the sheet plane, [1-12] along RD">Brass (110)[1<span class="ob">1</span>2]</button>
+    <button type="button" data-ori="1 3 9, 6 1 -1" title="(139) in the sheet plane, [61-1] along RD: no symmetry of the crystal lines up with the sheet, so it turns when rolled">Tilted (139)[61<span class="ob">1</span>]</button>
+    <button type="button" id="random" title="A new orientation, chosen at random">Random</button>
+  </span>
+  <span class="grp readout" title="(hkl) is the crystal plane parallel to the sheet; [uvw] is the crystal direction along RD">
+    <span class="lbl">(hkl)[uvw]</span><output id="ori" aria-live="off"></output>
+  </span>
+  <span class="grp">
+    <button type="button" id="topView" title="Turn the view to look straight down ND, as the pole figure does">Look down ND</button>
+    <button type="button" id="resetView">Reset view</button>
+    <label title="Show or hide the names RD, TD and ND on both pictures"><input type="checkbox" id="axNames" checked> Axis labels</label>
+  </span>
+  <!-- what the pole figure shows, from step 2 on; first on a phone -->
+  <span class="grp" id="figGrp" hidden>
+    <span class="grp seg" id="showGrp" hidden><span class="lbl">Show</span>
+      <button type="button" id="asDots" aria-pressed="true" title="Every pole of every grain, as a dot">Dots</button>
+      <button type="button" id="asLines" aria-pressed="false">Contours</button>
+    </span>
+    <span class="grp seg" role="group" aria-label="Which planes' poles are plotted"><span class="lbl">Poles</span>
+      <button type="button" data-family="111" aria-pressed="true" title="The normals of the four {111} planes">{111}</button>
+      <button type="button" data-family="100" aria-pressed="false" title="The normals of the three {100} planes, the faces of the cube">{100}</button>
+      <button type="button" data-family="110" aria-pressed="false" title="The normals of the six {110} planes">{110}</button>
+    </span>
+    <span class="grp seg" role="group" aria-label="Projection">
+      <button type="button" data-proj="stereo" aria-pressed="true" title="Stereographic projection: a circle on the sphere plots as a circle, but areas are not kept. A patch of directions is drawn four times as large at the rim as at the centre.">Stereographic</button>
+      <button type="button" data-proj="area" aria-pressed="false" title="Equal-area projection: equal areas of the figure hold equal shares of all directions, so how dense the poles are can be judged by eye. Shapes are squashed towards the rim.">Equal-area</button>
+    </span>
+  </span>
+  <!-- instructor only (see OPEN_TO_ALL in the script): where the ideal orientations' poles fall. Filled in by the script. -->
+  <span class="grp inst" id="marksGrp" role="group" aria-label="Mark an ideal orientation on the pole figure" hidden>
+    <span class="lbl" title="Where the poles of an ideal orientation fall, for the poles and the projection shown. Each is marked with its mirror images in RD and in TD: the variants of that orientation in a rolled sheet.">Mark</span>
+  </span>
+</section>
+
+<script>
+(() => {
+'use strict';
+
+// Set to true to show the instructor's extras to everyone: the markers for the ideal orientations on the pole
+// figure, and Young's modulus along RD, TD and ND. Until then they appear only when the URL ends in #instructor.
+// This hides them; it does not protect them. The controls, the code and the numbers are all in this file, for
+// anyone who opens it or adds the hash.
+const OPEN_TO_ALL = false;
+
+// ---------------------------------------------------------------- maths
+const TAU = Math.PI * 2, DEG = Math.PI/180;
+const dot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+const cross = (a, b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+const scl = (a, k) => [a[0]*k, a[1]*k, a[2]*k];
+const add = (a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+const len = a => Math.hypot(a[0], a[1], a[2]);
+const unit = a => { const l = len(a) || 1; return [a[0]/l, a[1]/l, a[2]/l]; };
+const mulMV = (m, v) => [dot(m[0], v), dot(m[1], v), dot(m[2], v)];
+const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+const ease = t => t <= 0 ? 0 : t >= 1 ? 1 : t*t*(3 - 2*t);
+
+// quaternions [w, x, y, z]; sample = R(q) * crystal
+function qmul(a, b){
+  return [
+    a[0]*b[0] - a[1]*b[1] - a[2]*b[2] - a[3]*b[3],
+    a[0]*b[1] + a[1]*b[0] + a[2]*b[3] - a[3]*b[2],
+    a[0]*b[2] - a[1]*b[3] + a[2]*b[0] + a[3]*b[1],
+    a[0]*b[3] + a[1]*b[2] - a[2]*b[1] + a[3]*b[0]];
+}
+function qnorm(q){ const l = Math.hypot(q[0], q[1], q[2], q[3]) || 1; return [q[0]/l, q[1]/l, q[2]/l, q[3]/l]; }
+function qBetween(a, b){            // shortest rotation taking unit a to unit b
+  const d = 1 + dot(a, b); if (d < 1e-6) return [1, 0, 0, 0];
+  const c = cross(a, b); return qnorm([d, c[0], c[1], c[2]]);
+}
+function qslerp(a, b, t){
+  let d = a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
+  if (d < 0){ b = b.map(x => -x); d = -d; }
+  if (d > 0.9995) return qnorm(a.map((x, i) => x + (b[i] - x)*t));
+  const th = Math.acos(d), s = Math.sin(th), wa = Math.sin((1 - t)*th)/s, wb = Math.sin(t*th)/s;
+  return a.map((x, i) => x*wa + b[i]*wb);
+}
+function qToMat(q){
+  const [w, x, y, z] = q;
+  return [
+    [1 - 2*(y*y + z*z), 2*(x*y - z*w), 2*(x*z + y*w)],
+    [2*(x*y + z*w), 1 - 2*(x*x + z*z), 2*(y*z - x*w)],
+    [2*(x*z - y*w), 2*(y*z + x*w), 1 - 2*(x*x + y*y)]];
+}
+function qFromMat(m){
+  const tr = m[0][0] + m[1][1] + m[2][2]; let w, x, y, z, s;
+  if (tr > 0){ s = Math.sqrt(tr + 1)*2; w = s/4; x = (m[2][1]-m[1][2])/s; y = (m[0][2]-m[2][0])/s; z = (m[1][0]-m[0][1])/s; }
+  else if (m[0][0] > m[1][1] && m[0][0] > m[2][2]){ s = Math.sqrt(1 + m[0][0] - m[1][1] - m[2][2])*2; w = (m[2][1]-m[1][2])/s; x = s/4; y = (m[0][1]+m[1][0])/s; z = (m[0][2]+m[2][0])/s; }
+  else if (m[1][1] > m[2][2]){ s = Math.sqrt(1 + m[1][1] - m[0][0] - m[2][2])*2; w = (m[0][2]-m[2][0])/s; x = (m[0][1]+m[1][0])/s; y = s/4; z = (m[1][2]+m[2][1])/s; }
+  else { s = Math.sqrt(1 + m[2][2] - m[0][0] - m[1][1])*2; w = (m[1][0]-m[0][1])/s; x = (m[0][2]+m[2][0])/s; y = (m[1][2]+m[2][1])/s; z = s/4; }
+  return qnorm([w, x, y, z]);
+}
+function qRandom(rand){             // uniform over all orientations (Shoemake); rand() is uniform on [0, 1)
+  const u1 = rand(), u2 = rand()*TAU, u3 = rand()*TAU, a = Math.sqrt(1 - u1), b = Math.sqrt(u1);
+  return [a*Math.sin(u2), a*Math.cos(u2), b*Math.sin(u3), b*Math.cos(u3)];
+}
+
+// ---------------------------------------------------------------- frames and data
+// Sample (sheet) frame, used for everything that is drawn:  x = TD,  y = RD,  z = ND.
+// A printed pole figure has RD up, TD to the right and ND towards the reader. In that picture
+// (TD, RD, ND) is the right-handed set, so TD = RD x ND, which is [uvw] x (hkl) in the crystal.
+// (RD, TD, ND in that order is left-handed: for the cube orientation (001)[100], [010] lies along -TD.)
+//
+// A grain's orientation is a unit quaternion q with  sample = R(q) * crystal.
+// The rows of R are TD, RD, ND written in crystal coordinates: row 2 is (hkl), row 1 is [uvw].
+function orientation(hkl, uvw){     // (hkl) parallel to the sheet plane, [uvw] along RD
+  const n = unit(hkl), r = unit(uvw);
+  return qFromMat([cross(r, n), r, n]);
+}
+
+// The poles that are plotted: one normal per plane of the family (a pole and its opposite are one pole).
+// One family at a time, as in a measured pole figure. count and what are for the wording.
+const FAMILIES = {
+  '111': { planes: [[1, 1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, -1]], count: 'four', what: '' },
+  '100': { planes: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], count: 'three', what: ', the faces of the cube' },
+  '110': { planes: [[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]], count: 'six', what: ', each through two opposite edges of the cube' }};
+let family = '111';
+// one colour per pole while a single crystal is shown: six, for {110}
+const POLE_COL = ['#D55E00', '#0072B2', '#009E73', '#7B2D8E', '#7A4A1E', '#222A33'];
+
+// The single crystal of steps 1 to 3 (a list of one, so that the drag code names its grain the same way).
+const grains = [{ q: orientation([0, 0, 1], [1, 0, 0]) }];
+let cur = 0;                         // the grain that the drag and the orientation buttons act on
+
+// A start for step 3 that turns when rolled. Exact Cube, Goss and Brass are balanced and stay where they are.
+const TILTED = { hkl: [1, 3, 9], uvw: [6, 1, -1] };
+TILTED.q = orientation(TILTED.hkl, TILTED.uvw);
+
+// The two ways the figure is drawn. Each takes a unit vector in the sample frame to the unit disc: X to the
+// right (TD), Y up (RD), ND at the centre, the sheet plane on the rim. Upper hemisphere: call project with the
+// end of the pole that has z >= 0 (an end a little below the sheet lands just outside the rim). At an angle a
+// from ND a pole plots at radius tan(a/2), stereographic, or √2·sin(a/2), equal-area (Lambert's projection,
+// scaled so that the rim of the hemisphere is the edge of the circle). solid(r) is the solid angle that a unit
+// of area of the figure stands for at radius r: the stereographic figure gives a patch of directions four
+// times the area at the rim that it gives it at the centre, the equal-area figure the same everywhere.
+const PROJECTIONS = {
+  stereo: { name: 'stereographic', a: 'a stereographic',
+    project: v => { const k = 1/(1 + v[2]); return [v[0]*k, v[1]*k]; },
+    unproject: (X, Y) => { const r2 = X*X + Y*Y; return [2*X/(1 + r2), 2*Y/(1 + r2), (1 - r2)/(1 + r2)]; },
+    solid: r => 4/((1 + r*r)*(1 + r*r)) },
+  area: { name: 'equal-area', a: 'an equal-area',
+    project: v => { const k = 1/Math.sqrt(1 + v[2]); return [v[0]*k, v[1]*k]; },
+    unproject: (X, Y) => { const r2 = Math.min(X*X + Y*Y, 2), k = Math.sqrt(2 - r2); return [X*k, Y*k, 1 - r2]; },   // radius √2 is the far pole, -ND
+    solid: () => 2 }};
+let projection = 'stereo';
+const project = v => PROJECTIONS[projection].project(v);               // the projection shown
+const unproject = (X, Y) => PROJECTIONS[projection].unproject(X, Y);
+
+// Scene sizes, in sample units
+const BOX = { td: 1.2, rd: 1.45, nd: 0.8 };   // half-lengths of the sheet element
+const AX_LEN = 0.75;                 // RD, TD, ND arrows beyond the faces of the element
+const HC = 0.32;                     // half-edge of the unit-cell cube
+const HS = 0.115;                    // half-edge of a small cube, one of the many grains
+const NS = 0.5;                      // length of a plane-normal arrow on the grain that is picked out
+const CUBE_ROOM = HS*1.8;            // a small cube's centre stays this far inside the faces of the element (its half-diagonal is HS·√3)
+const LAM_DRAWN = 2;                 // the sheet of many grains is drawn at its true shape until it is this many times as long, then held
+// Where a small cube placed at p in the element before rolling is drawn once the element is lam times as long
+// and 1/lam as thick: carried along with the sheet, and still CUBE_ROOM inside its faces.
+const carried = (p, lam) => [p[0], p[1]*(BOX.rd*lam - CUBE_ROOM)/(BOX.rd - CUBE_ROOM), p[2]*(BOX.nd/lam - CUBE_ROOM)/(BOX.nd - CUBE_ROOM)];
+const LN = 1.0;                      // length of a plane-normal arrow; also the radius of the circle in the sheet plane
+const ARC = 1.3;                     // radius of the ball that a drag on the crystal turns
+
+// The many grains of step 4 on, kept apart from the single crystal. Each is { q, q0, pos, cube, col, edge }:
+// q its orientation as drawn, q0 its orientation before rolling (step 5 adds path, its rolled path), pos where
+// its cube sits in the sheet element before rolling, cube whether that cube is always drawn (the first
+// CUBES_N are), col and edge its colours.
+// Orientations and positions come from a seeded generator, so every load shows the same sheet.
+const MANY_N = 500, CUBES_N = 40, SEED = 479;
+function seeded(a){                  // mulberry32: uniform on [0, 1)
+  return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0)/4294967296; };
+}
+const many = [];
+(function buildMany(){
+  const rand = seeded(SEED);
+  for (let i = 0; i < MANY_N; i++){ const q = qRandom(rand); many.push({ q, q0: q }); }
+  // Where the cubes sit: the best of several random spots, the one farthest from the cubes that are always
+  // drawn, both before rolling and in the rolled sheet as it is drawn (thinner, so cubes one above the other
+  // come together). Those 40 then cannot touch at any reduction. A second stream, so the orientations do not
+  // depend on how the cubes are placed.
+  const place = seeded(SEED + 1), mg = CUBE_ROOM, placed = [];
+  const spot = () => [(2*place() - 1)*(BOX.td - mg), (2*place() - 1)*(BOX.rd - mg), (2*place() - 1)*(BOX.nd - mg)];
+  const gap = (p, o) => len([p[0] - o[0], p[1] - o[1], p[2] - o[2]]);
+  const clear = p => { const f = carried(p, LAM_DRAWN); return placed.reduce((m, o) => Math.min(m, gap(p, o.p), gap(f, o.f)), Infinity); };
+  many.forEach((g, i) => {
+    g.cube = i < CUBES_N;
+    let best = spot(), bd = clear(best);
+    for (let t = g.cube ? 200 : 12; t > 1; t--){ const p = spot(), d = clear(p); if (d > bd){ bd = d; best = p; } }
+    g.pos = best;
+    if (g.cube){                     // its own colour: hues a golden angle apart, at three depths
+      placed.push({ p: best, f: carried(best, LAM_DRAWN) });
+      const h = Math.round((i*137.508 + 20) % 360), sat = 62 + 14*(i % 2), li = 34 + 8*(i % 3);
+      g.col = `hsl(${h},${sat}%,${li}%)`; g.edge = `hsl(${h},${sat}%,${li - 16}%)`;
+    } else { g.col = '#2b3644'; g.edge = '#10161e'; }   // drawn in the sheet only while it is picked out
+  });
+})();
+let sel = null;                      // the grain of `many` that is picked out, or null
+
+// Annealing (step 6) is scripted, not computed. The rolled grains are replaced one at a time, in a fixed random
+// order, by new grains near the cube orientation (001)[100]; KEEP_N of them are never replaced and stay as rolled.
+// A new grain is exact cube turned by a small random rotation: a rotation vector whose three components are
+// drawn from a normal distribution with a standard deviation of CUBE_SD degrees. With 5.3° the density of new
+// orientations is down to half its peak 6.2° from exact cube, the average new grain is 8.5° from it, and the
+// four {111} maxima come to 17 × random with the 5° bump below: the top of the scale of the measured figure
+// (16). A wider scatter is too flat for that: 6° gives 15, 8° gives 10, 10° gives 7.
+// Each grain is given rank, its place in the order (RX_N if it stays as rolled), and w, its rotation vector in
+// units of the standard deviation. Once its rolled path is known it also has qx, the orientation of the grain
+// that replaces it (see buildPaths).
+const KEEP_N = 20, RX_N = MANY_N - KEEP_N, CUBE_SD = 5.3;
+const CUBE_Q = orientation([0, 0, 1], [1, 0, 0]);
+const RX_ORDER = [];                 // the grains that are replaced, in the order of their going
+(function buildAnneal(){
+  const rand = seeded(SEED + 2);
+  const shuffled = (from, to) => {
+    const a = []; for (let i = from; i < to; i++) a.push(i);
+    for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(rand()*(i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  };
+  // The grains whose cubes are drawn are kept a fair sample of them all: the same share stays as rolled (2 of
+  // the 40), and the others go at an even pace through the anneal, one in each stretch of the order.
+  const drawn = shuffled(0, CUBES_N), rest = shuffled(CUBES_N, MANY_N), stay = Math.round(KEEP_N*CUBES_N/MANY_N);
+  drawn.length -= stay; rest.length -= KEEP_N - stay;
+  const slot = RX_N/drawn.length, place = new Map(drawn.map((i, k) => [Math.floor(k*slot) + Math.floor(rand()*Math.floor(slot)), i]));
+  for (let k = 0; k < RX_N; k++) RX_ORDER.push(place.has(k) ? place.get(k) : rest.pop());
+  for (const g of many) g.rank = RX_N;
+  RX_ORDER.forEach((i, k) => { many[i].rank = k; });
+  // the scatter, from a stream of its own: a grain's new orientation does not depend on when it is replaced
+  const u = seeded(SEED + 3), normal = () => Math.sqrt(-2*Math.log(1 - u()))*Math.cos(TAU*u());
+  for (const g of many) g.w = [normal(), normal(), normal()];
+})();
+// The new grain that takes the place of g, for a scatter of sd degrees: exact cube, turned by g.w
+const cubeGrain = (g, sd) => qnorm(qmul(qAbout(g.w, sd*DEG), CUBE_Q));
+// A cubic crystal looks the same after any of 24 rotations, so 24 quaternions (and their negatives) stand for
+// one orientation. nearestSame picks the one that is the shortest turn from `to`.
+const CUBIC = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+for (let a = 0; a < 4; a++) for (let b = a + 1; b < 4; b++) for (const s of [1, -1]){ const q = [0, 0, 0, 0]; q[a] = Math.SQRT1_2; q[b] = s*Math.SQRT1_2; CUBIC.push(q); }
+for (const x of [1, -1]) for (const y of [1, -1]) for (const z of [1, -1]) CUBIC.push([0.5, 0.5*x, 0.5*y, 0.5*z]);
+function nearestSame(q, to){
+  let best = q, bd = -1;
+  for (const s of CUBIC){
+    const p = qmul(q, s), d = Math.abs(p[0]*to[0] + p[1]*to[1] + p[2]*to[2] + p[3]*to[3]);   // a rotation of the crystal's own axes multiplies on the right
+    if (d > bd){ bd = d; best = p; }
+  }
+  return best;
+}
+
+// The ideal orientations that the instructor can mark on the figure. Cube is the recrystallization texture of
+// heavily rolled copper; Copper, S and Brass are the usual rolling components; Taylor is the orientation that
+// the rolling model of this page takes most grains to, 8° from Copper. Each has a shape and a colour of its own.
+const COMPONENTS = [
+  { id: 'cube', name: 'Cube', hkl: [0, 0, 1], uvw: [1, 0, 0], shape: 'square', col: '#111827', note: 'the texture of heavily rolled copper after annealing' },
+  { id: 'copper', name: 'Copper', hkl: [1, 1, 2], uvw: [1, 1, -1], shape: 'up', col: '#b3400a', note: 'a rolling component' },
+  { id: 's', name: 'S', hkl: [1, 2, 3], uvw: [6, 3, -4], shape: 'diamond', col: '#04724d', note: 'a rolling component' },
+  { id: 'brass', name: 'Brass', hkl: [1, 1, 0], uvw: [1, -1, 2], shape: 'down', col: '#1d4ed8', note: 'a rolling component' },
+  { id: 'taylor', name: 'Taylor', hkl: [4, 4, 11], uvw: [11, 11, -8], shape: 'cross', col: '#a21caf', note: 'where the rolling model of this page takes most grains, 8° from Copper' }];
+for (const c of COMPONENTS){ c.q = orientation(c.hkl, c.uvw); c.on = false; }
+// Where the poles of the orientation q plot, in units of the circle's radius, for a pole family and a projection
+// (default: those shown). Both ends of each normal, as for the dots, so a pole in the sheet plane is on the rim
+// twice. A rolled sheet looks the same mirrored in RD or in TD, so it holds the mirror images of an orientation
+// as well (its variants: four for S, two for Copper, Brass and Taylor, one for Cube); they are marked too.
+function componentMarks(q, fam, proj){
+  const M = qToMat(q), P = PROJECTIONS[proj || projection], out = [];
+  for (const h of FAMILIES[fam || family].planes){
+    const v = mulMV(M, unit(h));
+    for (const e of [1, -1]){
+      if (v[2]*e < -0.03) continue;
+      const [X, Y] = P.project(scl(v, e));
+      for (const [sx, sy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]]){
+        if (!out.some(p => Math.hypot(p[0] - X*sx, p[1] - Y*sy) < 1e-6)) out.push([X*sx, Y*sy]);
+      }
+    }
+  }
+  return out;
+}
+
+// Young's modulus along a direction, for the instructor's read-out. Table I of the problem sheet gives E for a
+// copper crystal pulled along [100] and along [111], and E for copper with no texture. For a cubic crystal the
+// first two fix E along any direction: with (l, m, n) a unit vector in crystal coordinates,
+//   1/E = 1/E100 - 3 (1/E100 - 1/E111) (l²m² + m²n² + n²l²)
+// For many grains two simple averages are given. Low: 1/(mean of 1/E), the grains end to end and sharing the
+// stress. High: the mean of E, the grains side by side and sharing the strain. Both treat a grain as a free rod
+// pulled along its length. In a real polycrystal its neighbours also hold it sideways, which stiffens it: for
+// grains with no texture the two averages come to 110 and 118 GPa, and Table I has 128. So the read-out is for
+// comparing directions and steps, not for quoting a modulus. (The proper upper bound, every grain taking the
+// whole strain, needs all three elastic constants of the crystal; Table I's two values are not enough.)
+const E100 = 67, E111 = 192, E_RANDOM = 128;          // GPa, Table I
+const compliance = d => 1/E100 - 3*(1/E100 - 1/E111)*(d[0]*d[0]*d[1]*d[1] + d[1]*d[1]*d[2]*d[2] + d[2]*d[2]*d[0]*d[0]);
+// the directions read out, in the sample frame (TD, RD, ND)
+const E_DIRS = [
+  { name: 'RD', s: [0, 1, 0], title: 'Along the rolling direction' },
+  { name: 'TD', s: [1, 0, 0], title: 'Along the transverse direction' },
+  { name: 'ND', s: [0, 0, 1], title: 'Along the sheet normal' },
+  { name: '45°', s: [Math.SQRT1_2, Math.SQRT1_2, 0], title: 'In the plane of the sheet, half-way between RD and TD' }];
+// E along the sample direction s for grains with orientations qs: [low, high], the two averages (equal for one grain)
+function modulus(qs, s){
+  let sumE = 0, sumS = 0;
+  for (const q of qs){
+    const R = qToMat(q);             // sample = R * crystal, so s in crystal coordinates is R transposed times s
+    const c = compliance([R[0][0]*s[0] + R[1][0]*s[1] + R[2][0]*s[2], R[0][1]*s[0] + R[1][1]*s[1] + R[2][1]*s[2], R[0][2]*s[0] + R[1][2]*s[1] + R[2][2]*s[2]]);
+    sumS += c; sumE += 1/c;
+  }
+  return [qs.length/sumS, sumE/qs.length];
+}
+let eRandom = null;
+function randomModulus(){            // the same two averages for grains with no texture: over every direction, evenly
+  if (!eRandom){
+    const N = 20000; let sumE = 0, sumS = 0;
+    for (let i = 0; i < N; i++){ const z = (i + 0.5)/N, r = Math.sqrt(1 - z*z), f = i*2.399963229728653, c = compliance([r*Math.cos(f), r*Math.sin(f), z]); sumS += c; sumE += 1/c; }
+    eRandom = [N/sumS, sumE/N];
+  }
+  return eRandom;
+}
+
+// A step's title t and caption c are text, or a function where the wording depends on the pole family or the
+// projection shown, or on whether the axes are named (worded() gives the text either way).
+const worded = x => typeof x === 'function' ? x() : x;
+const STEPS = [
+  { t: 'The sheet and one crystal', c: 'A piece of rolled sheet: RD is the rolling direction, TD the transverse direction, ND the sheet normal. Inside is one grain, a cubic crystal. Its orientation is written (hkl)[uvw]: the plane (hkl) lies in the sheet and the direction [uvw] points along RD.', d: 600 },
+  { t: () => `Its {${family}} poles`, c: () => `The crystal has ${FAMILIES[family].count} {${family}} planes${FAMILIES[family].what}; each arrow is the normal to one of them. ${axisNames ? 'Look down ND' : 'Look straight down on the sheet'} and plot each normal as a dot: that is the {${family}} pole figure of this grain. A normal that points below the sheet is plotted as its opposite.`, d: 1500 },
+  { t: 'Roll one crystal', c: 'The sheet is rolled thinner: it shortens along ND and lengthens along RD, with no change along TD. The crystal has to change shape with it, by slip on its twelve {111}⁠<110> systems, and slip turns the lattice. Press Play: each pole leaves a trail as the crystal turns.', d: 600 },
+  { t: 'Many random grains', c: () => 'Now 500 grains, each pointing a random way: a sheet with no texture. Forty are drawn as cubes, with their dots in the same colours; click a cube or a dot to pick out one grain. '
+    + (projection === 'area'
+      ? 'The poles cover the figure evenly, with no pattern: in an equal-area plot, equal areas of the figure hold equal shares of all directions. Switch to Stereographic and the same grains look denser at the centre, because there the same solid angle is drawn a quarter the size it is at the rim. That is the projection, not a texture.'
+      : 'The poles cover the figure with no pattern. They are denser at the centre only because a stereographic plot is not equal-area: the same solid angle covers four times the area at the rim as at the centre. That is the projection, not a texture: switch to Equal-area and the same grains cover the figure evenly.'), d: 900 },
+  { t: 'Roll them all', c: 'Press Play. Every grain is made to change shape with the sheet, and slip turns its lattice. The grains end near a few preferred orientations, so the poles gather into a pattern: a rolling texture. Click a grain to follow it there; switch to Contours for the pole density in times random. The model treats each grain on its own, so its texture is sharper than a real sheet\'s.', d: 600 },
+  { t: 'Recrystallize', c: 'Now the sheet is annealed. New, strain-free grains nucleate and grow until they have consumed the rolled ones. In heavily rolled copper nearly all of them have the cube orientation, (001)[100], so a quite different texture, just as strong, replaces the rolling texture. Press Play. This step is drawn, not computed: the grains are swapped one at a time, and a few are left as rolled.', d: 600 }];
+
+// ---------------------------------------------------------------- rolling: Taylor model
+// One grain is made to take the strain of the whole sheet (Taylor's full-constraints model). Rolling is
+// plane-strain compression: in the sample frame the strain rate is D = diag(0, +1, -1) on (TD, RD, ND),
+// with no spin. The grain supplies D by slip on its twelve {111}<110> systems. The slip rate on a system is
+// sign(tau)*|tau|^(1/m), tau being its resolved shear stress; with m > 0 the twelve rates are unique.
+// Slip shears the grain and would also spin it. The sheet does not spin, so the lattice turns the other way:
+// lattice spin = applied spin (zero) - plastic spin.
+// Units: critical resolved shear stress 1, strain rate 1, so time is true strain. No hardening.
+//
+// The sums are done in the crystal frame, where the slip systems stay put. A symmetric traceless tensor A is
+// held as the 5-vector [(A22-A11)/√2, √(3/2)·A33, √2·A23, √2·A13, √2·A12], for which A:B is a dot product.
+// Checked against w09-app-pole-figure-taylor-reference-F2026.py (numpy/scipy, sample frame, library solver).
+const RATE_N = 20;                   // 1/m: the rate sensitivity is m = 0.05
+const SLIP = [];                     // per system: p = sym(b⊗n) as a 5-vector, t = b × n
+(function buildSlip(){
+  const S2 = Math.SQRT2;
+  for (const pl of FAMILIES['111'].planes) for (const d of [[0, 1, -1], [1, 0, -1], [1, -1, 0], [0, 1, 1], [1, 0, 1], [1, 1, 0]]){
+    if (dot(pl, d) !== 0) continue;
+    const b = unit(d), n = unit(pl);
+    SLIP.push({
+      p: [(b[1]*n[1] - b[0]*n[0])/S2, Math.sqrt(1.5)*b[2]*n[2], (b[1]*n[2] + b[2]*n[1])/S2, (b[0]*n[2] + b[2]*n[0])/S2, (b[0]*n[1] + b[1]*n[0])/S2],
+      t: cross(b, n) });
+  }
+})();
+const dot5 = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4];
+function ipow(x, n){ let r = 1; while (n){ if (n & 1) r *= x; x *= x; n >>= 1; } return r; }   // x^n, n a whole number
+function potential(s, d){            // sum |tau|^(N+1)/(N+1) - s·d: convex in s, and least where the slip rates add up to d
+  let f = 0;
+  for (const sys of SLIP) f += ipow(Math.abs(dot5(sys.p, s)), RATE_N + 1);
+  return f/(RATE_N + 1) - dot5(s, d);
+}
+
+// The deviatoric stress s at which the slip rates add up to the strain rate d (both 5-vectors): the minimum of
+// the potential, found by Newton's method with a backtracking line search. s holds the starting guess and is
+// overwritten. Returns the number of iterations used, or -1 if it did not converge.
+const NW = { F: [0, 0, 0, 0, 0], x: [0, 0, 0, 0, 0], s1: [0, 0, 0, 0, 0], J: [0, 1, 2, 3, 4].map(() => [0, 0, 0, 0, 0, 0]) };
+function solveStress(d, s){
+  const N = RATE_N, F = NW.F, x = NW.x, s1 = NW.s1, J = NW.J;   // J's sixth column is the right-hand side
+  let phi = potential(s, d);
+  for (let it = 0; it < 200; it++){
+    // residual F = sum gdot·p - d, and its Jacobian J = sum N|tau|^(N-1) p p^T (symmetric, positive)
+    for (let i = 0; i < 5; i++){ F[i] = -d[i]; for (let j = 0; j < 5; j++) J[i][j] = 0; }
+    for (const sys of SLIP){
+      const p = sys.p, tau = dot5(p, s), a = ipow(Math.abs(tau), N - 1), g = a*tau, k = N*a;
+      for (let i = 0; i < 5; i++){ F[i] += g*p[i]; const kp = k*p[i]; for (let j = 0; j < 5; j++) J[i][j] += kp*p[j]; }
+    }
+    let err = 0, tr = 0;
+    for (let i = 0; i < 5; i++){ err = Math.max(err, Math.abs(F[i])); tr += J[i][i]; }
+    if (err < 1e-10) return it;
+    // Newton step: J x = -F, by elimination with pivoting (a trace of ridge keeps a flat direction solvable)
+    for (let i = 0; i < 5; i++){ J[i][i] += 1e-13*tr; J[i][5] = -F[i]; }
+    for (let c = 0; c < 5; c++){
+      let pv = c;
+      for (let r = c + 1; r < 5; r++) if (Math.abs(J[r][c]) > Math.abs(J[pv][c])) pv = r;
+      if (!(Math.abs(J[pv][c]) > 0)) return -1;
+      const row = J[pv]; J[pv] = J[c]; J[c] = row;
+      for (let r = c + 1; r < 5; r++){ const f = J[r][c]/row[c]; if (f) for (let j = c; j < 6; j++) J[r][j] -= f*row[j]; }
+    }
+    for (let i = 4; i >= 0; i--){ let v = J[i][5]; for (let j = i + 1; j < 5; j++) v -= J[i][j]*x[j]; x[i] = v/J[i][i]; }
+    // shorten the step until the potential has dropped as far as its slope promises
+    const slope = dot5(F, x), slack = 1e-13*(1 + Math.abs(phi));
+    let t = 1, phi1 = 0;
+    for (;;){
+      for (let i = 0; i < 5; i++) s1[i] = s[i] + t*x[i];
+      phi1 = potential(s1, d);
+      if (phi1 <= phi + 1e-4*t*slope + slack) break;
+      t *= 0.5; if (t < 1e-12) return -1;
+    }
+    for (let i = 0; i < 5; i++) s[i] = s1[i];
+    phi = phi1;
+  }
+  return -1;
+}
+
+// The lattice spin of a grain with orientation q while the sheet is rolled: an axial vector in crystal
+// coordinates, in radians per unit true strain. st carries the stress from one call to the next (start a path
+// with {}), and is given M, the Taylor factor (sum of |slip rate| over the strain rate), and ok (false if the
+// stress solve failed).
+function latticeSpin(q, st){
+  const R = qToMat(q), r = R[1], n = R[2], S2 = Math.SQRT2;
+  // the strain rate seen by the crystal: D = RD⊗RD - ND⊗ND, with RD and ND in crystal coordinates
+  const d = [((r[1]*r[1] - n[1]*n[1]) - (r[0]*r[0] - n[0]*n[0]))/S2, Math.sqrt(1.5)*(r[2]*r[2] - n[2]*n[2]),
+    S2*(r[1]*r[2] - n[1]*n[2]), S2*(r[0]*r[2] - n[0]*n[2]), S2*(r[0]*r[1] - n[0]*n[1])];
+  let it = st.s ? solveStress(d, st.s) : -1;
+  if (it < 0){                       // cold start: a stress along d, scaled so the hardest-pressed system has |tau| = 1
+    let m = 0;
+    for (const sys of SLIP) m = Math.max(m, Math.abs(dot5(sys.p, d)));
+    st.s = d.map(v => v/m);
+    it = solveStress(d, st.s);
+  }
+  st.ok = it >= 0;
+  // lattice spin = -(plastic spin); as an axial vector that is half the sum of gdot·(b × n)
+  let wx = 0, wy = 0, wz = 0, M = 0;
+  for (const sys of SLIP){
+    const tau = dot5(sys.p, st.s), g = ipow(Math.abs(tau), RATE_N - 1)*tau, t = sys.t;
+    M += Math.abs(g); wx += 0.5*g*t[0]; wy += 0.5*g*t[1]; wz += 0.5*g*t[2];
+  }
+  st.M = M;
+  return [wx, wy, wz];
+}
+function qAbout(w, t){               // the rotation of w·t radians about w
+  const rate = len(w), th = rate*t;
+  if (th < 1e-15) return [1, 0, 0, 0];
+  const k = Math.sin(th/2)/rate;
+  return [Math.cos(th/2), w[0]*k, w[1]*k, w[2]*k];
+}
+
+// One strain increment of rolling for one grain: returns its new orientation. Midpoint rule: half a step with
+// the spin at the start, then the whole step with the spin found there. st as for latticeSpin; M is the value
+// at the start of the increment.
+function taylorStep(q, dEps, st){
+  const w0 = latticeSpin(q, st), M = st.M, ok = st.ok;
+  const qm = qnorm(qmul(q, qAbout(w0, dEps/2)));       // a turn given in crystal coordinates multiplies on the right
+  const wm = mulMV(qToMat(qm), latticeSpin(qm, st));   // the mid-step spin, in the sample frame
+  st.M = M; st.ok = ok && st.ok;
+  return qnorm(qmul(qAbout(wm, dEps), q));
+}
+
+// A grain's whole path: its orientation at ROLL_STEPS + 1 equally spaced true strains, from 0 to 90 % reduction.
+const ROLL_MAX = 0.9;                              // the largest reduction r; true strain = -ln(1 - r)
+const strainOf = r => -Math.log(1 - r), reductionOf = eps => 1 - Math.exp(-eps);
+const EPS_MAX = strainOf(ROLL_MAX), ROLL_STEPS = 115, D_EPS = EPS_MAX/ROLL_STEPS;
+function rollPath(q0, steps){
+  steps = steps || ROLL_STEPS;
+  const qs = [q0.slice()], st = {}; let q = q0, failed = 0;
+  for (let i = 0; i < steps; i++){ q = taylorStep(q, EPS_MAX/steps, st); if (!st.ok) failed++; qs.push(q); }
+  qs.failed = failed;                // increments whose stress solve did not converge (none seen in testing)
+  return qs;
+}
+function pathAt(qs, eps){             // the orientation at true strain eps, between the stored points
+  const u = clamp(eps/EPS_MAX, 0, 1)*(qs.length - 1), i = Math.min(Math.floor(u), qs.length - 2);
+  return qnorm(qslerp(qs[i], qs[i + 1], u - i));
+}
+
+// ---------------------------------------------------------------- texture: pole density and contour lines
+// Pole density in times random: 1 everywhere for a sheet with no texture. Each pole is spread into a smooth
+// bump on the sphere, exp(k(cos a - 1)) at angle a from the pole (a Gaussian, near enough), with k set so that
+// the bump is down to half its height at KERNEL_HW; it is cut off at three half-widths. A pole and its opposite
+// are one pole, so both ends are spread. Dividing by the bump's mean over the hemisphere makes the density
+// average exactly 1 over the hemisphere, by solid angle.
+// A rolled sheet looks the same mirrored in RD or in TD. The density is given that symmetry by averaging it
+// with its mirror images, which is the same as adding the mirror images of the poles.
+// The density is held on a square grid of points in the plane of the figure, so the contour lines are found
+// in the picture itself: a field has the direction that plots at each grid point, for the projection in use.
+const KERNEL_HW = 5;                 // degrees: half-width at half height of the bump
+// The key lists the levels to 14, and to 16 for the annealed sheet of step 6: the scales of the two measured
+// {111} figures. A higher level is listed only where there is such a line: 20 is reached by the {100} poles of
+// the annealed sheet alone (a third of all its poles are at ND, where {111} has a quarter at each maximum).
+const LEVELS = [2, 4, 6, 8, 10, 12, 14, 16, 20];
+const LEVEL_COL = ['#3b7dd8', '#1a9a8a', '#4f9a2f', '#b58a00', '#e06c00', '#cf2e2e', '#7a1f6b', '#2a0f33', '#e61fa8'];
+const GRID_N = 129;                  // grid points across the figure (odd, so that ND is one of them)
+const RING = Array.from({ length: 16 }, (_, i) => [Math.cos(TAU*i/16), Math.sin(TAU*i/16)]);
+function makeField(n, proj, unproj){
+  const sp = 2/(n - 1), N = n*n;
+  const F = { n, sp, proj, x: new Float64Array(N), y: new Float64Array(N), z: new Float64Array(N), r: new Float64Array(N),
+    in: new Uint8Array(N), acc: new Float64Array(N), D: new Float64Array(N), max: 0, min: 0, at: [0, 0], dip: 0 };
+  let zmin = 0;
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++){
+    const k = j*n + i, X = -1 + i*sp, Y = -1 + j*sp, r = Math.hypot(X, Y);
+    F.r[k] = r;
+    if (r > 1 + 1.5*sp) continue;    // a little beyond the rim, so that every grid square the rim cuts is complete
+    const v = unproj(X, Y);
+    F.x[k] = v[0]; F.y[k] = v[1]; F.z[k] = v[2]; F.in[k] = 1;
+    if (v[2] < zmin) zmin = v[2];
+  }
+  F.dip = Math.asin(-zmin) + 1e-9;   // how far below the sheet plane the grid reaches, as an angle (it depends on the projection)
+  return F;
+}
+// Fills F.D with the density of the poles `planes` (unit vectors in the crystal) of the grains with orientations
+// qs, each spread over hw degrees; F.max and F.min are its range inside the rim, F.at where the maximum plots.
+function poleDensity(F, qs, planes, hw, mirror){
+  const rho = 3*hw*DEG, cmin = Math.cos(rho), sr = Math.sin(rho), kap = Math.LN2/(1 - Math.cos(hw*DEG));
+  const mean = (1 - Math.exp(-kap*(1 - cmin)))/kap;        // the bump's mean over the hemisphere
+  const n = F.n, sp = F.sp, acc = F.acc, gx = F.x, gy = F.y, gz = F.z, inn = F.in, D = F.D;
+  const zlow = -Math.sin(rho + F.dip);                     // an end this far below the sheet reaches no grid point
+  // the bump as a table over cos a, read off by interpolation (much the quickest part to save time on)
+  const TN = 1024, tk = TN/(1 - cmin), bump = new Float64Array(TN + 2);
+  for (let i = 0; i < TN + 2; i++) bump[i] = Math.exp(kap*(cmin + i/tk - 1));
+  acc.fill(0);
+  for (const q of qs){
+    const M = qToMat(q);
+    for (const c of planes){
+      const v = mulMV(M, c);
+      for (let e = 1; e >= -1; e -= 2){
+        const x = v[0]*e, y = v[1]*e, z = v[2]*e;
+        if (z < zlow) continue;
+        // the patch of the grid that the bump can reach: the box round the edge of the bump, as it plots
+        const a = unit(cross([x, y, z], Math.abs(z) < 0.9 ? [0, 0, 1] : [1, 0, 0])), b = cross([x, y, z], a);
+        let X0 = Infinity, X1 = -Infinity, Y0 = Infinity, Y1 = -Infinity;
+        for (const [ct, st] of RING){
+          const p = F.proj([cmin*x + sr*(ct*a[0] + st*b[0]), cmin*y + sr*(ct*a[1] + st*b[1]), cmin*z + sr*(ct*a[2] + st*b[2])]);
+          if (p[0] < X0) X0 = p[0]; if (p[0] > X1) X1 = p[0]; if (p[1] < Y0) Y0 = p[1]; if (p[1] > Y1) Y1 = p[1];
+        }
+        const mx = 0.04*(X1 - X0) + sp, my = 0.04*(Y1 - Y0) + sp;   // the 16 points cut the corners of the edge
+        const i0 = Math.max(0, Math.floor((X0 - mx + 1)/sp)), i1 = Math.min(n - 1, Math.ceil((X1 + mx + 1)/sp));
+        const j0 = Math.max(0, Math.floor((Y0 - my + 1)/sp)), j1 = Math.min(n - 1, Math.ceil((Y1 + my + 1)/sp));
+        for (let j = j0; j <= j1; j++) for (let k = j*n + i0, ke = j*n + i1; k <= ke; k++){
+          if (!inn[k]) continue;
+          const d = x*gx[k] + y*gy[k] + z*gz[k];
+          if (d > cmin){ const t = (d - cmin)*tk, i = t | 0; acc[k] += bump[i] + (bump[i + 1] - bump[i])*(t - i); }
+        }
+      }
+    }
+  }
+  const scale = 1/(qs.length*planes.length*mean);
+  let max = -Infinity, min = Infinity, at = 0;
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++){
+    const k = j*n + i; if (!inn[k]) continue;
+    const jm = (n - 1 - j)*n, im = n - 1 - i;
+    const d = D[k] = mirror === false ? acc[k]*scale : (acc[k] + acc[j*n + im] + acc[jm + i] + acc[jm + im])*scale/4;
+    if (F.r[k] > 1) continue;
+    if (d > max){ max = d; at = k; }
+    if (d < min) min = d;
+  }
+  // the maximum lies between grid points: a parabola through the highest point and its neighbours, each way.
+  // A maximum on the edge of the grid has no neighbour beyond it and is left where it is: that is a pole at RD
+  // or TD on the rim (the cube texture in {100}), which is a grid point.
+  const ai = at % n, aj = Math.floor(at/n);
+  const top = (lo, hi, ok) => {        // [how far along, in grid steps, and how much higher] the top of the parabola is
+    if (!(ok && inn[lo] && inn[hi])) return [0, 0];
+    const c = D[lo] - 2*max + D[hi], o = c < 0 ? clamp((D[lo] - D[hi])/(2*c), -0.5, 0.5) : 0;
+    return [o, -(D[lo] - D[hi])*o/4];
+  };
+  const [ox, ux] = top(at - 1, at + 1, ai > 0 && ai < n - 1), [oy, uy] = top(at - n, at + n, aj > 0 && aj < n - 1);
+  F.max = max + ux + uy; F.min = min;
+  F.at = [-1 + (ai + ox)*sp, -1 + (aj + oy)*sp];
+  return F;
+}
+// The same density at one direction d of the sample frame, summed pole by pole with no grid: for checks.
+function poleDensityAt(qs, planes, hw, d, mirror){
+  const cmin = Math.cos(3*hw*DEG), kap = Math.LN2/(1 - Math.cos(hw*DEG)), mean = (1 - Math.exp(-kap*(1 - cmin)))/kap;
+  const images = mirror === false ? [[1, 1]] : [[1, 1], [-1, 1], [1, -1], [-1, -1]];
+  let sum = 0;
+  for (const q of qs){
+    const M = qToMat(q);
+    for (const c of planes){
+      const v = mulMV(M, c);
+      for (const [sx, sy] of images){
+        const cs = Math.abs(sx*v[0]*d[0] + sy*v[1]*d[1] + v[2]*d[2]);
+        if (cs > cmin) sum += Math.exp(kap*(cs - 1));
+      }
+    }
+  }
+  return sum/(qs.length*planes.length*images.length*mean);
+}
+function fieldAt(F, X, Y){             // the density at a point of the figure, between the grid points
+  const n = F.n, u = clamp((X + 1)/F.sp, 0, n - 1.001), w = clamp((Y + 1)/F.sp, 0, n - 1.001);
+  const i = Math.floor(u), j = Math.floor(w), k = j*n + i, fu = u - i, fw = w - j;
+  if (!(F.in[k] && F.in[k + 1] && F.in[k + n] && F.in[k + n + 1])) return NaN;
+  return (F.D[k]*(1 - fu) + F.D[k + 1]*fu)*(1 - fw) + (F.D[k + n]*(1 - fu) + F.D[k + n + 1]*fu)*fw;
+}
+// The lines on which the density equals `level`: marching squares, the pieces joined end to end. Each line is
+// a flat list X0, Y0, X1, Y1, ... in units of the circle's radius, with .closed set when it is a loop.
+function contourLines(F, level){
+  const n = F.n, sp = F.sp, D = F.D, inn = F.in, next = new Map();
+  // A grid edge is named 2k (from point k to the point on its right) or 2k + 1 (to the point above).
+  const join = (p, q) => { for (const [s, t] of [[p, q], [q, p]]){ const l = next.get(s); if (l) l.push(t); else next.set(s, [t]); } };
+  for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++){
+    const k = j*n + i;
+    if (!(inn[k] && inn[k + 1] && inn[k + n] && inn[k + n + 1])) continue;
+    const a = D[k] > level, b = D[k + 1] > level, c = D[k + n + 1] > level, d = D[k + n] > level;
+    const m = (a ? 1 : 0) | (b ? 2 : 0) | (c ? 4 : 0) | (d ? 8 : 0);
+    if (m === 0 || m === 15) continue;
+    const B = 2*k, L = 2*k + 1, R = 2*(k + 1) + 1, T = 2*(k + n);
+    switch (m){
+      case 1: case 14: join(B, L); break;
+      case 2: case 13: join(B, R); break;
+      case 4: case 11: join(R, T); break;
+      case 8: case 7: join(T, L); break;
+      case 3: case 12: join(L, R); break;
+      case 6: case 9: join(B, T); break;
+      default: {                       // two opposite corners above the level: the middle of the square decides
+        const mid = (D[k] + D[k + 1] + D[k + n] + D[k + n + 1])/4 > level;
+        if ((m === 5) === mid){ join(B, R); join(T, L); } else { join(B, L); join(R, T); }
+      }
+    }
+  }
+  const point = e => {
+    const k = e >> 1, k2 = e & 1 ? k + n : k + 1, t = (level - D[k])/(D[k2] - D[k]);
+    const X = -1 + (k % n)*sp, Y = -1 + Math.floor(k/n)*sp;
+    return e & 1 ? [X, Y + t*sp] : [X + t*sp, Y];
+  };
+  const lines = [], seen = new Set();
+  const walk = start => {
+    const line = []; let e = start, prev = -1;
+    for (;;){
+      seen.add(e); const p = point(e); line.push(p[0], p[1]);
+      const l = next.get(e), to = l[0] !== prev && !seen.has(l[0]) ? l[0] : l.length > 1 && !seen.has(l[1]) ? l[1] : -1;
+      if (to < 0){ line.closed = l.length > 1 && (l[0] === start || l[1] === start) && line.length > 4; break; }
+      prev = e; e = to;
+    }
+    lines.push(line);
+  };
+  for (const [e, l] of next) if (l.length === 1 && !seen.has(e)) walk(e);    // open lines, from an end
+  for (const e of next.keys()) if (!seen.has(e)) walk(e);                    // then the loops
+  return lines;
+}
+
+// ---------------------------------------------------------------- state
+const CAM0 = { az: -Math.PI/2 - 0.4, el: 0.42, zoom: 1 };
+const CAM_TOP = { az: -Math.PI/2, el: Math.PI/2, zoom: 0.74 };   // looking down ND: RD up, TD right
+const cam = { az: CAM0.az, el: CAM0.el, zoom: CAM0.zoom };
+let qTween = null, camTween = null;
+let stage = 1, fromStage = 1, anim = 1, animT0 = 0, animDur = 1;
+let hover = null, drag = null, raf = 0;
+let view = null, map = null, pick3 = [], pick2 = [], drawn = [];
+let pickCubes = [], pickDots = [];   // step 4 on: the cubes and dots that a click can land on
+const multi = () => stage >= 4;      // the many grains are shown, not the single crystal
+const shown = () => multi() ? (sel === null ? null : many[sel]) : grains[cur];   // the grain the readout describes
+
+// Rolling (from step 3). eps is the true strain shown. While it is 0 the grain's q is its starting orientation
+// and can be changed freely; above 0, q is read off path, which rollPath worked out for that start.
+// still: the path hardly turns (a balanced orientation such as exact Cube, Goss or Brass).
+const roll = { eps: 0, path: null, still: false, playing: false, last: 0 };
+const ROLL_SECONDS = 12;             // Play runs from 0 to 90 % in this time, at a constant true strain rate
+const qAngle = (a, b) => 2*Math.acos(clamp(Math.abs(a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3]), 0, 1))/DEG;
+const staysPut = path => qAngle(path[0], path[path.length - 1]) < 0.5;   // turns less than half a degree by 90 %
+
+// Rolling the many grains (step 5). Each grain has a path of its own, g.path = rollPath(g.q0). The 500 paths are
+// worked out once, a few at a time so that the page stays live; until they are all there (ready) the sheet stays
+// unrolled. eps is the true strain step 5 is set to and shown the strain the grains are drawn at: step 4 shows
+// them before rolling and step 6 after all of it.
+const mroll = { eps: 0, shown: 0, playing: false, last: 0, built: 0, ready: false, timer: 0, ms: 0, wall: 0 };
+const rolling = () => stage >= 5 ? mroll : roll;       // the roll that the slider and Play act on
+
+// Annealing the rolled sheet (step 6). x is the fraction recrystallized that the step is set to, from 0 to 1,
+// and n the number of grains drawn as new ones: the first n of RX_ORDER. Every other step shows none.
+// g.q is always the grain's orientation now, and g.replaced says whether that is the new grain's.
+// A grain that has just changed hands is drawn turning to its new orientation for TURN_MS, so that the eye can
+// follow it: g.turn = { from, t0 }. Only the drawing lags; seen(g) is the orientation as drawn in this frame.
+const anneal = { x: 0, n: 0, playing: false, last: 0 };
+const ANNEAL_SECONDS = 14, TURN_MS = 450;
+let turns = [], clock = 0;           // the grains that are turning; the time of the frame being drawn
+const turned = g => g.turn ? clamp((clock - g.turn.t0)/TURN_MS, 0, 1) : 1;
+const seen = g => g.turn ? qnorm(qslerp(g.turn.from, g.q, ease(turned(g)))) : g.q;
+const newGrains = () => stage === 6 && mroll.ready ? Math.round(anneal.x*RX_N) : 0;
+function showMany(){                 // put every grain where its path has it, or in step 6 the new grain in its place
+  const eps = mroll.ready ? mroll.eps : 0, n = newGrains();
+  for (const g of many){ g.replaced = g.rank < n; g.q = g.replaced ? g.qx : eps > 0 ? pathAt(g.path, eps) : g.q0; }
+  mroll.shown = eps; anneal.n = n;
+}
+function buildPaths(){
+  if (mroll.ready || mroll.timer) return;
+  const began = performance.now();
+  const slice = () => {
+    const t0 = performance.now(), budget = document.hidden ? 200 : 8;   // milliseconds of work between frames
+    while (mroll.built < MANY_N && performance.now() - t0 < budget){
+      const g = many[mroll.built++];
+      g.path = rollPath(g.q0);
+      // The grain that will replace it in step 6. Of the 24 ways of writing that orientation, the one nearest
+      // the rolled grain's: the cube then turns the short way into line, never more than 63°.
+      g.qx = nearestSame(cubeGrain(g, CUBE_SD), g.path[ROLL_STEPS]);
+    }
+    mroll.ms += performance.now() - t0;
+    mroll.timer = mroll.built < MANY_N ? setTimeout(slice, 0) : 0;
+    if (!mroll.timer){ mroll.ready = true; mroll.wall = performance.now() - began; showMany(); }
+    syncRoll(); syncAnneal(); invalidate();
+  };
+  mroll.timer = setTimeout(slice, 0);
+}
+
+// Contours (step 5 on): lines of equal pole density in place of the dots. tex holds the density field and the
+// lines of each level for the grains as last worked out; key says for what. Working it out takes longer than a
+// frame should, so while the grains are moving it is redone only every few frames (late: the lines are behind).
+let lines = false, probe = null;     // probe: the point of the figure under the pointer, for the density there
+// The names RD, TD and ND can be hidden on both pictures, so that a class can be asked which is which. While
+// they are hidden nothing else on the page says where they are on the figure: the read-outs under the figure
+// give angles from its centre only, and the wording that names the view direction steps back.
+let axisNames = true;
+let instructor = false;              // the instructor's extras are shown: see OPEN_TO_ALL and applyGate
+const contoured = () => lines && stage >= 5;
+// The density on the sphere does not depend on the projection, but the grid it is held on lies in the figure, so
+// each projection has a field of its own (fields). view is the family and projection the lines were found for:
+// the lines of another family or projection are never drawn in place of this one's, however briefly.
+const tex = { F: null, fields: {}, key: '', view: '', levels: LEVELS.map(() => []), t: 0, cost: 0, late: false };
+function texture(){
+  const view = `${family}|${projection}`, key = `${view}|${mroll.shown}|${anneal.n}`, now = performance.now();
+  tex.late = view === tex.view && key !== tex.key && now - tex.t < 3*tex.cost;
+  if (key === tex.key || tex.late) return tex;
+  const P = PROJECTIONS[projection];
+  tex.F = tex.fields[projection] || (tex.fields[projection] = makeField(GRID_N, P.project, P.unproject));
+  tex.view = view;
+  poleDensity(tex.F, many.map(g => g.q), FAMILIES[family].planes.map(unit), KERNEL_HW);
+  tex.levels = LEVELS.map(L => L < tex.F.max ? contourLines(tex.F, L) : []);
+  tex.key = key; tex.t = performance.now(); tex.cost = tex.t - now;
+  return tex;
+}
+
+const FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+const INK = '#1c2530';
+
+// ---------------------------------------------------------------- (hkl)[uvw] readout
+// Low-index directions: every lowest-terms triple with indices up to 3. No two are closer than 5.8 degrees.
+const LOW = [];
+(function buildLow(){
+  const gcd = (a, b) => b ? gcd(b, a % b) : a;
+  for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) for (let k = -3; k <= 3; k++){
+    if ((i || j || k) && gcd(gcd(Math.abs(i), Math.abs(j)), Math.abs(k)) === 1) LOW.push({ h: [i, j, k], v: unit([i, j, k]) });
+  }
+})();
+const NEAR = Math.cos(2*DEG), EXACT = Math.cos(0.25*DEG);
+function nearestLow(v){
+  let best = null, bd = NEAR;
+  for (const c of LOW){ const d = dot(c.v, v); if (d >= bd){ bd = d; best = c; } }
+  return best && { h: best.h, exact: bd >= EXACT };
+}
+const idxHTML = h => h.map(n => n < 0 ? `<span class="ob">${-n}</span>` : String(n)).join('');
+const decText = v => {
+  const m = Math.max(Math.abs(v[0]), Math.abs(v[1]), Math.abs(v[2])) || 1;
+  return v.map(x => { const s = (x/m).toFixed(2); return (s === '-0.00' ? '0.00' : s).replace('-', '−'); }).join(' ');
+};
+function readoutHTML(){              // nearest low-index (hkl)[uvw] within 2 degrees, otherwise decimals
+  const g = shown();
+  if (!g) return `<span class="none">${contoured() ? 'click a cube' : 'click a cube or a dot'}</span>`;
+  // step 6: a new grain is described by how far it is from exact cube (the length of its rotation vector)
+  if (stage === 6 && g.replaced) return `new grain · ${(len(g.w)*CUBE_SD).toFixed(0)}° from (001)[100]`;
+  const M = qToMat(g.q), a = nearestLow(M[2]), b = nearestLow(M[1]), was = stage === 6 ? 'rolled grain · ' : '';
+  if (dot(M[2], unit(TILTED.hkl)) >= EXACT && dot(M[1], unit(TILTED.uvw)) >= EXACT) return `(${idxHTML(TILTED.hkl)})[${idxHTML(TILTED.uvw)}]`;
+  if (a && b && dot(a.h, b.h) === 0) return was + (a.exact && b.exact ? '' : '≈ ') + `(${idxHTML(a.h)})[${idxHTML(b.h)}]`;
+  return was + `(${decText(M[2])})[${decText(M[1])}]`;
+}
+function poleInfoHTML(i){            // the angles a reader takes off the figure
+  const v = mulMV(qToMat(shown().q), unit(FAMILIES[family].planes[i]));
+  const ang = c => (Math.acos(clamp(Math.abs(c), 0, 1))/DEG).toFixed(1);
+  if (!axisNames) return `(${idxHTML(FAMILIES[family].planes[i])}) pole: ${ang(v[2])}° from the centre of the figure`;
+  return `(${idxHTML(FAMILIES[family].planes[i])}) pole: ${ang(v[2])}° from ND · ${ang(v[1])}° from RD · ${ang(v[0])}° from TD`;
+}
+
+// ---------------------------------------------------------------- drawing helpers
+// Miller index label with overbars for negative entries, centred on (x, y); br is the bracket pair
+function drawIndex(ctx, hkl, x, y, fs, color, alpha, br){
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.font = `600 ${fs}px ${FONT}`; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  const digits = hkl.map(n => String(Math.abs(n)));
+  const gap = digits.some(d => d.length > 1) ? fs*0.3 : fs*0.05;
+  const wo = ctx.measureText(br[0]).width, wc = ctx.measureText(br[1]).width, ws = digits.map(d => ctx.measureText(d).width);
+  let px = x - (wo + wc + ws[0] + ws[1] + ws[2] + gap*2)/2;
+  const items = [[br[0], px, false, wo]]; px += wo;
+  digits.forEach((d, i) => { items.push([d, px, hkl[i] < 0, ws[i]]); px += ws[i] + (i < 2 ? gap : 0); });
+  items.push([br[1], px, false, wc]);
+  const by = y - fs*0.56;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(255,255,255,0.92)'; ctx.lineWidth = 3.5;
+  for (const it of items){ ctx.strokeText(it[0], it[1], y); if (it[2]){ ctx.beginPath(); ctx.moveTo(it[1], by); ctx.lineTo(it[1] + it[3], by); ctx.stroke(); } }
+  ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineWidth = Math.max(1.3, fs*0.1);
+  for (const it of items){ ctx.fillText(it[0], it[1], y); if (it[2]){ ctx.beginPath(); ctx.moveTo(it[1] + 0.5, by); ctx.lineTo(it[1] + it[3] - 0.5, by); ctx.stroke(); } }
+  ctx.restore();
+}
+function drawText(ctx, str, x, y, font, color, align){
+  ctx.font = font; ctx.textAlign = align || 'center'; ctx.textBaseline = 'middle';
+  ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(255,255,255,0.92)'; ctx.lineWidth = 3.5; ctx.strokeText(str, x, y);
+  ctx.fillStyle = color; ctx.fillText(str, x, y);
+}
+function arrowHead(ctx, tip, ux, uy, hs){
+  ctx.beginPath();
+  ctx.moveTo(tip[0] + ux*hs*0.5, tip[1] + uy*hs*0.5);
+  ctx.lineTo(tip[0] - ux*hs - uy*hs*0.5, tip[1] - uy*hs + ux*hs*0.5);
+  ctx.lineTo(tip[0] - ux*hs + uy*hs*0.5, tip[1] - uy*hs - ux*hs*0.5);
+  ctx.closePath(); ctx.fill();
+}
+function outOfPage(ctx, x, y, r0){    // an arrow seen end-on: a dot in a circle
+  ctx.beginPath(); ctx.arc(x, y, r0, 0, TAU); ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.strokeStyle = INK; ctx.lineWidth = 1.8; ctx.stroke();
+  ctx.beginPath(); ctx.arc(x, y, r0*0.34, 0, TAU); ctx.fillStyle = INK; ctx.fill();
+}
+function traceLine(ctx, l, cx, cy, Rm){   // a contour line added to the current path, its corners rounded off
+  const m = l.length/2, x = i => cx + l[2*i]*Rm, y = i => cy - l[2*i + 1]*Rm;
+  if (l.closed && m > 2){
+    ctx.moveTo((x(m - 1) + x(0))/2, (y(m - 1) + y(0))/2);
+    for (let i = 0; i < m; i++){ const j = (i + 1) % m; ctx.quadraticCurveTo(x(i), y(i), (x(i) + x(j))/2, (y(i) + y(j))/2); }
+    return;
+  }
+  ctx.moveTo(x(0), y(0));
+  for (let i = 1; i < m - 1; i++) ctx.quadraticCurveTo(x(i), y(i), (x(i) + x(i + 1))/2, (y(i) + y(i + 1))/2);
+  ctx.lineTo(x(m - 1), y(m - 1));
+}
+// Where the level of each contour line is written: at most one number to a line, just off it on the downhill
+// side, where the next line down is far enough off to leave room, and as near as can be to a bearing from RD
+// that differs from level to level (so the numbers fan out, and stay put as the lines move). Only in the
+// quarter between RD and TD: the other three are its mirror images.
+function contourLabels(T, Rm, fs){
+  const F = T.F, h = F.sp, out = [];
+  T.levels.forEach((ls, li) => {
+    const bearing = (24 + 9*li)*DEG;
+    for (const l of ls){
+      const m = l.length/2; let run = 0;
+      for (let i = 1; i < m; i++) run += Math.hypot(l[2*i] - l[2*i - 2], l[2*i + 1] - l[2*i - 1]);
+      if (run*Rm < fs*7) continue;                        // too short a line to carry a number
+      const cand = [];
+      for (let i = 0; i < m; i++){
+        const X = l[2*i], Y = l[2*i + 1]; if (X < 0 || Y < 0 || X*X + Y*Y > 0.78) continue;
+        cand.push([Math.abs(Math.atan2(X, Y) - bearing), X, Y]);
+      }
+      cand.sort((p, q) => p[0] - q[0]);
+      for (const [, X0, Y0] of cand.slice(0, 60)){
+        const gx = fieldAt(F, X0 + h, Y0) - fieldAt(F, X0 - h, Y0), gy = fieldAt(F, X0, Y0 + h) - fieldAt(F, X0, Y0 - h), g = Math.hypot(gx, gy);
+        if (!(g > 0)) continue;
+        const step = fs/Rm/g, X = X0 - gx*step*0.8, Y = Y0 - gy*step*0.8;   // the number's middle, 0.8 of its height down the slope
+        if (X*X + Y*Y > 0.85 || out.some(b => Math.hypot(b.X - X, b.Y - Y)*Rm < fs*1.8)) continue;
+        const beyond = fieldAt(F, X0 - gx*step*1.6, Y0 - gy*step*1.6);     // the far side of the number: still between this level and the next one down?
+        if (!(beyond < LEVELS[li] && (li === 0 || beyond > LEVELS[li - 1]))) continue;
+        out.push({ X, Y, text: String(LEVELS[li]), col: LEVEL_COL[li] });
+        break;
+      }
+    }
+  });
+  return out;
+}
+// The mark of an ideal orientation, centred on (x, y): an open shape in the component's colour with a white
+// edge, so that it reads over dots and over contour lines and what is under it still shows.
+function markPath(ctx, shape, x, y, r){
+  ctx.beginPath();
+  if (shape === 'square') ctx.rect(x - r*0.9, y - r*0.9, r*1.8, r*1.8);
+  else if (shape === 'diamond'){ ctx.moveTo(x, y - r*1.25); ctx.lineTo(x + r*1.25, y); ctx.lineTo(x, y + r*1.25); ctx.lineTo(x - r*1.25, y); ctx.closePath(); }
+  else if (shape === 'up' || shape === 'down'){ const k = shape === 'up' ? 1 : -1; ctx.moveTo(x, y - k*r*1.25); ctx.lineTo(x + r*1.15, y + k*r*0.8); ctx.lineTo(x - r*1.15, y + k*r*0.8); ctx.closePath(); }
+  else { ctx.moveTo(x - r*0.9, y - r*0.9); ctx.lineTo(x + r*0.9, y + r*0.9); ctx.moveTo(x + r*0.9, y - r*0.9); ctx.lineTo(x - r*0.9, y + r*0.9); }
+}
+function drawMark(ctx, c, x, y, r){
+  const lw = clamp(r/3.2, 2, 3.2);
+  markPath(ctx, c.shape, x, y, r);
+  ctx.lineJoin = 'miter'; ctx.lineCap = 'round';
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = lw + 3; ctx.stroke();
+  ctx.strokeStyle = c.col; ctx.lineWidth = lw; ctx.stroke();
+}
+// how strongly an end of a pole is drawn: 1 on or above the sheet plane, fading to 0 just below it,
+// so a pole lying in the sheet shows both of its ends in full
+const upness = z => clamp(1 + z/0.03, 0, 1);
+
+// ---------------------------------------------------------------- 3D view
+const FACES = [[[4,5,7,6],[1,0,0]], [[0,1,3,2],[-1,0,0]], [[2,3,7,6],[0,1,0]], [[0,1,5,4],[0,-1,0]], [[1,3,7,5],[0,0,1]], [[0,2,6,4],[0,0,-1]]];
+const SAMPLE_AXES = [{ name: 'RD', n: [0, 1, 0] }, { name: 'TD', n: [1, 0, 0] }, { name: 'ND', n: [0, 0, 1] }];
+const CRYSTAL_AXES = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+
+function draw3D(){
+  const ctx = g3.ctx, W = g3.W, H = g3.H;
+  ctx.setTransform(g3.dpr, 0, 0, g3.dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  pick3 = []; pickCubes = [];
+  if (W < 10 || H < 10) return;
+  const all = multi();                // the many grains, not the single crystal
+
+  const ca = Math.cos(cam.az), sa = Math.sin(cam.az), ce = Math.cos(cam.el), se = Math.sin(cam.el);
+  const w = [ce*ca, ce*sa, se];       // towards the viewer
+  const r = [-sa, ca, 0];             // screen right
+  const u = [-se*ca, -se*sa, ce];     // screen up
+  const s = Math.min(W/4.7, H/3.9)*cam.zoom;
+  const cx = W/2, cy = H/2 + 8;
+  const P = p => [cx + s*dot(p, r), cy - s*dot(p, u), dot(p, w)];
+  const O = P([0, 0, 0]);
+  view = { r, u, w, s, O, rb: s*ARC };
+  const fs = clamp(Math.min(W, H)/30, 12, 18);
+  const line = (A, B) => { ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); ctx.stroke(); };
+
+  // what each step has revealed
+  const grow = all ? 0 : stage > 2 ? 1 : stage === 2 ? ease(clamp(anim/0.6, 0, 1)) : 0;   // the plane normals
+  const M = qToMat(grains[cur].q);
+
+  // the sheet element as rolled, at its true shape: lam times as long, 1/lam as thick, the same width.
+  // A long sheet runs out of the panel; the RD arrow then starts inside the sheet, where it can still be seen.
+  // The sheet of many grains is drawn so only as far as LAM_DRAWN and then held: any thinner and it could not
+  // hold the cubes, which keep their size. Each cube is carried along with the sheet as drawn.
+  const lam = all ? Math.min(Math.exp(mroll.shown), LAM_DRAWN) : Math.exp(roll.eps), box = { td: BOX.td, rd: BOX.rd*lam, nd: BOX.nd/lam };
+  const at = g => carried(g.pos, lam);
+  const room = (half, c) => Math.abs(c) > 1e-6 ? half/(s*Math.abs(c)) : Infinity;
+  const rdSeen = Math.max(BOX.rd, Math.min(room(W/2 - fs*2.6, r[1]), room(H/2 - fs*2.6, u[1])) - AX_LEN);
+  const from = { RD: Math.min(box.rd, rdSeen), TD: box.td, ND: box.nd };
+  view.cut = box.rd > rdSeen; view.box = box;
+
+  const corners = f => { const c = []; for (const i of [-1, 1]) for (const j of [-1, 1]) for (const k of [-1, 1]) c.push(P(f(i, j, k))); return c; };
+  function faces(c, normal, front, fill, edgeFront, edgeBack){
+    for (const [idx, n] of FACES){
+      if ((dot(normal(n), w) >= 0) !== front) continue;
+      ctx.beginPath();
+      idx.forEach((k, i) => i ? ctx.lineTo(c[k][0], c[k][1]) : ctx.moveTo(c[k][0], c[k][1]));
+      ctx.closePath();
+      ctx.fillStyle = fill; ctx.fill();
+      ctx.strokeStyle = front ? edgeFront : edgeBack; ctx.lineWidth = 1.4; ctx.lineJoin = 'round'; ctx.stroke();
+    }
+  }
+  const boxC = corners((i, j, k) => [i*box.td, j*box.rd, k*box.nd]);
+  const cubeC = corners((i, j, k) => mulMV(M, [i*HC, j*HC, k*HC]));
+  const sheet = front => faces(boxC, n => n, front, 'rgba(120,145,180,0.07)', 'rgba(60,80,105,0.78)', 'rgba(60,80,105,0.28)');
+  const cube = front => faces(cubeC, n => mulMV(M, n), front, 'rgba(86,108,140,0.16)', 'rgba(40,52,68,0.9)', 'rgba(40,52,68,0.32)');
+
+  // RD, TD, ND: an arrow out of the middle of each face
+  const labels = [];
+  function sampleAxis(ax){
+    const A = P(scl(ax.n, from[ax.name])), B = P(scl(ax.n, from[ax.name] + AX_LEN));
+    const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy);
+    ctx.globalAlpha = 1;
+    if (L < 18){
+      outOfPage(ctx, B[0], B[1], fs*0.42);
+      labels.push([ax.name, B[0] - fs*1.3, B[1] + fs*1.05]);
+      return;
+    }
+    const ux = dx/L, uy = dy/L, hs = 11;
+    ctx.strokeStyle = INK; ctx.fillStyle = INK; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+    line(A, [B[0] - ux*hs*0.6, B[1] - uy*hs*0.6]);
+    arrowHead(ctx, B, ux, uy, hs);
+    labels.push([ax.name, B[0] + ux*fs*1.25, B[1] + uy*fs*0.95]);
+  }
+
+  // the cube axes of the crystal, a short stub out of each positive face
+  function crystalAxis(a, front){
+    const v = mulMV(M, a);
+    if ((dot(v, w) >= 0) !== front) return;
+    const A = P(scl(v, HC)), B = P(scl(v, HC + 0.2));
+    const quiet = 1 - (family === '100' ? 1 : 0.45)*grow;   // they step back once the plane normals are up; the {100} normals run along them and take their place
+    if (quiet <= 0) return;
+    ctx.globalAlpha = (front ? 0.9 : 0.45)*quiet; ctx.strokeStyle = '#6b7888'; ctx.lineWidth = 1.4; ctx.lineCap = 'round';
+    line(A, B);
+    ctx.globalAlpha = 1;
+    const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1;
+    drawIndex(ctx, a, B[0] + dx/L*fs*1.15, B[1] + dy/L*fs*0.7, fs*0.78, '#6b7888', (front ? 0.95 : 0.55)*quiet, '[]');
+  }
+
+  // the circle of radius LN in the sheet plane: the directions that land on the rim of the pole figure
+  function ring(front){
+    if (grow <= 0) return;
+    const n = 96;
+    ctx.globalAlpha = grow*(front ? 0.75 : 0.35); ctx.strokeStyle = '#52627a'; ctx.lineWidth = 1.3; ctx.lineCap = 'round';
+    ctx.beginPath();
+    for (let i = 0; i < n; i++){
+      const p0 = [LN*Math.cos(TAU*i/n), LN*Math.sin(TAU*i/n), 0], p1 = [LN*Math.cos(TAU*(i + 1)/n), LN*Math.sin(TAU*(i + 1)/n), 0];
+      if ((dot(add(p0, p1), w) >= 0) !== front) continue;
+      const A = P(p0), B = P(p1); ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  // the plane normals, both ends of each: the end above the sheet is the one that is plotted
+  const ends = [];
+  if (grow > 0) FAMILIES[family].planes.forEach((h, i) => {
+    const v = mulMV(M, unit(h));
+    for (const e of [1, -1]){ const d = scl(v, e); ends.push({ i, d, up: upness(d[2]), tip: P(scl(d, LN*grow)) }); }
+  });
+  ends.sort((p, q) => p.tip[2] - q.tip[2]);
+  function normal(it){
+    const hl = hover === it.i, col = POLE_COL[it.i];
+    ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.25 + 0.75*it.up; ctx.lineWidth = (hl ? 1.4 : 0) + 1.2 + 1.3*it.up;
+    line(O, it.tip);
+    const dx = it.tip[0] - O[0], dy = it.tip[1] - O[1], L = Math.hypot(dx, dy);
+    if (it.up > 0 && L > 14){ ctx.globalAlpha = it.up; arrowHead(ctx, it.tip, dx/L, dy/L, hl ? 12 : 10); }
+    ctx.globalAlpha = 1;
+    pick3.push({ id: it.i, x: it.tip[0], y: it.tip[1] });
+  }
+
+  // the many grains: a small cube for each of the first CUBES_N, in its own colour, and for the grain that is
+  // picked out. Only the faces towards the viewer are painted, lit from the upper left.
+  // Step 6: a new grain keeps the colour of the grain it replaced, as its dots do, and is marked by white edges.
+  // While a cube turns to its new orientation it swells a little, to catch the eye.
+  const LIGHT = unit(add(add(w, scl(u, 0.9)), scl(r, -0.5)));
+  function grainCube(g, id, size, alpha){
+    const Mg = qToMat(seen(g)), h = HS*size*(1 + 0.22*Math.sin(Math.PI*turned(g))), quads = [], big = size > 1.2;
+    const c0 = at(g), c = corners((i, j, k) => add(c0, mulMV(Mg, [i*h, j*h, k*h])));
+    const mark = clamp(s*HS*size*0.26, 2.2, big ? 4.6 : 3.4);   // the edge of a new grain: wide enough to hold a white line, on a cube of any size
+    ctx.lineJoin = 'round';
+    for (const [idx, nrm] of FACES){
+      const nn = mulMV(Mg, nrm); if (dot(nn, w) < 0) continue;
+      ctx.beginPath();
+      idx.forEach((k, i) => i ? ctx.lineTo(c[k][0], c[k][1]) : ctx.moveTo(c[k][0], c[k][1]));
+      ctx.closePath();
+      ctx.globalAlpha = alpha; ctx.fillStyle = g.col; ctx.fill();
+      const lit = dot(nn, LIGHT);
+      ctx.globalAlpha = alpha*0.34*Math.abs(lit); ctx.fillStyle = lit > 0 ? '#fff' : '#000'; ctx.fill();
+      ctx.globalAlpha = alpha; ctx.strokeStyle = g.edge; ctx.lineWidth = g.replaced ? mark : big ? 2 : 1; ctx.stroke();
+      if (g.replaced){ ctx.strokeStyle = '#fff'; ctx.lineWidth = mark*0.44; ctx.stroke(); }   // a white line inside the dark one
+      quads.push(idx.map(k => c[k]));
+    }
+    ctx.globalAlpha = 1;
+    const C = P(c0);
+    pickCubes.push({ id, x: C[0], y: C[1], quads });   // in paint order: the last is on top
+  }
+  function grainNormals(g, front){    // its plane normals, the ends above the sheet: the poles that are plotted
+    const Mg = qToMat(seen(g)), c0 = at(g), C = P(c0);
+    ctx.strokeStyle = g.edge; ctx.fillStyle = g.edge; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    for (const hk of FAMILIES[family].planes){
+      let v = mulMV(Mg, unit(hk)); if (v[2] < 0) v = scl(v, -1);
+      if ((dot(v, w) >= 0) !== front) continue;
+      const T = P(add(c0, scl(v, NS))), dx = T[0] - C[0], dy = T[1] - C[1], L = Math.hypot(dx, dy);
+      line(C, T);
+      if (L > 10) arrowHead(ctx, T, dx/L, dy/L, 8);
+    }
+  }
+  function manyGrains(){
+    const size = stage === 4 ? ease(anim) : 1;          // they grow into place as step 4 opens
+    if (size <= 0) return;
+    const list = [];
+    many.forEach((g, i) => { if (g.cube && i !== sel) list.push(i); });
+    const depth = new Map(list.map(i => [i, dot(at(many[i]), w)]));
+    list.sort((a, b) => depth.get(a) - depth.get(b));
+    for (const i of list) grainCube(many[i], i, size, sel === null ? 1 : 0.16);
+    if (sel === null) return;
+    const g = many[sel];             // the grain that is picked out: larger, on top, with its plane normals
+    grainNormals(g, false);
+    grainCube(g, sel, 1.5*size, 1);
+    grainNormals(g, true);
+  }
+
+  // ---- paint, far to near
+  for (const ax of SAMPLE_AXES) if (dot(ax.n, w) < 0) sampleAxis(ax);
+  sheet(false);
+  if (all) manyGrains();
+  else {
+    ring(false);
+    for (const a of CRYSTAL_AXES) crystalAxis(a, false);
+    cube(false);
+    for (const it of ends) if (it.tip[2] < 0) normal(it);
+    cube(true);
+    for (const a of CRYSTAL_AXES) crystalAxis(a, true);
+    for (const it of ends) if (it.tip[2] >= 0) normal(it);
+    ring(true);
+  }
+  sheet(true);
+  for (const ax of SAMPLE_AXES) if (dot(ax.n, w) >= 0) sampleAxis(ax);
+
+  // ---- labels on top
+  for (const it of ends){
+    if (it.up <= 0 || grow < 1) continue;
+    let dx = it.tip[0] - O[0], dy = it.tip[1] - O[1]; const L = Math.hypot(dx, dy);
+    if (L < 12){ dx = 0.75; dy = -0.66; } else { dx /= L; dy /= L; }
+    drawIndex(ctx, FAMILIES[family].planes[it.i], it.tip[0] + dx*fs*1.6, it.tip[1] + dy*fs*1.0, fs, POLE_COL[it.i], it.up, '()');
+  }
+  if (axisNames) for (const [name, x, y] of labels) drawText(ctx, name, x, y, `700 ${fs*1.05}px ${FONT}`, INK);
+}
+
+// ---------------------------------------------------------------- pole figure
+function draw2D(){
+  const ctx = g2.ctx, W = g2.W, H = g2.H;
+  ctx.setTransform(g2.dpr, 0, 0, g2.dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  pick2 = []; drawn = []; pickDots = [];
+  if (W < 10 || H < 10) return;
+  const m = Math.min(W, H), fs = clamp(m/26, 12, 18), mr = clamp(m/62, 5.5, 9);
+  const cx = W/2, cy = H/2 + 12, Rm = Math.max(30, m/2 - fs*3.2);   // room for the panel's title above RD
+  map = { cx, cy, Rm };
+  const live = stage >= 2, all = multi(), cont = contoured();
+  const A = stage === 2 ? ease(clamp((anim - 0.5)/0.5, 0, 1)) : live ? 1 : 0;   // the dots arrive after the arrows
+
+  // the frame: primitive circle, RD up, TD right, ND at the centre
+  const rim = () => { ctx.beginPath(); ctx.arc(cx, cy, Rm, 0, TAU); };
+  rim();
+  if (live){ ctx.fillStyle = '#fffaf0'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 1.8; ctx.stroke(); }
+  else { ctx.setLineDash([6, 6]); ctx.strokeStyle = '#aab3bf'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash([]); }
+  const frame = live ? INK : '#8a96a3', tick = 8;
+  ctx.strokeStyle = frame; ctx.lineWidth = 1; ctx.globalAlpha = 0.22;
+  ctx.beginPath(); ctx.moveTo(cx - Rm, cy); ctx.lineTo(cx + Rm, cy); ctx.moveTo(cx, cy - Rm); ctx.lineTo(cx, cy + Rm); ctx.stroke();
+  ctx.globalAlpha = 1; ctx.lineWidth = 1.8; ctx.lineCap = 'butt';
+  ctx.beginPath();
+  for (const [ux, uy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]){ ctx.moveTo(cx + ux*Rm, cy + uy*Rm); ctx.lineTo(cx + ux*(Rm + tick), cy + uy*(Rm + tick)); }
+  ctx.stroke();
+  const axFont = `700 ${fs*1.05}px ${FONT}`;
+  const nameND = () => { if (axisNames) drawText(ctx, 'ND', cx - fs*1.25, cy + fs*1.0, axFont, frame); };
+  if (axisNames){                    // the ticks and the mark at the centre stay when the names are hidden
+    drawText(ctx, 'RD', cx, cy - Rm - tick - fs*0.8, axFont, frame);
+    drawText(ctx, 'TD', cx + Rm + tick + fs*0.35, cy, axFont, frame, 'left');
+  }
+  outOfPage(ctx, cx, cy, fs*0.3);
+  nameND();
+  if (!live){
+    drawText(ctx, 'The poles appear at step 2', cx, cy - Rm*0.42, `${fs}px ${FONT}`, '#8a96a3');
+    return;
+  }
+
+  // the poles. Both ends of every normal are placed; the circle clips the end that is below the sheet,
+  // so a pole leaves at the rim as its opposite comes in on the far side, with nothing jumping.
+  // One grain has large, labelled dots: the single crystal, or among the many grains the one that is picked out.
+  const one = shown(), M = one && qToMat(all ? seen(one) : one.q), dots = [];
+  const dotCol = i => all ? one.col : POLE_COL[i], lblCol = i => all ? one.edge : POLE_COL[i];
+  if (one) FAMILIES[family].planes.forEach((h, i) => {
+    const v = mulMV(M, unit(h));
+    for (const e of [1, -1]){
+      const d = scl(v, e); if (d[2] < -0.1) continue;
+      const [X, Y] = project(d);
+      dots.push({ i, d, X, Y, x: cx + X*Rm, y: cy - Y*Rm });
+    }
+  });
+  ctx.save();
+  rim(); ctx.clip();
+  // the many grains: every pole of every grain. Small grey dots, and larger ones in the colours of the grains
+  // whose cubes are drawn. With one grain picked out the rest step back.
+  let T = null;
+  if (cont){                         // contour lines of the pole density, each with its level written on it where there is room
+    T = texture();
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.lineWidth = clamp(Rm/150, 1.6, 2.6);
+    ctx.globalAlpha = sel === null ? 1 : 0.5;
+    T.levels.forEach((ls, li) => {
+      if (!ls.length) return;
+      ctx.beginPath();
+      for (const l of ls) traceLine(ctx, l, cx, cy, Rm);
+      ctx.strokeStyle = LEVEL_COL[li]; ctx.stroke();
+    });
+    for (const b of contourLabels(T, Rm, fs)) drawText(ctx, b.text, cx + b.X*Rm, cy - b.Y*Rm, `700 ${fs*0.85}px ${FONT}`, b.col);
+    ctx.globalAlpha = 1;
+    nameND();                        // again, on top: a maximum at ND (the cube texture in {100}) rings the centre with lines
+    if (T.F.max <= LEVELS[0]) drawText(ctx, `No line: nowhere as high as ${LEVELS[0]} × random`, cx, cy - Rm*0.42, `${fs}px ${FONT}`, '#5d6b7a');
+  } else if (all){
+    const Am = stage === 4 ? ease(anim) : 1, rg = clamp(Rm/100, 1.2, 2.6), rc = clamp(Rm/48, 2.8, 5.5);
+    const units = FAMILIES[family].planes.map(unit), coloured = [], area = projection === 'area';
+    ctx.beginPath();
+    many.forEach((g, gi) => {
+      const Mg = qToMat(seen(g));
+      units.forEach((c, i) => {
+        const v = mulMV(Mg, c);
+        for (const e of [1, -1]){
+          const z = v[2]*e; if (z < -0.03) continue;
+          const k = area ? e/Math.sqrt(1 + z) : e/(1 + z), X = v[0]*k, Y = v[1]*k, x = cx + X*Rm, y = cy - Y*Rm;   // project(), written out: this runs for every pole
+          drawn.push({ grain: gi, pole: i, X, Y, z });
+          pickDots.push({ id: gi, x, y, r: g.cube ? rc : rg });
+          if (gi === sel) continue;                    // drawn large, below
+          if (g.cube) coloured.push([x, y, g.col]);
+          else { ctx.moveTo(x + rg, y); ctx.arc(x, y, rg, 0, TAU); }
+        }
+      });
+    });
+    ctx.globalAlpha = Am*(sel === null ? 0.62 : 0.22); ctx.fillStyle = '#566170'; ctx.fill();
+    ctx.globalAlpha = Am*(sel === null ? 1 : 0.28); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1;
+    for (const [x, y, col] of coloured){ ctx.beginPath(); ctx.arc(x, y, rc, 0, TAU); ctx.fillStyle = col; ctx.fill(); ctx.stroke(); }
+  }
+  // the trail each pole has left since rolling began, and a ring where it started (both ends, as for the dots):
+  // for the single crystal, or among the many grains for the one that is picked out. In step 6 the trail of a
+  // grain that has been replaced is the old grain's: it stops where that grain was, and the new one did not come along it.
+  const trail = !all ? (roll.path && roll.eps > 0 ? roll : null) : one && one.path && mroll.shown > 0 ? { path: one.path, eps: mroll.shown } : null;
+  if (trail){
+    const last = Math.min(Math.floor(trail.eps/EPS_MAX*ROLL_STEPS), ROLL_STEPS), Ms = [];
+    for (let k = 0; k <= last; k++) Ms.push(qToMat(trail.path[k]));
+    if (!all || !(one.replaced || one.turn)) Ms.push(M);
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    FAMILIES[family].planes.forEach((h, i) => {
+      const c = unit(h), vs = Ms.map(m => mulMV(m, c));
+      ctx.strokeStyle = dotCol(i);
+      for (const e of [1, -1]){
+        ctx.beginPath();
+        let pen = false;
+        for (const v of vs){
+          if (v[2]*e < -0.1){ pen = false; continue; }
+          const [X, Y] = project(scl(v, e));
+          if (pen) ctx.lineTo(cx + X*Rm, cy - Y*Rm); else ctx.moveTo(cx + X*Rm, cy - Y*Rm);
+          pen = true;
+        }
+        ctx.globalAlpha = A*(all ? 0.6 : 0.42); ctx.lineWidth = Math.max(2.5, mr*0.5); ctx.stroke();
+        if (vs[0][2]*e < -0.1) continue;
+        const [X, Y] = project(scl(vs[0], e));
+        ctx.beginPath(); ctx.arc(cx + X*Rm, cy - Y*Rm, mr*0.8, 0, TAU);
+        ctx.globalAlpha = A*0.75; ctx.lineWidth = 1.6; ctx.stroke();
+      }
+    });
+  }
+  ctx.globalAlpha = A;
+  for (const p of dots){
+    ctx.beginPath(); ctx.arc(p.x, p.y, mr*(hover === p.i ? 1.4 : 1), 0, TAU);
+    ctx.fillStyle = dotCol(p.i); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = all ? 1.6 : 1; ctx.stroke();
+    if (p.d[2] > -0.03){ pick2.push({ id: p.i, x: p.x, y: p.y }); if (!all) drawn.push({ pole: p.i, X: p.X, Y: p.Y, z: p.d[2] }); }
+  }
+  // the ideal orientations the instructor has ticked: an open mark at each of their poles, on top of the dots or
+  // the lines. Inside the circle's clip, so a pole in the sheet plane shows as two half marks, like a dot.
+  if (instructor) for (const c of COMPONENTS){
+    if (c.on) for (const [X, Y] of componentMarks(c.q)) drawMark(ctx, c, cx + X*Rm, cy - Y*Rm, mr*1.2);
+  }
+  ctx.restore();
+  ctx.globalAlpha = A; rim(); ctx.strokeStyle = INK; ctx.lineWidth = 1.8; ctx.stroke();
+
+  for (const p of dots){
+    const la = upness(p.d[2]); if (la <= 0) continue;
+    let dx = p.x - cx, dy = p.y - cy; const L = Math.hypot(dx, dy);
+    if (L < 8){ dx = 0.75; dy = -0.66; } else { dx /= L; dy /= L; }
+    if (L > Rm*0.8){ dx = -dx; dy = -dy; }             // near the rim the label goes inside
+    drawIndex(ctx, FAMILIES[family].planes[p.i], p.x + dx*(mr + fs*1.45), p.y + dy*(mr + fs*0.85), fs, lblCol(p.i), A*la, '()');
+  }
+  ctx.globalAlpha = 1;
+
+  // the key to the contour lines, in the corner: the levels, faint when there is no such line, and the maximum.
+  // To 14, and to 16 in step 6, where the annealed sheet gets there; further only as far as there are lines.
+  if (T){
+    const kf = clamp(m/40, 9.5, 14), row = kf*1.25, x1 = W - 12, y0 = 12 + kf*0.6, small = `600 ${kf}px ${FONT}`;
+    let nl = LEVELS.indexOf(stage === 6 ? 16 : 14) + 1;
+    T.levels.forEach((ls, li) => { if (ls.length) nl = Math.max(nl, li + 1); });
+    drawText(ctx, '× random', x1, y0, small, '#5d6b7a', 'right');
+    LEVELS.slice(0, nl).forEach((L, li) => {
+      const y = y0 + (nl - li)*row;
+      ctx.globalAlpha = T.levels[li].length ? 1 : 0.28;
+      ctx.strokeStyle = LEVEL_COL[li]; ctx.lineWidth = 3; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(x1 - kf*3.6, y); ctx.lineTo(x1 - kf*1.9, y); ctx.stroke();
+      drawText(ctx, String(L), x1, y, `700 ${kf}px ${FONT}`, LEVEL_COL[li], 'right');
+    });
+    ctx.globalAlpha = 1;
+    drawText(ctx, `max ${T.F.max.toFixed(1)}`, x1, y0 + (nl + 1.3)*row, small, INK, 'right');
+  }
+}
+
+// ---------------------------------------------------------------- loop
+const $ = id => document.getElementById(id);
+let shownOri = '', shownHint = '', shownNote = '', shownAnneal = '', shownMod = '';
+// The instructor's read-out of Young's modulus along RD, TD, ND and 45° between RD and TD in the sheet: for the
+// single crystal its own value, for the 500 grains the two averages as a range (see modulus). GPa, whole numbers.
+function modulusHTML(){
+  const qs = multi() ? many.map(g => g.q) : [grains[cur].q];
+  return '<span>E, GPa</span> ' + E_DIRS.map(d => {
+    const [lo, hi] = modulus(qs, d.s).map(Math.round);
+    return `<span title="${d.title}">${d.name} <b>${lo === hi ? lo : `${lo}–${hi}`}</b></span>`;
+  }).join(' ');
+}
+function rollNoteHTML(){             // what the sheet has become, and anything the picture cannot show
+  if (roll.eps === 0) return 'Press Play, or drag the slider, to roll the sheet with the crystal as it is now.';
+  const lam = Math.exp(roll.eps), say = [`<b>${lam.toFixed(1)}× as long, ${(1/lam).toFixed(2)}× as thick</b>, the same width.`];
+  if (roll.still) say.push('A balanced orientation: the turning from its slip systems cancels, so it stays. Drag it a little off, or choose Tilted, and roll again.');
+  else if (view && view.cut) say.push('The sheet now runs out of the view; the crystal is not to scale.');
+  return say.join(' ');
+}
+function manyNoteHTML(){             // the same for the sheet of many grains
+  if (!mroll.ready) return `Working out how each of the ${MANY_N} grains turns: ${Math.round(100*mroll.built/MANY_N)} %`;
+  if (mroll.shown === 0) return `Press Play, or drag the slider, to roll the sheet and all ${MANY_N} grains.`;
+  const lam = Math.exp(mroll.shown), say = [`<b>${lam.toFixed(1)}× as long, ${(1/lam).toFixed(2)}× as thick</b>, the same width.`];
+  if (lam > LAM_DRAWN) say.push(`The picture stops at ${LAM_DRAWN}× as long (${Math.round(100*(1 - 1/LAM_DRAWN))} % reduction): any thinner and the sheet could not hold the cubes, which are not to scale.`);
+  return say.join(' ');
+}
+function annealNoteHTML(){           // how far the anneal has got, and how to tell the new grains
+  if (!mroll.ready) return manyNoteHTML();
+  const n = anneal.n, left = MANY_N - n;
+  if (n === 0) return 'Press Play, or drag the slider, to anneal the rolled sheet. Its shape does not change. Drawn, not computed: the grains are swapped for new ones one at a time.';
+  if (n < RX_N) return `<b>${n} new grain${n === 1 ? '' : 's'}, ${left} rolled grains left.</b> A new grain's cube has white edges and lines up with RD, TD and ND.`;
+  return `<b>${n} new grains.</b> The other ${left} (${Math.round(100*left/MANY_N)} %) are left as rolled: a real annealed sheet is not all cube either.`;
+}
+function probeHTML(){                // the density under the pointer, and where that is
+  const v = unproject(probe[0], probe[1]), ang = c => (Math.acos(clamp(Math.abs(c), 0, 1))/DEG).toFixed(0);
+  const here = `${fieldAt(tex.F, probe[0], probe[1]).toFixed(1)} × random here · ${ang(v[2])}° from `;
+  return axisNames ? `${here}ND · ${ang(v[1])}° from RD · ${ang(v[0])}° from TD` : `${here}the centre of the figure`;
+}
+function updateText(){
+  const o = readoutHTML();
+  if (o !== shownOri){ shownOri = o; $('ori').innerHTML = o; }
+  const n = stage === 3 ? rollNoteHTML() : stage === 5 ? manyNoteHTML() : '';
+  if (n !== shownNote){ shownNote = n; $('rollNote').innerHTML = n; }
+  const a = stage === 6 ? annealNoteHTML() : '';
+  if (a !== shownAnneal){ shownAnneal = a; $('annealNote').innerHTML = a; }
+  const h = stage < 2 ? '' : hover !== null && shown() ? poleInfoHTML(hover)
+    : !multi() ? `Drag to turn the crystal · point at a pole for its ${axisNames ? 'angles' : 'angle from the centre'}`
+    : contoured() ? (probe && tex.F ? probeHTML() : 'Lines of equal pole density, in times random · point at the figure for the value there')
+    : sel === null ? (stage === 6 ? 'Click a dot or a cube to follow one grain through the anneal' : stage === 5 ? 'Click a dot or a cube to follow one grain as the sheet is rolled' : 'Click a dot or a cube to pick out one grain')
+    : `Point at one of its ${FAMILIES[family].count} poles for ${axisNames ? 'the angles' : 'its angle from the centre'} · click away from the dots to clear`;
+  if (h !== shownHint){ shownHint = h; $('hint2').innerHTML = h; $('hint2').hidden = !h; }
+  const e = instructor ? modulusHTML() : '';
+  if (e !== shownMod){ shownMod = e; $('modOut').innerHTML = e; }
+}
+function tick(now){
+  raf = 0;
+  let busy = false;
+  if (anim < 1){ anim = clamp((now - animT0)/animDur, 0, 1); if (anim < 1) busy = true; }
+  if (qTween){
+    const t = clamp((now - qTween.t0)/qTween.dur, 0, 1);
+    qTween.grain.q = qnorm(qslerp(qTween.from, qTween.to, ease(t)));
+    if (t < 1) busy = true; else qTween = null;
+  }
+  if (camTween){
+    const t = clamp((now - camTween.t0)/camTween.dur, 0, 1), e = ease(t);
+    cam.az = camTween.az0 + camTween.daz*e; cam.el = camTween.el0 + camTween.del*e; cam.zoom = camTween.z0 + camTween.dz*e;
+    if (t < 1) busy = true; else camTween = null;
+  }
+  const R = rolling();
+  if (R.playing){
+    const dt = R.last ? now - R.last : 0;
+    R.last = now;
+    strainTo(R.eps + dt/1000*EPS_MAX/ROLL_SECONDS);
+    if (R.eps >= EPS_MAX){ R.playing = false; syncRoll(); } else busy = true;
+  }
+  if (anneal.playing){
+    const dt = anneal.last ? now - anneal.last : 0;
+    anneal.last = now;
+    setAnneal(anneal.x + dt/1000/ANNEAL_SECONDS);
+    if (anneal.x >= 1){ anneal.playing = false; syncAnneal(); } else busy = true;
+  }
+  clock = now;
+  if (turns.length){                 // the grains still turning to their new orientation
+    turns = turns.filter(g => { if (now - g.turn.t0 < TURN_MS) return true; g.turn = null; return false; });
+    if (turns.length) busy = true;
+  }
+  draw3D(); draw2D(); updateText();
+  if (busy || (tex.late && contoured())) invalidate();
+}
+function invalidate(){
+  if (raf) return;
+  raf = document.hidden ? setTimeout(() => tick(performance.now()), 50) : requestAnimationFrame(tick);
+}
+function tweenCam(to, dur){
+  let daz = to.az - cam.az; daz = ((daz + Math.PI) % TAU + TAU) % TAU - Math.PI;
+  camTween = { az0: cam.az, el0: cam.el, z0: cam.zoom, daz, del: to.el - cam.el, dz: to.zoom - cam.zoom, t0: performance.now(), dur: dur || 1000 };
+  invalidate();
+}
+
+// ---------------------------------------------------------------- steps
+const dotsEl = $('dots'), dotBtns = [];
+const famBtns = document.querySelectorAll('[data-family]'), projBtns = document.querySelectorAll('[data-proj]');
+// The instructor's markers: a tick box for each ideal orientation, with its mark beside the name as the key.
+const MARK_SVG = {
+  square: '<rect x="2.5" y="2.5" width="11" height="11"/>', up: '<polygon points="8,1.5 14.5,13 1.5,13"/>', diamond: '<polygon points="8,1 15,8 8,15 1,8"/>',
+  down: '<polygon points="8,14.5 14.5,3 1.5,3"/>', cross: '<path d="M3 3 13 13M13 3 3 13"/>' };
+const idxText = h => h.some(n => Math.abs(n) > 9) ? h.join(' ') : h.join('');
+COMPONENTS.forEach((c, i) => {
+  const l = document.createElement('label');
+  l.title = `${c.name}, (${idxText(c.hkl)})[${idxText(c.uvw)}]: (${idxText(c.hkl)}) in the sheet plane, [${idxText(c.uvw)}] along RD; ${c.note}`;
+  l.innerHTML = `<input type="checkbox" data-comp="${i}"><svg width="16" height="16" aria-hidden="true" fill="none" stroke="${c.col}" stroke-width="2.2" stroke-linecap="round">${MARK_SVG[c.shape]}</svg>${c.name}`;
+  $('marksGrp').appendChild(l);
+});
+const markBtns = document.querySelectorAll('[data-comp]');
+STEPS.forEach((sp, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = String(i + 1);    // its title is set in updateUI: a step may be named after the pole family
+  if (sp.soon) b.classList.add('soon-step');
+  b.addEventListener('click', () => setStage(i + 1));
+  dotsEl.appendChild(b); dotBtns.push(b);
+});
+function updateUI(){
+  const sp = STEPS[stage - 1];
+  $('back').disabled = stage === 1; $('next').disabled = stage === STEPS.length;
+  dotBtns.forEach((b, i) => {
+    const name = worded(STEPS[i].t) + (STEPS[i].soon ? ' (coming soon)' : '');
+    b.classList.toggle('on', i + 1 === stage); b.classList.toggle('done', i + 1 < stage);
+    b.title = name; b.setAttribute('aria-label', `Step ${i + 1}: ${name}`);
+  });
+  $('stepTitle').textContent = `Step ${stage} of ${STEPS.length} · ${worded(sp.t)}`;
+  $('caption').textContent = worded(sp.c);
+  $('soon').hidden = !sp.soon;
+  $('soon').textContent = sp.soon ? `Step ${stage} · ${worded(sp.t)}: coming soon` : '';
+  const all = multi(), P = PROJECTIONS[projection];
+  $('rollBar').hidden = stage !== 3 && stage !== 5;   // the slider rolls the single crystal in step 3, all the grains in step 5
+  $('annealBar').hidden = stage !== 6;                // and in step 6 the anneal takes its place
+  $('play').title = stage === 5 ? `Roll the sheet and its ${MANY_N} grains on to 90 % reduction` : 'Roll the sheet on to 90 % reduction';
+  $('oriGrp').hidden = all;            // the orientation buttons act on the single crystal
+  $('figGrp').hidden = stage < 2;      // which poles, and in which projection: wherever the pole figure is shown
+  $('showGrp').hidden = stage < 5;     // dots or contour lines, once there is a texture to show
+  // the instructor's extras: the modulus in every step, the markers wherever the pole figure is shown
+  $('modGrp').hidden = !instructor; $('marksGrp').hidden = !instructor || stage < 2;
+  const [eLo, eHi] = randomModulus().map(Math.round);
+  $('modNote').textContent = !instructor ? ''
+    : all ? `low: grains share the stress · high: grains share the strain · random grains come to ${eLo}–${eHi} this way, not Table I's ${E_RANDOM}`
+    : `this crystal · from Table I: ${E100} along [100], ${E111} along [111]`;
+  $('modGrp').title = !instructor ? '' : `Young's modulus along each direction of the sheet, in GPa, from Table I's two single-crystal values. They fix E along any direction (l, m, n) of a cubic crystal: 1/E = 1/E100 − 3(1/E100 − 1/E111)(l²m² + m²n² + n²l²). For the ${MANY_N} grains two simple averages are given, as a range. Low: 1/(mean of 1/E), the grains end to end and sharing the stress. High: the mean of E, the grains side by side and sharing the strain. Both treat a grain as a free rod. In a real polycrystal its neighbours also hold it sideways, which stiffens it: for random grains the averages come to ${eLo} and ${eHi}, and Table I has ${E_RANDOM}. Compare directions and steps; do not quote these as measured moduli.`;
+  for (const b of markBtns) b.checked = COMPONENTS[+b.dataset.comp].on;
+  $('axNames').checked = axisNames;
+  $('topView').textContent = axisNames ? 'Look down ND' : 'Top view';
+  $('topView').title = `Turn the view to look straight down ${axisNames ? 'ND' : 'on the sheet'}, as the pole figure does`;
+  $('asDots').setAttribute('aria-pressed', String(!lines)); $('asLines').setAttribute('aria-pressed', String(lines));
+  $('asLines').title = `Lines of equal pole density, in times random: 1 everywhere is a sheet with no texture. Each pole is smoothed over ${KERNEL_HW}° (half-width at half height), and its mirror images in RD and in TD are added. Lines at ${LEVELS[0]}, ${LEVELS[1]}, … ${LEVELS[LEVELS.length - 2]}, and at ${LEVELS[LEVELS.length - 1]} where the density gets there.`;
+  for (const b of famBtns) b.setAttribute('aria-pressed', String(b.dataset.family === family));
+  for (const b of projBtns) b.setAttribute('aria-pressed', String(b.dataset.proj === projection));
+  $('tag2').innerHTML = `{${family}} pole ${contoured() ? 'density' : 'figure'} · ${P.name}<small>${contoured() ? `smoothed over ${KERNEL_HW}°` : axisNames ? 'looking down ND' : ''}</small>`;
+  $('tag3').textContent = !all ? 'Sheet element and one crystal'
+    : `Sheet element and ${CUBES_N} of its ${MANY_N} grains` + (stage === 6 ? ' · white edges: a new grain' : '');
+  $('hint3').textContent = all ? 'Click a cube to pick out its grain · drag to turn the view · scroll to zoom'
+    : 'Drag the crystal to turn it · drag outside it to turn the view · scroll to zoom';
+  $('view3d').setAttribute('aria-label', 'Three-dimensional view of a piece of rolled sheet, with its rolling, transverse and normal directions, and '
+    + (all ? `${CUBES_N} of its ${MANY_N} grains inside it, each a small cube in its own colour` : 'one cubic crystal inside it'));
+  $('map').setAttribute('aria-label', `Pole figure: ${contoured() ? 'contour lines of the density of ' : ''}the {${family}} plane normals of `
+    + (all ? `all ${MANY_N} grains` : 'the crystal') + ` in ${P.a} projection` + (axisNames ? ', with RD up, TD to the right and ND at the centre' : ''));
+  syncRoll(); syncAnneal();
+}
+// Step 3 should open on a crystal that turns. From a balanced start (exact Cube, Goss or Brass) the crystal is
+// first turned to TILTED; a start that does turn, and a crystal already rolled here, are left as they are.
+function openStep3(){
+  if (roll.eps > 0) return;
+  const q = qTween ? qTween.to : grains[cur].q;
+  if (staysPut(rollPath(q))) goOrientation(TILTED.q);
+}
+function pick(i){                    // pick out one of the many grains in both views; null clears
+  if (i === sel) return;
+  sel = i; hover = null; invalidate();
+}
+function setStage(n){
+  n = clamp(n, 1, STEPS.length); if (n === stage) return;
+  const prev = stage; stage = n;
+  if (stage < 3 && (roll.eps > 0 || roll.playing)){ roll.playing = false; setStrain(0); }   // steps 1 and 2 show the sheet before rolling
+  if (stage > 3) roll.playing = false;                 // the single crystal waits, as rolled as it was left
+  if (stage >= 4) buildPaths();                        // the many grains' paths, ready for step 5
+  if (stage !== 5) mroll.playing = false;
+  if (stage < 5) mroll.eps = 0;                        // step 4 shows the sheet before rolling,
+  else if (stage === 6) mroll.eps = EPS_MAX;           // step 6 the sheet rolled all the way
+  anneal.playing = false; anneal.x = 0;                // step 6 opens on the sheet as rolled; no other step is annealed
+  for (const g of turns) g.turn = null;
+  turns = [];
+  showMany();
+  if (!contoured()) probe = null;
+  if (n > prev){ fromStage = prev; anim = 0; animT0 = performance.now(); animDur = STEPS[n - 1].d; }
+  else { fromStage = n; anim = 1; }
+  if (stage < 2 || (prev >= 4) !== (stage >= 4)) hover = null;
+  if (stage === 3) openStep3();
+  updateUI(); invalidate();
+}
+$('back').addEventListener('click', () => setStage(stage - 1));
+$('next').addEventListener('click', () => setStage(stage + 1));
+window.addEventListener('keydown', e => {
+  if ((e.target instanceof HTMLInputElement && e.target.type !== 'checkbox') || e.metaKey || e.ctrlKey || e.altKey) return;   // a slider keeps its arrow keys; a tick box has no use for them
+  if (e.key === 'ArrowRight' || e.key === 'PageDown'){ setStage(stage + 1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ setStage(stage - 1); e.preventDefault(); }
+  else if (e.key === 'Escape' && multi()) pick(null);
+});
+
+// ---------------------------------------------------------------- rolling controls
+function syncRoll(){
+  const R = rolling(), pct = reductionOf(R.eps)*100, wait = R === mroll && !mroll.ready;   // the paths are still being worked out
+  $('red').value = pct; $('redOut').textContent = `${Math.round(pct)} %`;
+  $('play').textContent = R.playing ? '❚❚ Pause' : '▶ Play';
+  $('play').disabled = $('red').disabled = wait;
+  $('rollReset').disabled = wait || (R.eps === 0 && !R.playing);
+}
+function setStrain(eps){             // show the grain and the sheet after true strain eps (0: before rolling)
+  const g = grains[cur];
+  eps = clamp(eps, 0, EPS_MAX);
+  if (eps > 0 && !roll.path){
+    if (qTween){ g.q = qTween.to.slice(); qTween = null; }     // a preset still turning into place: roll from where it is going
+    roll.path = rollPath(g.q);
+    roll.still = staysPut(roll.path);
+  }
+  roll.eps = eps;
+  if (roll.path) g.q = pathAt(roll.path, eps);
+  syncRoll(); invalidate();
+}
+function newStart(){                 // the crystal is being given a new orientation: unroll the sheet and forget the path
+  roll.eps = 0; roll.path = null; roll.still = false; roll.playing = false;
+  syncRoll();
+}
+function setManyStrain(eps){         // the same for the sheet of many grains (step 5)
+  mroll.eps = clamp(eps, 0, EPS_MAX);
+  showMany(); syncRoll(); invalidate();
+}
+const strainTo = eps => rolling() === mroll ? setManyStrain(eps) : setStrain(eps);
+function play(on){
+  const R = rolling();
+  if (on && R.eps >= EPS_MAX - 1e-9) strainTo(0);              // at the end, Play starts again
+  R.playing = on; R.last = 0;
+  syncRoll(); invalidate();
+}
+$('play').addEventListener('click', () => play(!rolling().playing));
+$('rollReset').addEventListener('click', () => { rolling().playing = false; strainTo(0); });
+$('red').addEventListener('input', e => { rolling().playing = false; strainTo(strainOf(e.target.value/100)); });
+$('red').addEventListener('pointerup', e => e.target.blur());  // so the arrow keys go back to changing the step
+
+// ---------------------------------------------------------------- annealing controls (step 6)
+function syncAnneal(){
+  const pct = anneal.x*100, wait = !mroll.ready;       // the rolled paths are still being worked out
+  $('rex').value = pct; $('rexOut').textContent = `${Math.round(pct)} %`;
+  $('annealPlay').textContent = anneal.playing ? '❚❚ Pause' : '▶ Play';
+  $('annealPlay').disabled = $('rex').disabled = wait;
+  $('annealReset').disabled = wait || (anneal.x === 0 && !anneal.playing);
+}
+function setAnneal(x){               // show the sheet with the fraction x of its grains recrystallized
+  anneal.x = clamp(x, 0, 1);
+  const was = anneal.n, n = newGrains(), t0 = performance.now();
+  for (let k = Math.min(was, n); k < Math.max(was, n); k++){   // the grains that change hands turn to their new orientation
+    const g = many[RX_ORDER[k]], from = seen(g);
+    if (!g.turn) turns.push(g);
+    g.turn = { from, t0 };
+  }
+  showMany(); syncAnneal(); invalidate();
+}
+function playAnneal(on){
+  if (on && anneal.x >= 1) setAnneal(0);               // at the end, Play starts again
+  anneal.playing = on; anneal.last = 0;
+  syncAnneal(); invalidate();
+}
+$('annealPlay').addEventListener('click', () => playAnneal(!anneal.playing));
+$('annealReset').addEventListener('click', () => { anneal.playing = false; setAnneal(0); });
+$('rex').addEventListener('input', e => { anneal.playing = false; setAnneal(e.target.value/100); });
+$('rex').addEventListener('pointerup', e => e.target.blur());
+
+// ---------------------------------------------------------------- options
+function goOrientation(q){
+  newStart();
+  const g = grains[cur];
+  qTween = { grain: g, from: g.q, to: q, t0: performance.now(), dur: 900 };
+  invalidate();
+}
+document.querySelectorAll('[data-ori]').forEach(b => b.addEventListener('click', () => {
+  const [hkl, uvw] = b.dataset.ori.split(',').map(t => t.trim().split(/\s+/).map(Number));
+  goOrientation(orientation(hkl, uvw));
+}));
+$('random').addEventListener('click', () => goOrientation(qRandom(Math.random)));
+function setLines(on){ lines = on; probe = null; hover = null; updateUI(); invalidate(); }
+$('asDots').addEventListener('click', () => setLines(false));
+$('asLines').addEventListener('click', () => setLines(true));
+// Which planes' poles are plotted, and in which projection. Both are kept from step to step, and everything
+// drawn reads `family` and goes through project(), so a change needs no more than a repaint.
+function setFamily(f){
+  if (f === family || !FAMILIES[f]) return;
+  family = f; hover = null;            // hover is a pole of the old family
+  updateUI(); invalidate();
+}
+function setProjection(p){
+  if (p === projection || !PROJECTIONS[p]) return;
+  projection = p; probe = null; drag = null;   // a point of the figure is another direction now
+  updateUI(); invalidate();
+}
+for (const b of famBtns) b.addEventListener('click', () => setFamily(b.dataset.family));
+for (const b of projBtns) b.addEventListener('click', () => setProjection(b.dataset.proj));
+$('axNames').addEventListener('change', e => { axisNames = e.target.checked; updateUI(); invalidate(); });
+for (const b of markBtns) b.addEventListener('change', () => { COMPONENTS[+b.dataset.comp].on = b.checked; invalidate(); });
+// The gate for the instructor's extras: open when OPEN_TO_ALL is set or the URL ends in #instructor, and read
+// again whenever the hash changes, so adding or removing it needs no reload. Closed, the controls are not
+// displayed (so they are out of the tab order and of the accessibility tree), nothing is marked on the figure
+// and the read-out is emptied.
+function applyGate(){
+  instructor = OPEN_TO_ALL || /instructor/i.test(location.hash);
+  updateUI(); invalidate();
+}
+window.addEventListener('hashchange', applyGate);
+$('topView').addEventListener('click', () => tweenCam(CAM_TOP));
+$('resetView').addEventListener('click', () => tweenCam(CAM0, 700));
+
+// ---------------------------------------------------------------- pointer
+const cv3 = $('view3d'), cv2 = $('map');
+const pos = (e, cv) => { const b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+function nearest(list, x, y){
+  let best = null, bd = 14;
+  for (const it of list){ const d = Math.hypot(it.x - x, it.y - y); if (d < bd){ bd = d; best = it.id; } }
+  return best;
+}
+const onCrystal = (x, y) => !multi() && Math.hypot(x - view.O[0], y - view.O[1]) <= view.rb;
+// Step 4 on: the grain under a click, or null. A cube is hit on one of its painted faces (the one on top first),
+// or failing that near its centre, which helps a finger; a dot within a few pixels of its edge.
+function inQuad(q, x, y){
+  let sign = 0;
+  for (let i = 0; i < 4; i++){
+    const a = q[i], b = q[(i + 1) % 4], c = (b[0] - a[0])*(y - a[1]) - (b[1] - a[1])*(x - a[0]);
+    if (c !== 0){ if (sign && (c > 0) !== (sign > 0)) return false; sign = c; }
+  }
+  return true;
+}
+function cubeAt(x, y){
+  for (let i = pickCubes.length - 1; i >= 0; i--) if (pickCubes[i].quads.some(q => inQuad(q, x, y))) return pickCubes[i].id;
+  let best = null, bd = Math.max(10, view.s*HS*1.5);
+  for (const c of pickCubes){ const d = Math.hypot(c.x - x, c.y - y); if (d < bd){ bd = d; best = c.id; } }
+  return best;
+}
+function dotAt(x, y){
+  let best = null, bd = 6;
+  for (const d of pickDots){ const gap = Math.hypot(d.x - x, d.y - y) - d.r; if (gap < bd){ bd = gap; best = d.id; } }
+  return best;
+}
+const moved = (d, x, y) => d.far || (d.far = Math.hypot(x - d.x0, y - d.y0) > 5);   // a drag, not a click
+function arc(x, y){                  // screen point -> point on the near side of the ball round the crystal (sample frame)
+  let nx = (x - view.O[0])/view.rb, ny = -(y - view.O[1])/view.rb; const d2 = nx*nx + ny*ny;
+  let nz = 0; if (d2 > 1){ const d = Math.sqrt(d2); nx /= d; ny /= d; } else nz = Math.sqrt(1 - d2);
+  return add(add(scl(view.r, nx), scl(view.u, ny)), scl(view.w, nz));
+}
+const mapToVec = (x, y) => unproject((x - map.cx)/map.Rm, -(y - map.cy)/map.Rm);
+const turn = (v0, v1) => {           // turns the crystal in the sample frame; the sheet stays where it is
+  const g = grains[cur];
+  if (roll.eps > 0 || roll.playing || roll.path) newStart();   // a rolled crystal that is turned by hand becomes a new start
+  g.q = qnorm(qmul(qBetween(v0, v1), g.q)); qTween = null;
+};
+
+cv3.addEventListener('pointerdown', e => {
+  if (!view) return;
+  cv3.setPointerCapture(e.pointerId);
+  const [x, y] = pos(e, cv3), inside = onCrystal(x, y);
+  drag = { mode: inside ? 'crystal' : 'orbit', x, y, x0: x, y0: y, v: arc(x, y) };
+  if (!inside) camTween = null;
+  cv3.style.cursor = 'grabbing';
+});
+cv3.addEventListener('pointermove', e => {
+  if (!view) return;
+  const [x, y] = pos(e, cv3);
+  if (drag){
+    moved(drag, x, y);
+    if (drag.mode === 'crystal'){ const v = arc(x, y); turn(drag.v, v); drag.v = v; }
+    else if (drag.mode === 'orbit'){ cam.az -= (x - drag.x)*0.01; cam.el = clamp(cam.el + (y - drag.y)*0.01, -0.5, Math.PI/2); drag.x = x; drag.y = y; }
+    invalidate(); return;
+  }
+  const h = nearest(pick3, x, y);
+  if (h !== hover){ hover = h; invalidate(); }
+  cv3.style.cursor = multi() ? (cubeAt(x, y) !== null ? 'pointer' : 'move') : onCrystal(x, y) ? 'grab' : 'move';
+});
+const end3 = e => {
+  if (drag && multi() && e.type === 'pointerup'){ const [x, y] = pos(e, cv3); if (!moved(drag, x, y)) pick(cubeAt(x, y)); }
+  drag = null; cv3.style.cursor = '';
+};
+cv3.addEventListener('pointerup', end3); cv3.addEventListener('pointercancel', end3);
+cv3.addEventListener('pointerleave', () => { if (!drag && hover !== null){ hover = null; invalidate(); } });
+cv3.addEventListener('wheel', e => { e.preventDefault(); camTween = null; cam.zoom = clamp(cam.zoom*Math.exp(-e.deltaY*0.0012), 0.5, 3); invalidate(); }, { passive: false });
+
+cv2.addEventListener('pointerdown', e => {
+  if (!map || stage < 2) return;
+  cv2.setPointerCapture(e.pointerId);
+  const [x, y] = pos(e, cv2);
+  if (multi()){ drag = { mode: 'pick', x0: x, y0: y }; return; }   // the many grains are not turned by hand
+  drag = { mode: 'map', v: mapToVec(x, y) }; cv2.style.cursor = 'grabbing';
+});
+cv2.addEventListener('pointermove', e => {
+  if (!map || stage < 2) return;
+  const [x, y] = pos(e, cv2);
+  if (drag && drag.mode === 'map'){ const v = mapToVec(x, y); turn(drag.v, v); drag.v = v; invalidate(); return; }
+  if (drag && drag.mode === 'pick'){ moved(drag, x, y); return; }
+  const h = nearest(pick2, x, y);
+  if (h !== hover){ hover = h; invalidate(); }
+  if (contoured()){                  // the density under the pointer is read out below the figure
+    const X = (x - map.cx)/map.Rm, Y = -(y - map.cy)/map.Rm;
+    probe = X*X + Y*Y <= 1 ? [X, Y] : null; invalidate();
+  }
+  cv2.style.cursor = !multi() ? 'grab' : dotAt(x, y) !== null ? 'pointer' : '';
+});
+const end2 = e => {                  // a click picks the grain whose dot is under it (with contour lines there are no dots to click)
+  if (drag && drag.mode === 'pick' && e.type === 'pointerup' && !contoured()){ const [x, y] = pos(e, cv2); if (!moved(drag, x, y)) pick(dotAt(x, y)); }
+  drag = null; cv2.style.cursor = '';
+};
+cv2.addEventListener('pointerup', end2); cv2.addEventListener('pointercancel', end2);
+cv2.addEventListener('pointerleave', () => { if (!drag && (hover !== null || probe)){ hover = null; probe = null; invalidate(); } });
+
+// ---------------------------------------------------------------- canvases
+function setupCanvas(cv){
+  const g = { cv, ctx: cv.getContext('2d'), W: 0, H: 0, dpr: 1 };
+  const fit = () => {
+    const b = cv.getBoundingClientRect();
+    g.dpr = window.devicePixelRatio || 1; g.W = b.width; g.H = b.height;
+    cv.width = Math.max(1, Math.round(b.width*g.dpr)); cv.height = Math.max(1, Math.round(b.height*g.dpr));
+    if (ready){ draw3D(); draw2D(); }   // resizing clears a canvas: repaint at once, so no frame is blank
+    invalidate();
+  };
+  new ResizeObserver(fit).observe(cv);
+  fit();
+  return g;
+}
+let ready = false;
+const g3 = setupCanvas(cv3), g2 = setupCanvas(cv2);
+ready = true;
+document.addEventListener('visibilitychange', invalidate);
+applyGate();
+
+// Directions at which poleFigureApp.texture() reports the density: degrees from ND, and round from RD towards TD.
+const CHECK_DIRS = [['ND', 0, 0], ['RD axis, 20 from ND', 20, 0], ['RD axis, 28', 28, 0], ['RD axis, 35', 35, 0], ['RD axis, 50', 50, 0],
+  ['RD axis, 70', 70, 0], ['RD, on the rim', 90, 0], ['rim, 20 round from RD', 90, 20], ['rim, 45 round from RD', 90, 45], ['TD axis, 30 from ND', 30, 90],
+  ['TD axis, 60', 60, 90], ['TD axis, 75', 75, 90], ['TD, on the rim', 90, 90], ['45 from ND, 45 round', 45, 45], ['60 from ND, 30 round', 60, 30],
+  ['30 from ND, 60 round', 30, 60]];
+// Read-only handle for checks from the console: the orientation, and where each pole is plotted.
+window.poleFigureApp = {
+  state(){
+    const M = qToMat(grains[cur].q), deg = c => Math.acos(clamp(c, -1, 1))/DEG;
+    const sg = sel === null ? null : many[sel], Ms = sg && qToMat(sg.q);
+    return {
+      stage, family, projection, axisNames, instructor, marked: COMPONENTS.filter(c => c.on).map(c => c.id), q: grains[cur].q.slice(), hkl: M[2].slice(), uvw: M[1].slice(), readout: $('ori').textContent,
+      // step 4 on: the grain picked out, the cubes painted in the last frame (canvas pixels), and the figure's circle
+      picked: sg && { grain: sel, q: sg.q.slice(), hkl: Ms[2].slice(), uvw: Ms[1].slice(), cube: sg.cube, col: sg.col },
+      cubes: pickCubes.map(c => ({ grain: c.id, x: c.x, y: c.y })), figure: map && { ...map },
+      roll: {                        // the reduction shown, the sheet's half-lengths as drawn, and the start of the path
+        reduction: reductionOf(roll.eps), strain: roll.eps, playing: roll.playing, still: roll.still,
+        start: roll.path ? roll.path[0].slice() : grains[cur].q.slice(), failed: roll.path ? roll.path.failed : 0,
+        sheet: view && view.box ? { ...view.box } : null, cut: !!(view && view.cut), note: $('rollNote').textContent },
+      // step 5 on: the roll of the many grains, and the contour lines as last drawn (how many of each level)
+      many: {
+        reduction: reductionOf(mroll.eps), strain: mroll.eps, shown: mroll.shown, playing: mroll.playing, ready: mroll.ready,
+        built: mroll.built, pathsMs: mroll.ms, pathsWallMs: mroll.wall, failed: many.reduce((n, g) => n + (g.path ? g.path.failed : 0), 0),
+        contours: contoured(), halfWidth: KERNEL_HW, levels: tex.levels.map(l => l.length), max: tex.F && tex.key ? tex.F.max : null,
+        densityMs: tex.cost, late: tex.late, note: $('rollNote').textContent },
+      // step 6: how far the anneal is set, how many grains are drawn as new ones, and how many are still turning
+      anneal: {
+        recrystallized: anneal.x, newGrains: anneal.n, rolled: MANY_N - anneal.n, kept: KEEP_N, scatter: CUBE_SD, playing: anneal.playing,
+        turning: turns.length, cubesNew: many.filter(g => g.cube && g.replaced).length, note: $('annealNote').textContent },
+      poles: FAMILIES[family].planes.map(h => {
+        let v = mulMV(M, unit(h)); if (v[2] < 0) v = scl(v, -1);     // the end above the sheet
+        const [X, Y] = project(v);
+        return { plane: h, TD: v[0], RD: v[1], ND: v[2], fromND: deg(v[2]), fromRD: deg(v[1]), fromTD: deg(v[0]), X, Y };
+      }),
+      drawn: drawn.map(d => ({ ...d })) };   // the dots painted in the last frame, in units of the circle's radius
+  },
+  // the grains of step 4 on: q is the orientation now, in every step; rank the place in the anneal's order
+  // (RX_N = 480 for a grain that stays as rolled), replaced whether it is drawn as a new grain, fromCube how far q is from exact cube
+  many(){
+    return many.map(g => ({ q: g.q.slice(), q0: g.q0.slice(), pos: g.pos.slice(), cube: g.cube, col: g.col, rank: g.rank, replaced: !!g.replaced,
+      qx: g.qx && g.qx.slice(), fromCube: qAngle(nearestSame(g.q, CUBE_Q), CUBE_Q) }));
+  },
+  // Young's modulus along RD, TD, ND and 45° between RD and TD for what is shown (the single crystal, or the 500
+  // grains): [low, high] in GPa, the two averages of the instructor's read-out. random: the same for no texture.
+  modulus(){
+    const qs = multi() ? many.map(g => g.q) : [grains[cur].q];
+    return { grains: qs.length, ...Object.fromEntries(E_DIRS.map(d => [d.name, modulus(qs, d.s)])), random: randomModulus().slice(), shown: $('modOut').textContent, note: $('modNote').textContent };
+  },
+  // Where the marks of an ideal orientation fall ('cube', 'copper', 's', 'brass', 'taylor'), for a family and a
+  // projection (default: those shown): degrees from ND and round from RD, and the place in units of the radius.
+  marks(id, fam, proj){
+    const c = COMPONENTS.find(k => k.id === id), P = PROJECTIONS[proj || projection];
+    return c && componentMarks(c.q, fam, proj).map(([X, Y]) => { const v = P.unproject(X, Y); return { fromND: Math.acos(clamp(v[2], -1, 1))/DEG, roundFromRD: Math.atan2(X, Y)/DEG, X, Y }; });
+  },
+  // The pole density worked out afresh, for checks: at a reduction (default: as shown), a half-width hw in degrees
+  // and a grid of n points across. max and min are its range, at where the maximum is (degrees from ND, and round
+  // from RD), mean its average over the hemisphere by solid angle (pole by pole at `samples` evenly spread
+  // directions), gridMean the same from the grid, dirs its value at some fixed directions (from the grid, and exact).
+  // For the anneal: recrystallized, the fraction from 0 to 1 (default: as shown), and scatter, the standard
+  // deviation of the new grains in degrees (default CUBE_SD). nearCube is the share of the grains within
+  // `within` degrees (default 15) of exact cube. family ('111', '100', '110') and projection ('stereo', 'area')
+  // default to what is shown; the projection changes the grid, and so max, at, gridMean and value, not the density.
+  texture(o){
+    o = o || {};
+    if (!mroll.ready) return null;
+    const eps = o.reduction === undefined ? mroll.shown : strainOf(o.reduction), hw = o.hw || KERNEL_HW;
+    const nNew = o.recrystallized === undefined ? anneal.n : Math.round(clamp(o.recrystallized, 0, 1)*RX_N), sd = o.scatter || CUBE_SD;
+    const fam = o.family || family, P = PROJECTIONS[o.projection || projection];
+    const qs = many.map(g => g.rank < nNew ? cubeGrain(g, sd) : eps > 0 ? pathAt(g.path, eps) : g.q0), planes = FAMILIES[fam].planes.map(unit);
+    const t0 = performance.now(), F = poleDensity(makeField(o.n || GRID_N, P.project, P.unproject), qs, planes, hw, o.mirror), ms = performance.now() - t0;
+    const top = P.unproject(F.at[0], F.at[1]), N = o.samples || 4000;
+    const dir = (a, b) => [Math.sin(a*DEG)*Math.sin(b*DEG), Math.sin(a*DEG)*Math.cos(b*DEG), Math.cos(a*DEG)];
+    let mean = 0, gs = 0, gw = 0;
+    for (let i = 0; i < N; i++){ const z = (i + 0.5)/N, r = Math.sqrt(1 - z*z), f = i*2.399963229728653; mean += poleDensityAt(qs, planes, hw, [r*Math.cos(f), r*Math.sin(f), z], o.mirror); }
+    for (let k = 0; k < F.D.length; k++){   // each grid point weighted by the solid angle its cell stands for; the rim cuts the last cells
+      if (!F.in[k]) continue;
+      const r = F.r[k], w = P.solid(r)*clamp((1 - r)/F.sp + 0.5, 0, 1); gs += w*F.D[k]; gw += w;
+    }
+    return { family: fam, projection: P.name, hw, reduction: reductionOf(eps), newGrains: nNew, scatter: sd, n: F.n, ms, max: F.max, min: F.min, mean: mean/N, gridMean: gs/gw,
+      nearCube: qs.filter(q => qAngle(nearestSame(q, CUBE_Q), CUBE_Q) <= (o.within || 15)).length/qs.length,
+      at: [Math.acos(clamp(top[2], -1, 1))/DEG, Math.atan2(Math.abs(top[0]), Math.abs(top[1]))/DEG],
+      dirs: CHECK_DIRS.map(([name, a, b]) => { const d = dir(a, b), xy = P.project(d); return { name, fromND: a, fromRD: b, value: fieldAt(F, xy[0], xy[1]), exact: poleDensityAt(qs, planes, hw, d, o.mirror) }; }) };
+  },
+  model: { latticeSpin, taylorStep, rollPath, pathAt, orientation, strainOf, ROLL_STEPS, EPS_MAX, poleDensity, poleDensityAt, contourLines, makeField, fieldAt,
+    cubeGrain, nearestSame, RX_ORDER, RX_N, KEEP_N, CUBE_SD, FAMILIES, PROJECTIONS, LEVELS, COMPONENTS, componentMarks, compliance, modulus, randomModulus }};   // the rolling model, the scripted anneal and the figure's maps, for checks
+})();
+</script>
+</body>
+</html>
