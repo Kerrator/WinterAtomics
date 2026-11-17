@@ -318,9 +318,16 @@ const HC = 0.32;                     // half-edge of the unit-cell cube
 const HS = 0.115;                    // half-edge of a small cube, one of the many grains
 const NS = 0.5;                      // length of a plane-normal arrow on the grain that is picked out
 const CUBE_ROOM = HS*1.8;            // a small cube's centre stays this far inside the faces of the element (its half-diagonal is HS·√3)
-const LAM_DRAWN = 2;                 // the sheet of many grains is drawn at its true shape until it is this many times as long, then held
-// Where a small cube placed at p in the element before rolling is drawn once the element is lam times as long
-// and 1/lam as thick: carried along with the sheet, and still CUBE_ROOM inside its faces.
+// The rolled sheet is not drawn to scale. At 90 % reduction it is truly ten times as long and a tenth as thick:
+// it would run far out of the panel and be thinner than the cubes and the crystal, which keep their size. So the
+// picture shows DRAWN_POWER of the true strain: lam^DRAWN_POWER times as long and that much thinner (3.2 times at
+// 90 %, where the sheet can still just hold the cubes). It thins and lengthens at a steady pace all the way from
+// 0 to 90 %, for the single crystal and for the many grains alike; the notes beside the slider give both shapes.
+const DRAWN_POWER = 0.5;
+const drawnStretch = eps => Math.exp(DRAWN_POWER*eps);   // how many times as long the sheet is drawn at true strain eps
+const LAM_PLACED = 2;                // the cubes are placed to stay apart in a sheet drawn this many times as long (see buildMany)
+// Where a small cube placed at p in the element before rolling is drawn once the element is drawn lam times as
+// long and 1/lam as thick: carried along with the sheet, and still CUBE_ROOM inside its faces.
 const carried = (p, lam) => [p[0], p[1]*(BOX.rd*lam - CUBE_ROOM)/(BOX.rd - CUBE_ROOM), p[2]*(BOX.nd/lam - CUBE_ROOM)/(BOX.nd - CUBE_ROOM)];
 const LN = 1.0;                      // length of a plane-normal arrow; also the radius of the circle in the sheet plane
 const ARC = 1.3;                     // radius of the ball that a drag on the crystal turns
@@ -339,20 +346,21 @@ const many = [];
   const rand = seeded(SEED);
   for (let i = 0; i < MANY_N; i++){ const q = qRandom(rand); many.push({ q, q0: q }); }
   // Where the cubes sit: the best of several random spots, the one farthest from the cubes that are always
-  // drawn, both before rolling and in the rolled sheet as it is drawn (thinner, so cubes one above the other
-  // come together). Those 40 then cannot touch at any reduction. A second stream, so the orientations do not
-  // depend on how the cubes are placed.
+  // drawn, both before rolling and in a rolled sheet drawn LAM_PLACED times as long (thinner, so cubes one above
+  // the other come together). Those 40 then do not touch at any reduction: placed so, they are never closer than
+  // 0.407 between centres up to the 3.2 times of 90 %, and a cube's diagonal is 0.398. A second stream, so the
+  // orientations do not depend on how the cubes are placed.
   const place = seeded(SEED + 1), mg = CUBE_ROOM, placed = [];
   const spot = () => [(2*place() - 1)*(BOX.td - mg), (2*place() - 1)*(BOX.rd - mg), (2*place() - 1)*(BOX.nd - mg)];
   const gap = (p, o) => len([p[0] - o[0], p[1] - o[1], p[2] - o[2]]);
-  const clear = p => { const f = carried(p, LAM_DRAWN); return placed.reduce((m, o) => Math.min(m, gap(p, o.p), gap(f, o.f)), Infinity); };
+  const clear = p => { const f = carried(p, LAM_PLACED); return placed.reduce((m, o) => Math.min(m, gap(p, o.p), gap(f, o.f)), Infinity); };
   many.forEach((g, i) => {
     g.cube = i < CUBES_N;
     let best = spot(), bd = clear(best);
     for (let t = g.cube ? 200 : 12; t > 1; t--){ const p = spot(), d = clear(p); if (d > bd){ bd = d; best = p; } }
     g.pos = best;
     if (g.cube){                     // its own colour: hues a golden angle apart, at three depths
-      placed.push({ p: best, f: carried(best, LAM_DRAWN) });
+      placed.push({ p: best, f: carried(best, LAM_PLACED) });
       const h = Math.round((i*137.508 + 20) % 360), sat = 62 + 14*(i % 2), li = 34 + 8*(i % 3);
       g.col = `hsl(${h},${sat}%,${li}%)`; g.edge = `hsl(${h},${sat}%,${li - 16}%)`;
     } else { g.col = '#2b3644'; g.edge = '#10161e'; }   // drawn in the sheet only while it is picked out
@@ -1035,23 +1043,33 @@ function draw3D(){
   const w = [ce*ca, ce*sa, se];       // towards the viewer
   const r = [-sa, ca, 0];             // screen right
   const u = [-se*ca, -se*sa, ce];     // screen up
-  const s = Math.min(W/4.7, H/3.9)*cam.zoom;
+  const fs = clamp(Math.min(W, H)/30, 12, 18);
+  // the sheet element as rolled: drawn lam times as long and 1/lam as thick, the same width (see drawnStretch).
+  // Each small cube is carried along with the sheet as drawn.
+  const lam = drawnStretch(all ? mroll.shown : roll.eps), box = { td: BOX.td, rd: BOX.rd*lam, nd: BOX.nd/lam };
+  // The view draws back as the sheet lengthens, so that all of it stays in the panel. fit(b) is how much of the
+  // scale s0 leaves a sheet b and its three arrows inside the panel, with room for the arrows' names. The scale
+  // is that of the sheet before rolling times fit(box)/fit(BOX): the same view as ever while the sheet is
+  // unrolled, and no jump at any reduction.
+  const s0 = Math.min(W/4.7, H/3.9)*cam.zoom;
+  const fit = b => {
+    const reach = a => Math.max(b.td*Math.abs(a[0]) + b.rd*Math.abs(a[1]) + b.nd*Math.abs(a[2]),
+      (b.td + AX_LEN)*Math.abs(a[0]), (b.rd + AX_LEN)*Math.abs(a[1]), (b.nd + AX_LEN)*Math.abs(a[2]));
+    return Math.min(1, Math.max(W/2 - fs*2.6, 1)/(s0*reach(r)), Math.max(H/2 - fs*2.6, 1)/(s0*reach(u)));
+  };
+  const s = s0*fit(box)/fit(BOX);
   const cx = W/2, cy = H/2 + 8;
   const P = p => [cx + s*dot(p, r), cy - s*dot(p, u), dot(p, w)];
   const O = P([0, 0, 0]);
   view = { r, u, w, s, O, rb: s*ARC };
-  const fs = clamp(Math.min(W, H)/30, 12, 18);
   const line = (A, B) => { ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); ctx.stroke(); };
 
   // what each step has revealed
   const grow = all ? 0 : stage > 2 ? 1 : stage === 2 ? ease(clamp(anim/0.6, 0, 1)) : 0;   // the plane normals
   const M = qToMat(grains[cur].q);
 
-  // the sheet element as rolled, at its true shape: lam times as long, 1/lam as thick, the same width.
-  // A long sheet runs out of the panel; the RD arrow then starts inside the sheet, where it can still be seen.
-  // The sheet of many grains is drawn so only as far as LAM_DRAWN and then held: any thinner and it could not
-  // hold the cubes, which keep their size. Each cube is carried along with the sheet as drawn.
-  const lam = all ? Math.min(Math.exp(mroll.shown), LAM_DRAWN) : Math.exp(roll.eps), box = { td: BOX.td, rd: BOX.rd*lam, nd: BOX.nd/lam };
+  // A sheet that still runs out of the panel (the view zoomed in, or turned): the RD arrow then starts inside
+  // the sheet, where it can still be seen.
   const at = g => carried(g.pos, lam);
   const room = (half, c) => Math.abs(c) > 1e-6 ? half/(s*Math.abs(c)) : Infinity;
   const rdSeen = Math.max(BOX.rd, Math.min(room(W/2 - fs*2.6, r[1]), room(H/2 - fs*2.6, u[1])) - AX_LEN);
@@ -1394,19 +1412,20 @@ function modulusHTML(){
     return `<span title="${d.title}">${d.name} <b>${lo === hi ? lo : `${lo}–${hi}`}</b></span>`;
   }).join(' ');
 }
-function rollNoteHTML(){             // what the sheet has become, and anything the picture cannot show
+// What the sheet has become, and what the picture shows of it: the drawn sheet changes less (see drawnStretch).
+// The notes are kept to two lines at 1280 px, so that the pictures do not change size when rolling starts.
+const trueHTML = eps => { const lam = Math.exp(eps); return `<b>${lam.toFixed(1)}× as long, ${(1/lam).toFixed(2)}× as thick</b>`; };
+const drawnHTML = eps => { const d = drawnStretch(eps); return `${d.toFixed(1)}× and ${(1/d).toFixed(2)}×`; };
+const shapeHTML = eps => `${trueHTML(eps)}, the same width. The picture shows a smaller change (${drawnHTML(eps)}), so that the sheet stays in view`;
+function rollNoteHTML(){
   if (roll.eps === 0) return 'Press Play, or drag the slider, to roll the sheet with the crystal as it is now.';
-  const lam = Math.exp(roll.eps), say = [`<b>${lam.toFixed(1)}× as long, ${(1/lam).toFixed(2)}× as thick</b>, the same width.`];
-  if (roll.still) say.push('A balanced orientation: the turning from its slip systems cancels, so it stays. Drag it a little off, or choose Tilted, and roll again.');
-  else if (view && view.cut) say.push('The sheet now runs out of the view; the crystal is not to scale.');
-  return say.join(' ');
+  if (roll.still) return `${trueHTML(roll.eps)}, drawn ${drawnHTML(roll.eps)}. A balanced orientation: the turning from its slip systems cancels, so it stays. Drag it a little off, or choose Tilted, and roll again.`;
+  return shapeHTML(roll.eps) + '.';
 }
 function manyNoteHTML(){             // the same for the sheet of many grains
   if (!mroll.ready) return `Working out how each of the ${MANY_N} grains turns: ${Math.round(100*mroll.built/MANY_N)} %`;
   if (mroll.shown === 0) return `Press Play, or drag the slider, to roll the sheet and all ${MANY_N} grains.`;
-  const lam = Math.exp(mroll.shown), say = [`<b>${lam.toFixed(1)}× as long, ${(1/lam).toFixed(2)}× as thick</b>, the same width.`];
-  if (lam > LAM_DRAWN) say.push(`The picture stops at ${LAM_DRAWN}× as long (${Math.round(100*(1 - 1/LAM_DRAWN))} % reduction): any thinner and the sheet could not hold the cubes, which are not to scale.`);
-  return say.join(' ');
+  return shapeHTML(mroll.shown) + ' and can hold the cubes, which are not to scale.';
 }
 function annealNoteHTML(){           // how far the anneal has got, and how to tell the new grains
   if (!mroll.ready) return manyNoteHTML();
@@ -1743,7 +1762,7 @@ const turn = (v0, v1) => {           // turns the crystal in the sample frame; t
 };
 
 cv3.addEventListener('pointerdown', e => {
-  if (!view) return;
+  if (!view || e.button) return;     // the main button only: a right-click's pointerup goes to the menu, and the drag would never end
   cv3.setPointerCapture(e.pointerId);
   const [x, y] = pos(e, cv3), inside = onCrystal(x, y);
   drag = { mode: inside ? 'crystal' : 'orbit', x, y, x0: x, y0: y, v: arc(x, y) };
@@ -1772,7 +1791,7 @@ cv3.addEventListener('pointerleave', () => { if (!drag && hover !== null){ hover
 cv3.addEventListener('wheel', e => { e.preventDefault(); camTween = null; cam.zoom = clamp(cam.zoom*Math.exp(-e.deltaY*0.0012), 0.5, 3); invalidate(); }, { passive: false });
 
 cv2.addEventListener('pointerdown', e => {
-  if (!map || stage < 2) return;
+  if (!map || stage < 2 || e.button) return;
   cv2.setPointerCapture(e.pointerId);
   const [x, y] = pos(e, cv2);
   if (multi()){ drag = { mode: 'pick', x0: x, y0: y }; return; }   // the many grains are not turned by hand
@@ -1833,10 +1852,10 @@ window.poleFigureApp = {
       // step 4 on: the grain picked out, the cubes painted in the last frame (canvas pixels), and the figure's circle
       picked: sg && { grain: sel, q: sg.q.slice(), hkl: Ms[2].slice(), uvw: Ms[1].slice(), cube: sg.cube, col: sg.col },
       cubes: pickCubes.map(c => ({ grain: c.id, x: c.x, y: c.y })), figure: map && { ...map },
-      roll: {                        // the reduction shown, the sheet's half-lengths as drawn, and the start of the path
+      roll: {                        // the reduction shown, the sheet's half-lengths as drawn (of whichever sheet is shown) and the scale, pixels per unit, and the start of the path
         reduction: reductionOf(roll.eps), strain: roll.eps, playing: roll.playing, still: roll.still,
         start: roll.path ? roll.path[0].slice() : grains[cur].q.slice(), failed: roll.path ? roll.path.failed : 0,
-        sheet: view && view.box ? { ...view.box } : null, cut: !!(view && view.cut), note: $('rollNote').textContent },
+        sheet: view && view.box ? { ...view.box } : null, scale: view ? view.s : 0, cut: !!(view && view.cut), note: $('rollNote').textContent },
       // step 5 on: the roll of the many grains, and the contour lines as last drawn (how many of each level)
       many: {
         reduction: reductionOf(mroll.eps), strain: mroll.eps, shown: mroll.shown, playing: mroll.playing, ready: mroll.ready,
