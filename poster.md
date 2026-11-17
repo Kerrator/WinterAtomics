@@ -123,22 +123,22 @@ description: Scan-to-read landing page for the full version of the work on chrom
   <p class="tagline">Scan-to-read landing page for the full version of the work.</p>
 
   <a
-    href="https://www.winteratomics.ca/assets/pdfs/kerr-2025-scripta-cr-vacancy.pdf"
+    href="https://doi.org/10.1016/j.scriptamat.2026.117203"
     class="primary-button"
-    aria-label="View or download the full PDF paper on chromium vacancy concentration in nickel-chromium-aluminum alloys"
+    aria-label="Read the published article on chromium vacancy concentration in nickel-chromium-aluminum alloys in Scripta Materialia"
     target="_blank"
     rel="noopener noreferrer"
   >
-    View / Download PDF
+    Read the published article
   </a>
 
   <a
     href="https://www.winteratomics.ca/assets/pdfs/kerr-2025-scripta-cr-vacancy.pdf"
     class="secondary-link"
-    aria-label="Direct link to PDF file"
+    aria-label="Preprint PDF"
     target="_blank"
     rel="noopener noreferrer"
   >
-    Direct PDF link
+    Preprint PDF
   </a>
 </div>

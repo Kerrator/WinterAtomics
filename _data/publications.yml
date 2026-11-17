@@ -1,13 +1,14 @@
 # Peer-reviewed publications, preprints, and theses
 
 - title: "Chromium Raises Vacancy Concentration and Promotes Grain-Boundary Al Segregation in Ni–Cr–Al"
-  authors: "Stephen T.W. Kerr, Keyvan Ferasat, Yasaman Ghaffari, Laurent Karim Béland"
+  authors: "Stephen T.W. Kerr, Keyvan Ferasat, Yasaman Ghaffari, Kevin Daub, Suraj Y. Persaud, Laurent Karim Béland"
   year: 2026
   venue: "Scripta Materialia 277, 117203"
-  link: "https://www.sciencedirect.com/science/article/pii/S1359646226000394"
+  link: "https://doi.org/10.1016/j.scriptamat.2026.117203"
+  link_label: "Article"
+  preprint: "/assets/pdfs/kerr-2025-scripta-cr-vacancy.pdf"
   image: "/assets/images/graphical-abstract-cr-vacancy.png"
   type: "journal"
-  talk_page: "/pykmc/"
 
 - title: "C–C Bonding in Molecular Systems via Cross-Coupling-like Reactions Involving Noncovalently Bound Constituent Ions"
   authors: "Stephen Kerr, Fedor Y. Naumkin"
@@ -26,13 +27,13 @@
 - title: "Noncovalently Bound Complexes of Polar Molecules: Dipole-Inside-of-Dipole vs. Dipole–Dipole Systems"
   authors: "S. Kerr, F.Y. Naumkin"
   year: 2017
-  venue: "New Journal of Chemistry 41(22)"
+  venue: "New Journal of Chemistry 41, 13576"
   link: "/assets/pdfs/kerr-2017-njc-noncovalent-complexes.pdf"
   type: "journal"
 
 - title: "Rational Design of a Material for Rapid Colorimetric Fe²⁺ Detection"
   authors: "Nadia O. Laschuk, Iraklii I. Ebralidze, Simone Quaranta, Stephen T.W. Kerr, Jacquelyn G. Egan, Scott Gillis, Franco Gaspari, Alessandro Latini, Olena V. Zenkina"
   year: 2016
-  venue: "Materials and Design 107"
+  venue: "Materials and Design 107, 18–25"
   link: "/assets/pdfs/kerr-2016-materials-design-fe-detection.pdf"
   type: "journal"

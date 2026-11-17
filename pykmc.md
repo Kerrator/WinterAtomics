@@ -1,8 +1,8 @@
 ---
 layout: default
-title: "PyKMC"
+title: "pyKMC"
 permalink: /pykmc/
-description: "Companion page for the PyKMC poster — full showreel and per-event animations (init / saddle / final stills) for the four elementary surface events in Ni–Cr–Al kinetic Monte Carlo."
+description: "Companion page for the pyKMC poster — full showreel and per-event animations (init / saddle / final stills) for the four elementary surface events in Ni–Cr–Al kinetic Monte Carlo."
 ---
 
 <style>
@@ -144,29 +144,29 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://www.winteratomics.ca/pykmc/">
-<meta property="og:title" content="PyKMC — Stephen Kerr">
-<meta property="og:description" content="Companion page for the PyKMC poster — full showreel and per-event animations of the four elementary surface events in Ni–Cr–Al kinetic Monte Carlo.">
+<meta property="og:title" content="pyKMC — Stephen Kerr">
+<meta property="og:description" content="Companion page for the pyKMC poster — full showreel and per-event animations of the four elementary surface events in Ni–Cr–Al kinetic Monte Carlo.">
 <meta property="og:image" content="https://www.winteratomics.ca/assets/images/graphical-abstract-cr-vacancy.png">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://www.winteratomics.ca/pykmc/">
-<meta name="twitter:title" content="PyKMC — Stephen Kerr">
-<meta name="twitter:description" content="Companion page for the PyKMC poster — full showreel and per-event animations of the four elementary surface events in Ni–Cr–Al kinetic Monte Carlo.">
+<meta name="twitter:title" content="pyKMC — Stephen Kerr">
+<meta name="twitter:description" content="Companion page for the pyKMC poster — full showreel and per-event animations of the four elementary surface events in Ni–Cr–Al kinetic Monte Carlo.">
 <meta name="twitter:image" content="https://www.winteratomics.ca/assets/images/graphical-abstract-cr-vacancy.png">
 
 <div class="pykmc-page">
 
   <div class="pykmc-hero">
-    <h1>PyKMC</h1>
-    <p class="tagline">Companion page for the PyKMC poster — full simulation showreel up top, then per-event animations and init / saddle / final stills for the four elementary surface events covered on the poster.</p>
+    <h1>pyKMC</h1>
+    <p class="tagline">Companion page for the pyKMC poster — full simulation showreel up top, then per-event animations and init / saddle / final stills for the four elementary surface events covered on the poster.</p>
   </div>
 
   <section id="showreel" class="pykmc-section" style="border-top: none; padding-top: 0;">
     <h2>Full showreel</h2>
-    <p>End-to-end render of a representative PyKMC trajectory in Ni–Cr–Al: vacancy diffusion, surface ↔ subsurface exchange, and 1NN in-plane hops, sequenced in the order they occurred during the run.</p>
+    <p>End-to-end render of a representative pyKMC trajectory in Ni–Cr–Al: vacancy diffusion, surface ↔ subsurface exchange, and 1NN in-plane hops, sequenced in the order they occurred during the run.</p>
     <div class="video-embed">
-      <iframe src="https://www.youtube.com/embed/ATy5YVhzN2s" title="PyKMC full showreel — Ni–Cr–Al kinetic Monte Carlo" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <iframe src="https://www.youtube.com/embed/ATy5YVhzN2s" title="pyKMC full showreel — Ni–Cr–Al kinetic Monte Carlo" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
   </section>
 
@@ -237,7 +237,7 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
     <!--
       Descriptions left in source for later rewrite — kept out of render for now.
     <p class="event-meta">Same geometric event as Event 2, different atom (idx 2023) — different local chemistry, different barrier.</p>
-    <p>Atom 2023 makes the same geometric move as atom 3975, but its neighbours differ — so the barrier (and the rate that PyKMC samples it at) differs too. Side-by-side with Event 2, this is the cleanest single-event illustration of the local-environment sensitivity that PyKMC has to resolve at every step.</p>
+    <p>Atom 2023 makes the same geometric move as atom 3975, but its neighbours differ — so the barrier (and the rate that pyKMC samples it at) differs too. Side-by-side with Event 2, this is the cleanest single-event illustration of the local-environment sensitivity that pyKMC has to resolve at every step.</p>
     -->
     <div class="video-embed">
       <iframe src="https://www.youtube.com/embed/QaGVe-QhRt0" title="Event 3 — surface 1NN in-plane, atom 2023" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
@@ -287,7 +287,6 @@ description: "Companion page for the PyKMC poster — full showreel and per-even
   <aside class="pykmc-resources">
     <h2>Resources</h2>
     <ul>
-      <li><a href="/assets/pdfs/kerr-2025-scripta-cr-vacancy.pdf" target="_blank" rel="noopener noreferrer">Preprint PDF — Chromium raises vacancy concentration in Ni–Cr–Al</a></li>
       <li><a href="/publications/">All publications</a></li>
       <li><a href="mailto:24jrpc@queensu.ca">Email me with questions</a></li>
     </ul>

@@ -5,7 +5,7 @@ title: Teaching
 
 # Teaching
 
-I teach and support early-year labs and tutorials with a focus on clarity, reproducible computation, and constructive feedback. Students move from analytical solutions to small Python scripts that test assumptions, residuals, and numerical error. I value accessibility, readable figures, and practical problem-solving.
+I teach MECH 479 and co-teach MECH 203 at Queen's, and before that I ran labs and tutorials for early-year courses. My focus is clarity, reproducible computation, and constructive feedback. Students move from analytical solutions to small Python scripts that test assumptions, residuals, and numerical error.
 
 ## Teaching Philosophy
 
@@ -34,29 +34,21 @@ My approach emphasizes:
 <h3>Queen's University <span class="status-badge active">Current</span></h3>
 <p><em>2024–present</em></p>
 
-<h4>MECH 479 Nanomaterials</h4>
-<p>Instructor + TA, 2024/2025, 20–40 students. Interactive lectures on materials simulation, molecular dynamics, and computational nanoscience. Designed cross-platform tutorials emphasizing reproducible workflows, version control, and verification of numerical results.</p>
-<p>Interactive viewer I built for the course: <a href="/talks/2026-mech479-stereographic-projection/">Stereographic projection of a cubic crystal</a>.</p>
+<h4>MECH 479 Nanomaterials Science &amp; Engineering</h4>
+<p>Instructor, Fall 2026. Co-instructor, Fall 2025. TA, Fall 2024.</p>
+<p>A technical elective on nanostructured materials: characterization tools and computer simulation, chemical and solid-state processing, and mechanical and physico-chemical properties.</p>
+<p>I build reusable teaching aids to help students understand complex topics, such as this <a href="/talks/2026-mech479-stereographic-projection/">interactive stereographic projection of a cubic crystal</a>.</p>
 
-<h4>MECH 272 Materials</h4>
-<p>Lab TA, Winter 2025. Undergraduate materials laboratory supporting hands-on characterization and testing methods.</p>
+<h4>MECH 203 Mathematical and Computational Tools for Mechanical Engineers II</h4>
+<p>Co-instructor, Winter 2026.</p>
+<p>A required second-year course on differential equations, numerical methods, and statistics.</p>
 
-<h4>CHEM 112 General Chemistry II</h4>
-<p>Lab TA, Winter 2025. Laboratory instruction for first-year engineering and science students.</p>
+<h4>Teaching Assistant</h4>
+<p>Labs and tutorials across first- and second-year chemistry and engineering courses.</p>
 </div>
 
 <div class="teaching-card">
 <h3>Ontario Tech University <span class="status-badge past">Previous</span></h3>
-<p><em>2021–2024</em></p>
-
-<h4>Winter 2023 — Full TA Load</h4>
-<p>Approximately 1,600 reports and quizzes marked in one term across:</p>
-<ul class="course-list">
-<li>CHEM 1800U Chemistry for Engineers (9 lab sections, ~20 students each)</li>
-<li>CHEM 1020U Chemistry II (4 lab sections)</li>
-<li>CHEM 1010U Chemistry I (2 labs + 4 tutorials, ~20–45 students each)</li>
-<li>Science Café (weekly drop-in support, 5–15 students per session)</li>
-</ul>
-
-<p>Additional terms included coordination of multiple CHEM 1010U and 1020U lab sections, development of comment banks for efficient feedback, and mentoring of undergraduate peer tutors. Emphasized reproducible computation, academic integrity, and hands-on problem-solving across all courses.</p>
+<h4>Teaching Assistant</h4>
+<p>Coordinated and taught labs and tutorials for first- and second-year science and engineering courses.</p>
 </div>
