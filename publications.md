@@ -31,7 +31,10 @@ Peer-reviewed publications and theses. If you need a copy, please contact me.
       <p class="pub-type"><strong>{{ pub.type | capitalize }}</strong></p>
       {% endif %}
       {% if pub.link %}
-      <a href="{{ pub.link }}" class="pub-link" target="_blank">PDF</a>
+      <a href="{{ pub.link }}" class="pub-link" target="_blank">{{ pub.link_label | default: "PDF" }}</a>
+      {% endif %}
+      {% if pub.preprint %}
+      <a href="{{ pub.preprint | relative_url }}" class="pub-link" style="margin-left: 1rem;" target="_blank">Preprint</a>
       {% endif %}
       {% if pub.talk_page %}
       <a href="{{ pub.talk_page | relative_url }}" class="pub-link" style="margin-left: 1rem;">Talk / Presentation Page →</a>
