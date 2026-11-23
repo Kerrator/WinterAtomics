@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbital hybridization</title>
+<style>
+:root{
+  --ink:#1c2530; --muted:#5d6b7a; --line:#d5dbe3; --bg:#f4f5f7; --panel:#ffffff; --accent:#1f5fae; --ok:#1d9e75;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font:16px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);
+  display:flex;flex-direction:column;height:100dvh;
+}
+header{padding:10px 18px 8px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+h1{font-size:20px;margin:0;font-weight:600}
+header span{color:var(--muted);font-size:14px}
+main{
+  flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);
+  gap:12px;padding:0 18px;
+}
+.panel{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;min-height:0;overflow:hidden}
+.panel canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.panel canvas.grabbing{cursor:grabbing}
+.tag,.hint,.key{position:absolute;left:12px;font-size:13px;color:var(--muted);pointer-events:none}
+.tag{top:9px;font-weight:600}
+.tag small{display:block;font-size:inherit;font-weight:400}
+.hint{bottom:9px;left:auto;right:12px}
+.key{bottom:9px}
+.side{overflow-y:auto;padding:11px 16px 12px}
+.side h2{font-size:15px;font-weight:600;margin:0 0 4px}
+.side h2.second{margin-top:14px}
+.side svg{display:block;width:100%;height:auto}
+#recipe{max-width:440px}
+.cap{font-size:13px;line-height:1.35;color:var(--muted);margin:2px 0 8px}
+table{border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:1px 9px;text-align:right;white-space:nowrap}
+tr:first-child th{color:var(--muted);font-weight:400;border-bottom:1px solid var(--line)}
+td.ok{color:var(--ok);font-weight:600}
+.row2{display:flex;gap:6px 14px;align-items:flex-start;flex-wrap:wrap}
+.row2 svg{flex:1 1 220px;width:auto;max-width:330px}
+.bar{padding:10px 18px 0;display:flex;gap:12px 22px;align-items:center;flex-wrap:wrap}
+.bar.last{padding-bottom:12px}
+button,select{
+  font:inherit;color:var(--ink);background:#fff;border:1px solid #b9c2cd;border-radius:7px;
+  padding:6px 12px;cursor:pointer;
+}
+button:hover{background:#eef2f6}
+button:disabled{color:#9aa5b1;border-color:#d5dbe3;background:#fff;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button[aria-pressed="true"],button[aria-pressed="true"]:hover{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.grp{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lbl{color:var(--muted)}
+.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.chk input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.slide{flex:1 1 220px;max-width:320px;flex-wrap:nowrap}
+input[type=range]{flex:1;min-width:110px;margin:0;accent-color:var(--accent);cursor:pointer}
+.slide output{min-width:2.6em;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.readout{display:flex;flex-wrap:wrap;gap:4px 26px;align-items:baseline}
+.readout div{white-space:nowrap}
+.readout span{color:var(--muted);font-size:14px;margin-right:6px}
+.readout b{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.note{flex:1 1 100%;min-height:2.7em;font-size:15px;line-height:1.35;color:var(--muted)}
+.note b{color:var(--ink);font-weight:600}
+@media (max-width:820px){
+  html,body{height:auto}
+  body{height:auto}
+  main{display:contents}
+  #p3{order:1;margin:0 10px;aspect-ratio:1/0.95}
+  .bar{order:2}
+  #p2{order:3;margin:12px 10px}
+  .side{overflow:visible}
+  .bar{padding:10px 10px 0}
+  .slide{max-width:none}
+  .hint{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Orbital hybridization</h1>
+  <span>MECH 479 · Carbon nanostructures</span>
+</header>
+<main>
+  <div class="panel" id="p3">
+    <canvas id="orb" aria-label="Carbon's orbitals drawn in 3D: the 2s and 2p orbitals, then the hybrids made from them; drag to rotate"></canvas>
+    <div class="tag">The orbitals<small id="orbTag"></small></div>
+    <div class="key">Shape = angular part |ψ|²; dark = + phase, pale = − phase</div>
+    <div class="hint">Drag to rotate</div>
+  </div>
+  <div class="panel side" id="p2">
+    <h2>① Mix: each hybrid = s + p</h2>
+    <svg id="recipe" viewBox="0 0 440 122" role="img" aria-label="The s orbital times its coefficient, plus a p orbital times its coefficient, equals one hybrid"></svg>
+    <p class="cap">Amplitudes ψ, drawn to scale: in every direction the hybrid's amplitude is the s amplitude plus the p amplitude, signs included, so s builds up the + lobe and eats into the − lobe. The 3D view shows |ψ|². Dashed circle = the whole 2s. The numbers are coefficients; their squares are the shares (0.58² = 1/3).</p>
+    <table id="coef" aria-label="Coefficients of each hybrid"></table>
+    <p class="cap">Each row is one hybrid; the squares in a row add to 1. Any rotation of a relaxed set is equally valid (textbooks put h<sub>1</sub> along x).</p>
+    <h2 class="second">② Minimize: turn the hybrids until every pair is orthogonal (S = 0)</h2>
+    <div class="row2">
+      <table id="pairs" aria-label="Angle and overlap for each pair of hybrids"></table>
+      <svg id="chart" viewBox="0 0 260 140" role="img" aria-label="Total overlap against minimization step"></svg>
+    </div>
+    <p class="cap" id="rule"></p>
+  </div>
+</main>
+<section class="bar">
+  <div class="grp" id="modes" role="group" aria-label="Hybridization">
+    <button data-mode="sp2" aria-pressed="true">sp² · graphene</button>
+    <button data-mode="sp3" aria-pressed="false">sp³ · diamond</button>
+  </div>
+  <div class="grp slide"><label class="lbl" for="mix">s share</label><input type="range" id="mix" min="0" max="1" step="0.01" value="0"><output id="mixv" for="mix" aria-live="off">0%</output></div>
+  <div class="grp"><button id="bMix">① Mix</button><button id="bMin">② Minimize</button><button id="bReset">Reset</button></div>
+</section>
+<section class="bar">
+  <div class="readout">
+    <div><span>Angles</span><b id="angs"></b></div>
+    <div><span>Total overlap Σ S²</span><b id="ovl"></b></div>
+  </div>
+  <div class="grp"><label class="lbl" for="en">Minimize</label><select id="en"><option value="overlap">overlap (orthogonality)</option><option value="repel">pair repulsion (VSEPR)</option></select></div>
+  <div class="grp"><button id="bRand">Random start</button><button id="bTop" aria-pressed="false">Top view</button><label class="chk" id="pzl"><input type="checkbox" id="pz"> left-over 2p<sub>z</sub></label></div>
+</section>
+<section class="bar last">
+  <div class="note" id="note" aria-live="polite"></div>
+</section>
+<script>
+"use strict";
+// A hybrid is h = c_s s + c_p p(u): one s orbital plus a p orbital pointed along the unit vector u.
+// Angular part ψ ∝ c_s + √3 c_p cos γ (γ = angle from u, real spherical harmonics). The 3D view draws |ψ|²,
+// the recipe panel draws the amplitude ψ itself (so the sum is visible); colour = sign.
+// With s share f = c_s² in every hybrid, two hybrids at angle θ overlap by S = f + (1 − f) cos θ.
+// S = 0 for every pair needs cos θ = −f/(1 − f) (Coulson): f = 1/3 gives 120° (sp²), f = 1/4 gives 109.47° (sp³).
+// "Minimize" runs gradient descent on the directions u (in the xy plane for sp²) for either Σ S² or Σ 1/|u_i − u_j|.
+const $ = id => document.getElementById(id);
+const S3 = Math.sqrt(3), R2 = Math.SQRT1_2, DEG = 180 / Math.PI;
+const HUE = ["#1f5fae", "#1d9e75", "#d85a30", "#8a4fc2"], SLATE = "#6b7a8c", AXIS = "#a3adb8", EDGE = "#8f9aa6";
+const INK = "#1c2530", MUTED = "#5d6b7a", FONT = '"Helvetica Neue",Helvetica,Arial,sans-serif';
+const MODES = {
+  sp2: { n: 3, name: "sp²", plane: true, frac: "1/3", pfrac: "2/3", target: 120, solid: "graphene",
+         trial: [[1, 0, 0], [0, 1, 0], [R2, R2, 0]], tsub: ["x", "y", "xy"], basis: ["s", "p<sub>x</sub>", "p<sub>y</sub>"], view: [-0.5, 0.98] },
+  sp3: { n: 4, name: "sp³", plane: false, frac: "1/4", pfrac: "3/4", target: Math.acos(-1 / 3) * DEG, solid: "diamond",
+         trial: [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1 / S3, 1 / S3, 1 / S3]], tsub: ["x", "y", "z", "xyz"], basis: ["s", "p<sub>x</sub>", "p<sub>y</sub>", "p<sub>z</sub>"], view: [-0.62, 0.32] }
+};
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const SUBSTEPS = 3, DT = { overlap: 0.015, repel: 0.025 }, MAXFRAMES = 1500;
+let key = "sp2", M = MODES.sp2, t = 0, U = [], hist = [], running = false, kind = "overlap", showPz = false, topView = false;
+let atTrial = true, paused = false, usedKind = null;   // directions still the trial set? run paused? energy of the last finished run
+let yaw = M.view[0], pitch = M.view[1], mixTo = null, camTo = null, dragging = false, lx = 0, ly = 0, raf = 0;
+
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const add = (a, b, k) => [a[0] + k * b[0], a[1] + k * b[1], a[2] + k * b[2]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const scale = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const norm = a => scale(a, 1 / Math.hypot(a[0], a[1], a[2]));
+const lerp = (a, b, s) => [a[0] + (b[0] - a[0]) * s, a[1] + (b[1] - a[1]) * s, a[2] + (b[2] - a[2]) * s];
+const num = (x, d) => { const s = Math.abs(x).toFixed(d); return (x < 0 && +s !== 0 ? "−" : "") + s; };
+
+// ---- physics ----
+const share = () => t / M.n;                                   // s character of each hybrid, 0 → 1/n
+const coef = () => [Math.sqrt(share()), Math.sqrt(1 - share())];
+function pairs() {
+  const f = share(), out = [];
+  for (let i = 0; i < U.length; i++) for (let j = i + 1; j < U.length; j++) {
+    const c = Math.max(-1, Math.min(1, dot(U[i], U[j])));
+    out.push({ i, j, ang: Math.acos(c) * DEG, S: f + (1 - f) * c });
+  }
+  return out;
+}
+const totalS2 = P => (P || pairs()).reduce((e, p) => e + p.S * p.S, 0);
+function gradStep(dt) {
+  const f = share(), G = U.map(() => [0, 0, 0]);
+  for (let i = 0; i < U.length; i++) for (let j = i + 1; j < U.length; j++) {
+    if (kind === "overlap") {                                  // ∂(S²)/∂u_i = 2 S (1 − f) u_j
+      const k = 2 * (f + (1 - f) * dot(U[i], U[j])) * (1 - f);
+      G[i] = add(G[i], U[j], k); G[j] = add(G[j], U[i], k);
+    } else {                                                   // ∂(1/r)/∂u_i = −(u_i − u_j)/r³
+      const d = sub(U[i], U[j]), r2 = dot(d, d) + 1e-6, k = 1 / (r2 * Math.sqrt(r2));
+      G[i] = add(G[i], d, -k); G[j] = add(G[j], d, k);
+    }
+  }
+  let gmax = 0;
+  for (let i = 0; i < U.length; i++) {
+    const g = add(G[i], U[i], -dot(G[i], U[i]));               // keep u on the unit sphere
+    gmax = Math.max(gmax, Math.hypot(g[0], g[1], g[2]));
+    U[i] = norm(add(U[i], g, -dt));
+    if (M.plane) U[i] = norm([U[i][0], U[i][1], 0]);           // sp² uses only p_x and p_y
+  }
+  return gmax;
+}
+const converged = g => kind === "overlap" ? totalS2() < 1e-10 : g < 1e-5;
+const atTarget = P => P.every(p => Math.abs(p.ang - M.target) < 0.05);
+const relaxed = P => t === 1 && totalS2(P) < 1e-8;
+// Labels: the trial set before minimizing (p_x … then s+p_x …), h_1 … once the directions have moved.
+const nameOf = i => atTrial ? [t === 0 ? "p" : "s+p", M.tsub[i]] : ["h", String(i + 1)];
+const nameHTML = i => { const [a, b] = nameOf(i); return a + "<sub>" + b + "</sub>"; };
+
+// ---- 3D view ----
+const cv = $("orb"), ctx = cv.getContext("2d"), NG = 30, NP = 36, LIGHT = norm([-0.5, -0.65, 0.58]);
+const rgbOf = h => { const v = parseInt(h.slice(1), 16); return [v >> 16, (v >> 8) & 255, v & 255]; };
+const paleOf = c => c.map(x => Math.round(x + (255 - x) * 0.62));
+const shades = new Map();
+function shade(c, lam) {
+  const q = Math.round(lam * 24), k = c.join() + ":" + q;
+  let s = shades.get(k);
+  if (!s) {
+    const L = q / 24, f = 0.62 + 0.38 * L, w = 0.22 * L ** 8;
+    s = "rgb(" + c.map(x => Math.round(x * f + (255 - x * f) * w)).join(",") + ")";
+    shades.set(k, s);
+  }
+  return s;
+}
+function toView(p) {                                           // world → [right, depth into screen, up]
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const x1 = p[0] * cy - p[1] * sy, y1 = p[0] * sy + p[1] * cy;
+  return [x1, y1 * cp - p[2] * sp, y1 * sp + p[2] * cp];
+}
+// Surface r(γ) = (A + B cos γ)²/2 about axis u (density-like |ψ|² shape, half scale), as shaded quads;
+// colour follows the sign of A + B cos γ; both lobes meet at the nucleus.
+function addOrbital(prims, u, A, B, hex, alpha) {
+  const plus = rgbOf(hex), minus = paleOf(plus);
+  const e1 = norm(Math.abs(u[2]) < 0.9 ? cross(u, [0, 0, 1]) : cross(u, [1, 0, 0])), e2 = cross(u, e1);
+  const vu = toView(u), v1 = toView(e1), v2 = toView(e2);
+  const gs = [];
+  for (let k = 0; k <= NG; k++) gs.push(Math.PI * k / NG);
+  if (B > 1e-9 && Math.abs(A) < B) gs.push(Math.acos(-A / B));   // the angular node, so lobes pinch cleanly
+  gs.sort((a, b) => a - b);
+  const ring = gs.map(g => {
+    const r = (A + B * Math.cos(g)) ** 2 / 2, c = r * Math.cos(g), s = r * Math.sin(g), out = [];
+    for (let l = 0; l < NP; l++) {
+      const ph = 2 * Math.PI * l / NP, a = s * Math.cos(ph), b = s * Math.sin(ph);
+      out.push([c * vu[0] + a * v1[0] + b * v2[0], c * vu[1] + a * v1[1] + b * v2[1], c * vu[2] + a * v1[2] + b * v2[2]]);
+    }
+    return out;
+  });
+  for (let k = 0; k + 1 < gs.length; k++) {
+    if (gs[k + 1] - gs[k] < 1e-9) continue;
+    const col = A + B * Math.cos((gs[k] + gs[k + 1]) / 2) >= 0 ? plus : minus;
+    for (let l = 0; l < NP; l++) {
+      const l2 = (l + 1) % NP, a = ring[k][l], b = ring[k + 1][l], c = ring[k + 1][l2], d = ring[k][l2];
+      let n = cross(sub(c, a), sub(d, b));
+      const m = [(a[0] + b[0] + c[0] + d[0]) / 4, (a[1] + b[1] + c[1] + d[1]) / 4, (a[2] + b[2] + c[2] + d[2]) / 4];
+      if (dot(n, m) < 0) n = scale(n, -1);                     // outward: each lobe is star-shaped about the nucleus
+      const len = Math.hypot(n[0], n[1], n[2]);
+      if (len < 1e-12 || n[1] > 0) continue;                   // degenerate, or facing away
+      prims.push({ d: m[1], q: [a, b, c, d], fill: shade(col, Math.max(0, dot(n, LIGHT) / len)), alpha });
+    }
+  }
+}
+function addLine(prims, p, q, color, width, pieces) {
+  const a = toView(p), b = toView(q);
+  for (let i = 0; i < pieces; i++) {
+    const A = lerp(a, b, i / pieces), B = lerp(a, b, (i + 1) / pieces);
+    prims.push({ d: (A[1] + B[1]) / 2, line: [A, B], color, width });
+  }
+}
+function draw() {
+  const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  if (!W || !H) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  const sc = Math.min(W / 6.6, (H - 56) / 6.4), ox = W / 2, oy = H / 2 + 6;
+  const X = v => ox + v[0] * sc, Y = v => oy - v[2] * sc;
+  const prims = [], [cs, cp] = coef();
+  for (const e of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) addLine(prims, scale(e, -2.7), scale(e, 2.7), AXIS, 1, 12);
+  if (t < 1) addOrbital(prims, [0, 0, 1], 1, 0, SLATE, 0.5 * (1 - t));          // the 2s, shared out as t → 1
+  U.forEach((u, i) => addOrbital(prims, u, cs, S3 * cp, HUE[i], 1));
+  if (M.plane && showPz) addOrbital(prims, [0, 0, 1], 0, S3, SLATE, 1);
+  if (!M.plane) for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) addLine(prims, scale(U[i], 2.6), scale(U[j], 2.6), EDGE, 1.2, 10);
+  const label = (txt, v, color, size, style, subTxt) => {        // v in view coordinates; optional subscript
+    const f1 = (style || "600") + " " + size + "px " + FONT, f2 = (style || "600") + " " + Math.round(size * 0.72) + "px " + FONT;
+    ctx.font = f1; const w1 = ctx.measureText(txt).width;
+    ctx.font = f2; const w2 = subTxt ? ctx.measureText(subTxt).width : 0;
+    const x0 = X(v) - (w1 + w2) / 2, y = Y(v), ys = y + size * 0.3;
+    ctx.globalAlpha = 1; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    ctx.lineWidth = 4; ctx.strokeStyle = "rgba(255,255,255,0.92)"; ctx.fillStyle = color;
+    ctx.font = f1; ctx.strokeText(txt, x0, y); ctx.fillText(txt, x0, y);
+    if (subTxt) { ctx.font = f2; ctx.strokeText(subTxt, x0 + w1, ys); ctx.fillText(subTxt, x0 + w1, ys); }
+  };
+  ["x", "y", "z"].forEach((s, i) => {                          // axis labels, depth-sorted; skip an axis pointing at the viewer
+    const e = [0, 0, 0]; e[i] = 2.95; const v = toView(e);
+    if (Math.hypot(v[0], v[2]) > 0.8) prims.push({ d: v[1], text: [s, v, MUTED, 14, "italic 400"] });
+  });
+  prims.sort((a, b) => b.d - a.d);
+  ctx.lineJoin = "round"; ctx.lineCap = "round";
+  for (const p of prims) {
+    if (p.text) { label(...p.text); continue; }
+    ctx.beginPath();
+    if (p.line) {
+      ctx.globalAlpha = 1; ctx.strokeStyle = p.color; ctx.lineWidth = p.width;
+      ctx.moveTo(X(p.line[0]), Y(p.line[0])); ctx.lineTo(X(p.line[1]), Y(p.line[1])); ctx.stroke();
+    } else {
+      ctx.globalAlpha = p.alpha; ctx.fillStyle = ctx.strokeStyle = p.fill; ctx.lineWidth = 0.7;
+      ctx.moveTo(X(p.q[0]), Y(p.q[0]));
+      for (let k = 1; k < 4; k++) ctx.lineTo(X(p.q[k]), Y(p.q[k]));
+      ctx.closePath(); ctx.fill();
+      if (p.alpha === 1) ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+  if (M.plane) {                                               // angle arcs between neighbouring hybrids
+    const az = U.map(u => Math.atan2(u[1], u[0])).sort((a, b) => a - b);
+    for (let k = 0; k < az.length; k++) {
+      let gap = az[(k + 1) % az.length] - az[k];
+      if (gap <= 0) gap += 2 * Math.PI;
+      if (gap > Math.PI + 1e-6) continue;
+      ctx.strokeStyle = MUTED; ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      for (let s = 0; s <= 40; s++) {
+        const a = az[k] + gap * s / 40, v = toView([2.6 * Math.cos(a), 2.6 * Math.sin(a), 0]);
+        s ? ctx.lineTo(X(v), Y(v)) : ctx.moveTo(X(v), Y(v));
+      }
+      ctx.stroke();
+      const mid = az[k] + gap / 2;
+      label((gap * DEG).toFixed(1) + "°", toView([2.98 * Math.cos(mid), 2.98 * Math.sin(mid), 0]), INK, 14, "600");
+    }
+  }
+  U.forEach((u, i) => { const [a, b] = nameOf(i); label(a, toView(scale(u, 2.4)), HUE[i], 15, "700", b); });   // always on top
+}
+
+// ---- side panel ----
+function polar(A, B, cx, cy, k, sgn) {
+  let d = "";
+  for (let i = 0; i <= 144; i++) {
+    const g = 2 * Math.PI * i / 144, r = Math.max(0, sgn * (A + B * Math.cos(g))) * k;
+    d += (i ? "L" : "M") + (cx + r * Math.cos(g)).toFixed(1) + " " + (cy - r * Math.sin(g)).toFixed(1);
+  }
+  return d + "Z";
+}
+const PALE0 = "rgb(" + paleOf(rgbOf(HUE[0])).join(",") + ")";
+function recipe() {
+  const [a, b] = coef(), B = S3 * b, k = 24, cy = 50;
+  const shape = (A, Bb, cx) => '<path d="' + polar(A, Bb, cx, cy, k, -1) + '" fill="' + PALE0 + '"/><path d="' + polar(A, Bb, cx, cy, k, 1) + '" fill="' + HUE[0] + '"/>';
+  const txt = (x, y, s, size, fill, weight) => '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-family=\'' + FONT + '\' font-size="' + size + '" fill="' + fill + '"' + (weight ? ' font-weight="' + weight + '"' : "") + ">" + s + "</text>";
+  const sign = (x, s, dark) => txt(x.toFixed(1), cy + 5, s, 15, dark ? "#fff" : INK, 700);
+  let h = '<circle cx="50" cy="' + cy + '" r="' + k + '" fill="none" stroke="#b9c2cd" stroke-dasharray="3 3"/>';
+  h += shape(a, 0, 50) + shape(0, B, 200) + shape(a, B, 365);
+  if (a * k > 9) h += sign(50, "+", true);
+  h += sign(200 + 0.55 * B * k, "+", true) + sign(200 - 0.55 * B * k, "−", false);
+  h += sign(365 + 0.55 * (a + B) * k, "+", true);
+  if ((B - a) * k > 14) h += sign(365 - 0.55 * (B - a) * k, "−", false);
+  h += txt(122, cy + 8, "+", 24, MUTED) + txt(284, cy + 8, "=", 24, MUTED);
+  h += txt(50, 112, a.toFixed(2) + " × s", 16, INK) + txt(200, 112, b.toFixed(2) + " × p", 16, INK);
+  h += txt(365, 112, "hybrid, " + Math.round(100 * share()) + "% s", 16, INK, 600);
+  $("recipe").innerHTML = h;
+}
+function coefTable() {
+  const [a, b] = coef(), nb = M.basis.length;
+  let h = "<tr><th></th>" + M.basis.map(c => "<th>" + c + "</th>").join("") + "</tr>";
+  U.forEach((u, i) => {
+    const v = [a, b * u[0], b * u[1], b * u[2]].slice(0, nb);
+    h += '<tr><th style="color:' + HUE[i] + '">' + nameHTML(i) + "</th>" + v.map(x => "<td>" + num(x, 2) + "</td>").join("") + "</tr>";
+  });
+  $("coef").innerHTML = h;
+}
+function pairTable(P) {
+  const hh = i => '<span style="color:' + HUE[i] + '">' + nameHTML(i) + "</span>";
+  let h = "<tr><th>pair</th><th>angle θ</th><th>overlap S</th></tr>";
+  for (const p of P) h += '<tr><th style="font-weight:400">' + hh(p.i) + " · " + hh(p.j) + "</th><td>" + p.ang.toFixed(1) + "°</td><td" + (Math.abs(p.S) < 5e-4 ? ' class="ok"' : "") + ">" + num(p.S, 3) + "</td></tr>";
+  $("pairs").innerHTML = h;
+  const f = share(), c0 = -f / (1 - f);
+  $("rule").innerHTML = (t === 1
+    ? "S = " + M.frac + " + (" + M.pfrac + ") cos θ, which is zero when cos θ = −" + (M.n === 3 ? "1/2, θ = 120°" : "1/3, θ = 109.47°") + "."
+    : "S = " + f.toFixed(2) + " + " + (1 - f).toFixed(2) + " cos θ, which is zero when cos θ = " + num(c0, 2) + ", θ = " + (Math.acos(c0) * DEG).toFixed(1) + "°.")
+    + " S is the overlap integral ∫h<sub>i</sub>h<sub>j</sub> dV. S = 0 does not mean the lobes are apart: the + and − parts of the product cancel, which is also why p<sub>x</sub> and p<sub>y</sub> at 90° have S = 0.";
+}
+function chart() {
+  const W = 260, H = 140, L = 40, R = 8, T = 10, Bm = 28, w = W - L - R, hgt = H - T - Bm;
+  const t2 = (x, y, s, anchor, extra) => '<text x="' + x + '" y="' + y + '" text-anchor="' + (anchor || "middle") + '" font-family=\'' + FONT + '\' font-size="12" fill="' + MUTED + '"' + (extra || "") + ">" + s + "</text>";
+  let h = '<path d="M' + L + " " + T + "V" + (T + hgt) + "H" + (L + w) + '" fill="none" stroke="#b9c2cd"/>';
+  h += t2(L + w / 2, H - 6, "minimization step") + t2(12, T + hgt / 2, "Σ S²", "middle", ' transform="rotate(-90 12 ' + (T + hgt / 2) + ')"');
+  h += t2(L - 5, T + hgt + 4, "0", "end");
+  const ymax = hist.length ? Math.max(...hist) : 0;
+  if (t < 1) h += t2(L + w / 2, T + hgt / 2, "Mix fully, then press ② Minimize");
+  else if (hist.length < 2) h += t2(L + w / 2, T + hgt / 2, relaxed() ? "Already relaxed" : "Press ② Minimize");
+  else if (ymax < 1e-6) h += t2(L + w / 2, T + hgt / 2, "Already relaxed");
+  else {
+    const N = Math.max(hist.length, 90);
+    h += t2(L - 5, T + 8, ymax.toFixed(2), "end");
+    h += '<polyline fill="none" stroke="' + HUE[0] + '" stroke-width="2" stroke-linejoin="round" points="' +
+      hist.map((e, i) => (L + w * i / (N - 1)).toFixed(1) + "," + (T + hgt * (1 - e / ymax)).toFixed(1)).join(" ") + '"/>';
+    if ((running ? kind : usedKind) === "repel") h += t2(L + w, T + 8, "minimizing Σ 1/r; Σ S² shown", "end");
+  }
+  $("chart").innerHTML = h;
+}
+function note(P, rel) {
+  const S2 = "<b>2s</b> (grey sphere, + everywhere, drawn see-through)";
+  if (running) return "Minimizing " + (kind === "overlap" ? "the total overlap Σ S²" : "the repulsion between the bonding electron pairs (each hybrid's electron plus one from a neighbour), Σ 1/distance") + ": searching for the best p directions while each hybrid keeps its " + M.frac + " s.";
+  if (t === 0) {
+    if (!atTrial) return "Start: carbon's " + S2 + " and pure p orbitals along the directions shown. Press <b>① Mix</b> to share the s orbital among them.";
+    return M.plane
+      ? "Start: carbon's " + S2 + " and its in-plane 2p orbitals <b>p<sub>x</sub></b> and <b>p<sub>y</sub></b>, plus a third trial direction along the diagonal, <b>p<sub>xy</sub></b> = (p<sub>x</sub> + p<sub>y</sub>)/√2. That one is a mix of p<sub>x</sub> and p<sub>y</sub>, not a new orbital; the third 2p, p<sub>z</sub>, takes no part. Press <b>① Mix</b> to share the s among them."
+      : "Start: carbon's " + S2 + " and its three 2p orbitals <b>p<sub>x</sub></b>, <b>p<sub>y</sub></b>, <b>p<sub>z</sub></b>, plus a fourth trial direction along the cube diagonal, <b>p<sub>xyz</sub></b> = (p<sub>x</sub> + p<sub>y</sub> + p<sub>z</sub>)/√3, built from the same three, not a new orbital. Press <b>① Mix</b> to share the s among them.";
+  }
+  if (t < 1) return atTarget(P)
+    ? "The hybrids are already " + M.target.toFixed(M.plane ? 0 : 2) + "° apart, but with less than " + M.frac + " s each they still overlap: S = (s share) + (p share) cos θ is not zero. The s orbital has to be shared out in full."
+    : "Each hybrid now holds part of the s orbital; " + M.name + " needs " + M.frac + " in each, one s orbital shared " + M.n + " ways. s has the same sign everywhere, so it adds to the + lobe of p and cancels part of the − lobe: one lobe grows, the other shrinks.";
+  if (!rel) return "Mixed: each hybrid is " + M.frac + " s + " + M.pfrac + " p. But at these angles the hybrids overlap (S ≠ 0): they are not orthogonal, so they are not a proper set of " + M.n + " separate orbitals. Press <b>② Minimize</b> to make every pair orthogonal.";
+  const ang = M.plane ? "120°" : "109.47°";
+  const tail = usedKind === "repel"
+    ? " Minimizing pair repulsion landed on the same angles, for a different reason: it counts only the bonds and ignores the s share. Orthogonality is what ties " + M.frac + " s to " + ang + "."
+    : " Pair repulsion (VSEPR) gives the same angles for a different reason; to see it, choose it under Minimize, press Random start, then ② Minimize.";
+  return M.plane
+    ? "<b>Relaxed:</b> S = 1/3 + (2/3) cos θ = 0 for every pair, so cos θ = −1/2 and <b>θ = 120°</b>, the trigonal σ bonds of graphene. Each hybrid holds one of carbon's four valence electrons; the fourth is in the left-over 2p<sub>z</sub> (tick it), perpendicular to the plane, which joins the delocalised π system spread over the whole sheet." + tail
+    : "<b>Relaxed:</b> S = 1/4 + (3/4) cos θ = 0 for every pair, so cos θ = −1/3 and <b>θ = 109.47°</b>, the tetrahedral bonds of diamond, with one valence electron in each hybrid." + tail;
+}
+function refresh() {
+  const P = pairs(), rel = relaxed(P);
+  $("mix").value = t; $("mixv").textContent = Math.round(100 * share()) + "%";
+  $("mix").setAttribute("aria-valuetext", Math.round(100 * share()) + "% s in each hybrid");
+  $("orbTag").textContent = t === 0 ? "2s and 2p, before mixing"
+    : t < 1 ? "Mixing: " + Math.round(100 * share()) + "% s in each hybrid"
+    : running ? "Minimizing…"
+    : rel ? M.name + " hybrids, " + M.target.toFixed(M.plane ? 0 : 2) + "° apart"
+    : "Trial " + M.name + " hybrids, still overlapping";
+  const angs = P.map(p => p.ang), lo = Math.min(...angs), hi = Math.max(...angs);
+  $("angs").textContent = hi - lo < 0.05 ? lo.toFixed(1) + "° (all " + (M.plane ? "three" : "six") + ")"
+    : M.plane ? angs.map(a => a.toFixed(1) + "°").join(", ") : lo.toFixed(1) + "° to " + hi.toFixed(1) + "°";
+  $("ovl").textContent = totalS2(P).toFixed(3);
+  $("bMix").disabled = t >= 1 || running;
+  $("bMin").disabled = t < 1 || (rel && !running && !paused);
+  $("bMin").textContent = running ? "Pause" : paused ? "② Resume" : "② Minimize";
+  $("bMin").title = t < 1 ? "Mix fully first: each hybrid needs its " + M.frac + " share of s" : rel && !running ? "Already relaxed: press Random start or Reset to run again" : "";
+  const nt = note(P, rel);
+  if ($("note").innerHTML !== nt) $("note").innerHTML = nt;
+  recipe(); coefTable(); pairTable(P); chart(); draw();
+}
+
+// ---- animation and controls ----
+function tick(now) {
+  raf = 0;
+  let more = false;
+  if (mixTo) {
+    if (mixTo.t0 === null) mixTo.t0 = now;
+    const k = Math.min(1, (now - mixTo.t0) / 1400);
+    t = mixTo.from + (1 - mixTo.from) * (1 - Math.pow(1 - k, 3));
+    if (k >= 1) { t = 1; mixTo = null; } else more = true;
+  }
+  if (camTo) {
+    if (camTo.t0 === null) camTo.t0 = now;
+    const k = Math.min(1, (now - camTo.t0) / 600), e = k * k * (3 - 2 * k);
+    yaw = camTo.from[0] + (camTo.to[0] - camTo.from[0]) * e; pitch = camTo.from[1] + (camTo.to[1] - camTo.from[1]) * e;
+    if (k >= 1) camTo = null; else more = true;
+  }
+  if (running) {
+    let g = 0;
+    for (let s = 0; s < SUBSTEPS; s++) g = gradStep(DT[kind]);
+    hist.push(totalS2());
+    if (converged(g) || hist.length > MAXFRAMES) { running = false; usedKind = kind; } else more = true;
+  }
+  refresh();
+  if (more) raf = requestAnimationFrame(tick);
+}
+const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
+const clearRun = () => { running = false; paused = false; hist = []; usedKind = null; };
+function reset() {
+  clearRun(); mixTo = null; t = 0; atTrial = true;
+  U = M.trial.map(u => u.slice());
+  refresh();
+}
+function setMode(k) {
+  key = k; M = MODES[k];
+  document.querySelectorAll("#modes button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === k)));
+  $("pzl").style.display = M.plane ? "" : "none";
+  camTo = null;
+  [yaw, pitch] = topView ? [0, Math.PI / 2] : M.view;
+  reset();
+}
+function randomDirs() {
+  for (;;) {
+    const V = M.trial.map(() => {
+      if (M.plane) { const p = Math.random() * 2 * Math.PI; return [Math.cos(p), Math.sin(p), 0]; }
+      const z = 2 * Math.random() - 1, p = Math.random() * 2 * Math.PI, r = Math.sqrt(1 - z * z);
+      return [r * Math.cos(p), r * Math.sin(p), z];
+    });
+    let ok = true;
+    for (let i = 0; i < V.length; i++) for (let j = i + 1; j < V.length; j++) if (dot(V[i], V[j]) > Math.cos(20 / DEG)) ok = false;
+    if (ok) return V;
+  }
+}
+document.querySelectorAll("#modes button").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+$("mix").addEventListener("input", e => { mixTo = null; t = +e.target.value; if (t < 1) clearRun(); refresh(); });
+$("bMix").addEventListener("click", () => {
+  running = false;
+  if (reduceMotion) { t = 1; refresh(); return; }
+  mixTo = { from: t, t0: null }; kick();
+});
+$("bMin").addEventListener("click", () => {
+  if (running) { running = false; paused = true; refresh(); return; }
+  if (t < 1) return;
+  if (!paused) hist = [totalS2()];
+  mixTo = null; paused = false; atTrial = false; usedKind = null; running = true;
+  if (reduceMotion) {
+    let g = 1;
+    do { for (let s = 0; s < SUBSTEPS; s++) g = gradStep(DT[kind]); hist.push(totalS2()); } while (!converged(g) && hist.length <= MAXFRAMES);
+    running = false; usedKind = kind; refresh(); return;
+  }
+  kick();
+});
+$("bReset").addEventListener("click", reset);
+$("bRand").addEventListener("click", () => { clearRun(); atTrial = false; U = randomDirs(); refresh(); });
+$("en").addEventListener("change", e => { kind = e.target.value; refresh(); });
+$("pz").addEventListener("change", e => { showPz = e.target.checked; draw(); });
+$("bTop").addEventListener("click", () => {
+  topView = !topView; $("bTop").setAttribute("aria-pressed", String(topView));
+  const to = topView ? [0, Math.PI / 2] : M.view;
+  to[0] += Math.round((yaw - to[0]) / (2 * Math.PI)) * 2 * Math.PI;   // turn the short way round
+  if (reduceMotion) { [yaw, pitch] = to; draw(); return; }
+  camTo = { from: [yaw, pitch], to, t0: null }; kick();
+});
+cv.addEventListener("pointerdown", e => {
+  dragging = true; lx = e.clientX; ly = e.clientY; cv.setPointerCapture(e.pointerId); cv.classList.add("grabbing");
+  if (camTo && topView) { topView = false; $("bTop").setAttribute("aria-pressed", "false"); }
+  camTo = null;
+});
+cv.addEventListener("pointermove", e => {
+  if (!dragging) return;
+  yaw += (e.clientX - lx) * 0.01;
+  pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch + (e.clientY - ly) * 0.01));
+  lx = e.clientX; ly = e.clientY;
+  if (topView) { topView = false; $("bTop").setAttribute("aria-pressed", "false"); }
+  draw();
+});
+const stop = () => { dragging = false; cv.classList.remove("grabbing"); };
+cv.addEventListener("pointerup", stop); cv.addEventListener("pointercancel", stop);
+new ResizeObserver(draw).observe(cv);
+kind = $("en").value; showPz = $("pz").checked;          // a reload may restore these controls
+setMode("sp2");
+</script>
+</body>
+</html>
